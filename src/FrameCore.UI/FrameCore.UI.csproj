@@ -41,4 +41,8 @@
     <Resource Include="Assets\framecore.png" />
     <Resource Include="Assets\framecore.ico" />
   </ItemGroup>
+  <!-- TraceEvent ships native helpers for every architecture; only x64 is ever loaded. -->
+  <Target Name="RemoveForeignArchitectureNatives" AfterTargets="Publish">
+    <RemoveDir Directories="$(PublishDir)x86;$(PublishDir)arm64" />
+  </Target>
 </Project>
