@@ -1,0 +1,257 @@
+[
+  {
+    "name": "vgc|vgk|vanguard|riot vanguard",
+    "classification": "Essential",
+    "category": "anticheat",
+    "protected": true
+  },
+  {
+    "name": "easyanticheat|EasyAntiCheat",
+    "classification": "Essential",
+    "category": "anticheat",
+    "protected": true
+  },
+  {
+    "name": "BEService|BattlEye",
+    "classification": "Essential",
+    "category": "anticheat",
+    "protected": true
+  },
+  {
+    "name": "FACEIT",
+    "classification": "Essential",
+    "category": "anticheat",
+    "protected": true
+  },
+  {
+    "name": "EAAntiCheat|EA AntiCheat|PnkBstr|ESEA|nProtect|GameGuard|XIGNCODE|mhyprot|Ricochet|atvi-randgrid",
+    "classification": "Essential",
+    "category": "anticheat",
+    "protected": true
+  },
+  {
+    "name": "NVDisplay\\.Container|NvContainer|NVIDIA Display Container",
+    "classification": "Essential",
+    "category": "gpu",
+    "protected": true
+  },
+  {
+    "name": "NVIDIA App|NvBackend|NVIDIA GeForce Experience|ShadowPlay",
+    "classification": "Optional",
+    "category": "gpu-companion"
+  },
+  {
+    "name": "AMD External Events|amdfendr|AMD Crash Defender|AMDRSServ|RadeonSoftware|AMD Software",
+    "classification": "Recommended",
+    "category": "gpu"
+  },
+  {
+    "name": "igfx|Intel\\(R\\) Graphics|IntelGraphicsSoftware|ArcControl|igcc",
+    "classification": "Recommended",
+    "category": "gpu"
+  },
+  {
+    "name": "RtkAudUService|Realtek|RAVCpl|RAVBg|Nahimic|SonicStudio|Dolby|DTS|WavesSvc|MaxxAudio|SteelSeries Sonar|Sound Blaster|Creative",
+    "classification": "Essential",
+    "category": "audio",
+    "protected": true
+  },
+  {
+    "name": "LGHUB|Logi(tech)? ?G ?HUB|LogiOptions|Logi Options",
+    "classification": "Recommended",
+    "category": "peripheral"
+  },
+  {
+    "name": "Razer|Synapse|RzSDK|Chroma",
+    "classification": "Recommended",
+    "category": "peripheral"
+  },
+  {
+    "name": "iCUE|Corsair",
+    "classification": "Recommended",
+    "category": "peripheral"
+  },
+  {
+    "name": "SteelSeries ?GG|SteelSeriesEngine",
+    "classification": "Recommended",
+    "category": "peripheral"
+  },
+  {
+    "name": "Wooting|HyperX NGENUITY|Glorious|ROCCAT|Swarm|Turtle Beach|Elgato|Stream Deck|Wacom|WTablet|Xbox Accessories|DS4Windows|Steam Input",
+    "classification": "Recommended",
+    "category": "peripheral"
+  },
+  {
+    "name": "SynTP|Synaptics|ELAN|Precision Touchpad|ETDCtrl",
+    "classification": "Essential",
+    "category": "input",
+    "protected": true
+  },
+  {
+    "name": "SecurityHealth|Windows Defender|MsMpEng|Malwarebytes|Bitdefender|Kaspersky|\\bESET\\b|Avast|\\bAVG\\b|Norton|McAfee|Sophos|Avira|Trend Micro|F-Secure|G DATA",
+    "classification": "Essential",
+    "category": "security",
+    "protected": true
+  },
+  {
+    "name": "Armoury ?Crate|ArmouryCrate|ASUS Framework|AsusCertService|LightingService|AURA",
+    "classification": "Optional",
+    "category": "vendor-utility"
+  },
+  {
+    "name": "MSI Center|MSI\\.CentralServer|Mystic Light|Dragon Center",
+    "classification": "Optional",
+    "category": "vendor-utility"
+  },
+  {
+    "name": "GIGABYTE|GCC|RGBFusion|AORUS",
+    "classification": "Optional",
+    "category": "vendor-utility"
+  },
+  {
+    "name": "Lenovo Vantage|LenovoVantage|Legion|ImController|Lenovo Hotkeys",
+    "classification": "Recommended",
+    "category": "oem-utility"
+  },
+  {
+    "name": "OMEN|HP System Event|HPHotkey|HP Support Assistant",
+    "classification": "Recommended",
+    "category": "oem-utility"
+  },
+  {
+    "name": "Alienware|AWCC|Dell Optimizer|Dell SupportAssist",
+    "classification": "Recommended",
+    "category": "oem-utility"
+  },
+  {
+    "name": "Ryzen Master|AMDRyzenMaster",
+    "classification": "Optional",
+    "category": "tuning"
+  },
+  {
+    "name": "MSIAfterburner|RTSS|RivaTuner",
+    "classification": "Optional",
+    "category": "tuning"
+  },
+  {
+    "name": "^Steam$|steam\\.exe|SteamService",
+    "classification": "Optional",
+    "category": "launcher"
+  },
+  {
+    "name": "EpicGamesLauncher|Epic Games",
+    "classification": "Optional",
+    "category": "launcher"
+  },
+  {
+    "name": "Battle\\.net|Blizzard",
+    "classification": "Optional",
+    "category": "launcher"
+  },
+  {
+    "name": "EADesktop|EA app|\\bOrigin\\b",
+    "classification": "Optional",
+    "category": "launcher"
+  },
+  {
+    "name": "Ubisoft Connect|UbisoftConnect|upc\\.exe|Uplay",
+    "classification": "Optional",
+    "category": "launcher"
+  },
+  {
+    "name": "GOG Galaxy|GalaxyClient",
+    "classification": "Optional",
+    "category": "launcher"
+  },
+  {
+    "name": "Riot Client|RiotClient",
+    "classification": "Optional",
+    "category": "launcher"
+  },
+  {
+    "name": "Xbox App|XboxPcApp|GamingServices",
+    "classification": "Recommended",
+    "category": "launcher"
+  },
+  {
+    "name": "Discord",
+    "classification": "Optional",
+    "category": "communication"
+  },
+  {
+    "name": "Teams|ms-teams",
+    "classification": "Optional",
+    "category": "communication"
+  },
+  {
+    "name": "Skype|Zoom|Slack|WhatsApp|Telegram|Signal",
+    "classification": "Optional",
+    "category": "communication"
+  },
+  {
+    "name": "OneDrive",
+    "classification": "Optional",
+    "category": "cloud"
+  },
+  {
+    "name": "Dropbox|Google Drive|GoogleDriveFS|iCloud|MEGAsync|pCloud|Box Sync",
+    "classification": "Optional",
+    "category": "cloud"
+  },
+  {
+    "name": "Spotify|iTunesHelper|Deezer",
+    "classification": "Optional",
+    "category": "media"
+  },
+  {
+    "name": "GoogleUpdate|Google Update|GoogleUpdater",
+    "classification": "Optional",
+    "category": "updater"
+  },
+  {
+    "name": "MicrosoftEdgeUpdate|edgeupdate",
+    "classification": "Recommended",
+    "category": "browser-updater"
+  },
+  {
+    "name": "Adobe ?(ARM|Updater|GC Invoker|Acrobat Update)|AdobeGCClient|CCXProcess|Creative Cloud",
+    "classification": "Optional",
+    "category": "updater"
+  },
+  {
+    "name": "Java ?Update|jusched",
+    "classification": "Optional",
+    "category": "updater"
+  },
+  {
+    "name": "MozillaMaintenance|Firefox Background Update",
+    "classification": "Recommended",
+    "category": "browser-updater"
+  },
+  {
+    "name": "CCleaner|Driver ?Booster|IObit|Advanced SystemCare|PC ?Cleaner|Reimage|Restoro|WinZip Driver|Avast Cleanup|Wise ?Care",
+    "classification": "Risky",
+    "category": "adware"
+  },
+  {
+    "name": "Opera.*(Assistant|Browser Assistant)|BrowserAssistant",
+    "classification": "Optional",
+    "category": "updater"
+  },
+  {
+    "name": "Wallpaper ?Engine",
+    "classification": "Optional",
+    "category": "customization"
+  },
+  {
+    "name": "Rainmeter|Lively",
+    "classification": "Optional",
+    "category": "customization"
+  },
+  {
+    "name": "SecurityHealthSystray",
+    "classification": "Essential",
+    "category": "security",
+    "protected": true
+  }
+]

@@ -1,0 +1,24 @@
+<Application x:Class="FrameCore.UI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="clr-namespace:FrameCore.UI.Infrastructure"
+             ShutdownMode="OnMainWindowClose">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Colors.Dark.xaml"/>
+                <ResourceDictionary Source="Themes/Styles.xaml"/>
+                <ResourceDictionary Source="Themes/Templates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <i:BoolToVisibilityConverter x:Key="BoolToVis"/>
+            <i:InverseBoolConverter x:Key="Not"/>
+            <i:EqualsConverter x:Key="Eq"/>
+            <i:EqualsToVisibilityConverter x:Key="EqVis"/>
+            <i:LevelToBrushConverter x:Key="LevelBrush"/>
+            <i:LocKeyConverter x:Key="LocKey"/>
+            <i:BytesConverter x:Key="Bytes"/>
+            <i:UnknownConverter x:Key="Unknown"/>
+            <i:SeverityIconConverter x:Key="SeverityIcon"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

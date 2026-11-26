@@ -1,0 +1,529 @@
+{
+  "schemaVersion": 1,
+  "tweaks": [
+    {
+      "id": "input.mouse.accel",
+      "category": "Input",
+      "group": {
+        "fr": "Souris et clavier",
+        "en": "Mouse & keyboard"
+      },
+      "name": {
+        "fr": "Désactiver « Améliorer la précision du pointeur »",
+        "en": "Disable \"Enhance pointer precision\""
+      },
+      "description": {
+        "fr": "Supprime l'accélération du pointeur Windows.",
+        "en": "Removes Windows pointer acceleration."
+      },
+      "impact": {
+        "fr": "Visée plus constante au bureau et dans les jeux sans « raw input ». Aucun effet sur les FPS ; sans effet dans les jeux utilisant le raw input.",
+        "en": "More consistent aim on the desktop and in games without raw input. No FPS effect; none in raw-input games."
+      },
+      "regressions": {
+        "fr": "Préférence : certains utilisateurs préfèrent l'accélération.",
+        "en": "Preference: some users prefer acceleration."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Comfort",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "spi",
+          "name": "mouseAcceleration",
+          "value": "0,0,0"
+        }
+      ]
+    },
+    {
+      "id": "input.stickykeys",
+      "category": "Input",
+      "group": {
+        "fr": "Souris et clavier",
+        "en": "Mouse & keyboard"
+      },
+      "name": {
+        "fr": "Désactiver le raccourci des touches rémanentes",
+        "en": "Disable Sticky Keys shortcut"
+      },
+      "description": {
+        "fr": "Empêche la fenêtre des touches rémanentes après 5 appuis sur Maj.",
+        "en": "Prevents the Sticky Keys prompt after pressing Shift 5 times."
+      },
+      "impact": {
+        "fr": "Confort en jeu (pas d'interruption).",
+        "en": "In-game comfort (no interruption)."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Comfort",
+      "restart": "SignOut",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Control Panel\\Accessibility\\StickyKeys",
+          "name": "Flags",
+          "valueKind": "String",
+          "value": "506"
+        }
+      ]
+    },
+    {
+      "id": "net.repair.autotuning",
+      "category": "Network",
+      "group": {
+        "fr": "Réseau",
+        "en": "Network"
+      },
+      "name": {
+        "fr": "Auto-réglage de la fenêtre TCP sur « normal »",
+        "en": "TCP window auto-tuning to normal"
+      },
+      "description": {
+        "fr": "Réparation : désactiver l'auto-tuning (conseil répandu) réduit fortement le débit sans améliorer le ping.",
+        "en": "Repair: disabling auto-tuning (common advice) greatly reduces throughput without improving ping."
+      },
+      "impact": {
+        "fr": "Restaure le débit des téléchargements.",
+        "en": "Restores download throughput."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Repair",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "handler",
+          "name": "net.autotuning.normal"
+        }
+      ]
+    },
+    {
+      "id": "net.eee",
+      "category": "Network",
+      "group": {
+        "fr": "Réseau",
+        "en": "Network"
+      },
+      "name": {
+        "fr": "Désactiver l'Ethernet économe en énergie (EEE)",
+        "en": "Disable Energy-Efficient Ethernet (EEE)"
+      },
+      "description": {
+        "fr": "Mot-clé normalisé *EEE des cartes Ethernet physiques.",
+        "en": "Standardized *EEE keyword of physical Ethernet adapters."
+      },
+      "impact": {
+        "fr": "Supprime les micro-latences de sortie de veille du lien (LPI) ; gain faible.",
+        "en": "Removes link low-power-idle exit micro-latencies; small gain."
+      },
+      "regressions": {
+        "fr": "Légère hausse de consommation ; coupure réseau de quelques secondes à l'application.",
+        "en": "Slightly higher power; network drops for a few seconds when applied."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Latency",
+      "restart": "AdapterRestart",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "netAdapterProperty",
+          "name": "*EEE",
+          "value": "0",
+          "filter": "ethernet"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "net.hasEthernet",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Aucune carte Ethernet physique.",
+            "en": "No physical Ethernet adapter."
+          }
+        }
+      ]
+    },
+    {
+      "id": "net.intmod",
+      "category": "Network",
+      "group": {
+        "fr": "Réseau",
+        "en": "Network"
+      },
+      "name": {
+        "fr": "Désactiver la modération des interruptions",
+        "en": "Disable interrupt moderation"
+      },
+      "description": {
+        "fr": "Chaque paquet génère une interruption.",
+        "en": "Every packet raises an interrupt."
+      },
+      "impact": {
+        "fr": "Latence légèrement réduite au prix d'une charge CPU plus élevée ; résultats variables.",
+        "en": "Slightly lower latency at the cost of higher CPU load; variable results."
+      },
+      "regressions": {
+        "fr": "Charge CPU plus élevée à fort débit.",
+        "en": "Higher CPU load at high throughput."
+      },
+      "confidence": "Experimental",
+      "risk": "Medium",
+      "kind": "Latency",
+      "restart": "AdapterRestart",
+      "profiles": [],
+      "actions": [
+        {
+          "type": "netAdapterProperty",
+          "name": "*InterruptModeration",
+          "value": "0",
+          "filter": "ethernet"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "net.hasEthernet",
+          "op": "isTrue"
+        }
+      ]
+    },
+    {
+      "id": "storage.trim",
+      "category": "Storage",
+      "group": {
+        "fr": "Stockage et maintenance",
+        "en": "Storage & maintenance"
+      },
+      "name": {
+        "fr": "TRIM activé",
+        "en": "TRIM enabled"
+      },
+      "description": {
+        "fr": "Réparation : TRIM informe le SSD des blocs libérés.",
+        "en": "Repair: TRIM tells the SSD which blocks are free."
+      },
+      "impact": {
+        "fr": "Indispensable pour maintenir les performances d'écriture d'un SSD.",
+        "en": "Essential to keep SSD write performance."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Repair",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
+          "name": "DisableDeleteNotification",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "storage.hasSsd",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Aucun SSD détecté.",
+            "en": "No SSD detected."
+          }
+        }
+      ]
+    },
+    {
+      "id": "storage.retrim",
+      "category": "Storage",
+      "group": {
+        "fr": "Stockage et maintenance",
+        "en": "Storage & maintenance"
+      },
+      "name": {
+        "fr": "ReTrim des SSD",
+        "en": "ReTrim SSDs"
+      },
+      "description": {
+        "fr": "Exécute l'optimisation Windows (defrag.exe /L) sur les volumes SSD. Jamais de défragmentation classique sur SSD.",
+        "en": "Runs Windows optimization (defrag.exe /L) on SSD volumes. Never classic defragmentation on SSDs."
+      },
+      "impact": {
+        "fr": "Maintenance ; utile si l'optimisation planifiée n'a pas tourné depuis longtemps.",
+        "en": "Maintenance; useful if scheduled optimization has not run for a long time."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Maintenance",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "handler",
+          "name": "storage.retrim"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "storage.hasSsd",
+          "op": "isTrue"
+        }
+      ],
+      "reversible": false
+    },
+    {
+      "id": "cleanup.temp.user",
+      "category": "Storage",
+      "group": {
+        "fr": "Stockage et maintenance",
+        "en": "Storage & maintenance"
+      },
+      "name": {
+        "fr": "Nettoyer les fichiers temporaires (utilisateur)",
+        "en": "Clean temporary files (user)"
+      },
+      "description": {
+        "fr": "Supprime les fichiers de %TEMP%, les vidages de plantage et rapports d'erreurs de plus de 24 h. Fichiers en cours d'utilisation ignorés ; caches de shaders jamais supprimés (cela provoquerait des saccades).",
+        "en": "Deletes %TEMP% files, crash dumps and error reports older than 24 h. Files in use are skipped; shader caches are never deleted (it would cause stutter)."
+      },
+      "impact": {
+        "fr": "Libère de l'espace disque ; pas d'effet sur les FPS.",
+        "en": "Frees disk space; no FPS effect."
+      },
+      "regressions": {
+        "fr": "Opération sans retour arrière (fichiers temporaires).",
+        "en": "Not reversible (temporary files)."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Maintenance",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "handler",
+          "name": "cleanup.temp.user"
+        }
+      ],
+      "reversible": false
+    },
+    {
+      "id": "cleanup.temp.system",
+      "category": "Storage",
+      "group": {
+        "fr": "Stockage et maintenance",
+        "en": "Storage & maintenance"
+      },
+      "name": {
+        "fr": "Nettoyer les fichiers temporaires (système)",
+        "en": "Clean temporary files (system)"
+      },
+      "description": {
+        "fr": "Windows\\Temp et rapports d'erreurs système archivés de plus de 24 h.",
+        "en": "Windows\\Temp and archived system error reports older than 24 h."
+      },
+      "impact": {
+        "fr": "Libère de l'espace disque.",
+        "en": "Frees disk space."
+      },
+      "regressions": {
+        "fr": "Opération sans retour arrière.",
+        "en": "Not reversible."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Maintenance",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "handler",
+          "name": "cleanup.temp.system"
+        }
+      ],
+      "reversible": false
+    },
+    {
+      "id": "storage.pagefile.auto",
+      "category": "Ram",
+      "group": {
+        "fr": "Stockage et maintenance",
+        "en": "Storage & maintenance"
+      },
+      "name": {
+        "fr": "Fichier d'échange géré par le système",
+        "en": "System-managed page file"
+      },
+      "description": {
+        "fr": "Réparation : réactive un fichier d'échange désactivé. Une configuration personnalisée existante est respectée.",
+        "en": "Repair: re-enables a disabled page file. An existing custom configuration is respected."
+      },
+      "impact": {
+        "fr": "Sans fichier d'échange, la mémoire engagée est plafonnée par la RAM : plantages de jeux possibles.",
+        "en": "Without a page file, commit is capped by RAM: games may crash."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Repair",
+      "restart": "Reboot",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "handler",
+          "name": "storage.pagefile.auto"
+        }
+      ]
+    },
+    {
+      "id": "storage.hibernate.off",
+      "category": "Storage",
+      "group": {
+        "fr": "Stockage et maintenance",
+        "en": "Storage & maintenance"
+      },
+      "name": {
+        "fr": "Désactiver la veille prolongée",
+        "en": "Disable hibernation"
+      },
+      "description": {
+        "fr": "Supprime hiberfil.sys (environ 40 % de la RAM).",
+        "en": "Removes hiberfil.sys (about 40% of RAM)."
+      },
+      "impact": {
+        "fr": "Libère de l'espace sur le disque système.",
+        "en": "Frees space on the system drive."
+      },
+      "regressions": {
+        "fr": "Plus de veille prolongée ni de démarrage rapide.",
+        "en": "No hibernation or Fast Startup."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Maintenance",
+      "restart": "None",
+      "profiles": [],
+      "actions": [
+        {
+          "type": "handler",
+          "name": "storage.hibernate.off"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "system.isDesktop",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Réservé aux PC fixes (consommation sur batterie).",
+            "en": "Desktop PCs only (battery consumption)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "security.vmp",
+      "category": "Security",
+      "group": {
+        "fr": "Sécurité (analyse)",
+        "en": "Security (analysis)"
+      },
+      "name": {
+        "fr": "Désactiver la Plateforme de machine virtuelle",
+        "en": "Disable Virtual Machine Platform"
+      },
+      "description": {
+        "fr": "Fonctionnalité facultative de Windows. Microsoft indique qu'elle peut réduire les performances en jeu sur certaines configurations. Ce n'est pas une protection de sécurité.",
+        "en": "Optional Windows feature. Microsoft states it can reduce gaming performance on some configurations. It is not a security protection."
+      },
+      "impact": {
+        "fr": "Gain variable selon la machine (à mesurer avec le Benchmark).",
+        "en": "Machine-dependent gain (measure with Benchmark)."
+      },
+      "regressions": {
+        "fr": "WSL 2, Windows Subsystem for Android, Windows Sandbox et certaines machines virtuelles ne fonctionnent plus.",
+        "en": "WSL 2, Windows Subsystem for Android, Windows Sandbox and some VMs stop working."
+      },
+      "confidence": "Probable",
+      "risk": "Medium",
+      "kind": "Performance",
+      "restart": "Reboot",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "optionalFeature",
+          "name": "VirtualMachinePlatform",
+          "enabled": false
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "security.vmpEnabled",
+          "op": "isTrue",
+          "reason": {
+            "fr": "La Plateforme de machine virtuelle n'est pas activée.",
+            "en": "Virtual Machine Platform is not enabled."
+          }
+        }
+      ],
+      "sources": [
+        "https://support.microsoft.com/en-us/windows/options-to-optimize-gaming-performance-in-windows-11-a255f612-2949-4373-a566-ff6f3f474613"
+      ],
+      "requiresConsent": true
+    }
+  ]
+}

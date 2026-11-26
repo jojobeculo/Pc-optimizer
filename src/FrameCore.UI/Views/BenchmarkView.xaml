@@ -1,0 +1,159 @@
+<UserControl x:Class="FrameCore.UI.Views.BenchmarkView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="clr-namespace:FrameCore.UI.Infrastructure">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,4,28,28">
+        <StackPanel>
+            <TextBlock Text="{i:Loc bench.title}" Style="{StaticResource Text.PageTitle}"/>
+            <TextBlock Text="{i:Loc bench.subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,2,0,16"/>
+
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="14"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc bench.capture.title}" Style="{StaticResource Text.CardTitle}"/>
+                        <TextBlock Text="{i:Loc bench.capture.desc}" Style="{StaticResource Text.Muted}" Margin="0,4,0,8"/>
+                        <DockPanel Margin="0,0,0,4">
+                            <Button DockPanel.Dock="Right" Content="{i:Loc common.refresh}" Style="{StaticResource Button.Small}" Command="{Binding RefreshProcessesCommand}"/>
+                            <TextBlock Text="{i:Loc bench.process}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center"/>
+                        </DockPanel>
+                        <ListBox ItemsSource="{Binding Processes}" SelectedItem="{Binding SelectedProcess}" DisplayMemberPath="Display" Height="130"
+                                 Style="{StaticResource List.Plain}" ItemContainerStyle="{StaticResource ListItem.Selectable}"/>
+                        <TextBlock Text="{i:Loc bench.label}" Style="{StaticResource Text.Caption}" Margin="0,10,0,4"/>
+                        <WrapPanel>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc bench.label.before}" IsChecked="{Binding LabelKind, Converter={StaticResource Eq}, ConverterParameter=before}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc bench.label.after}" IsChecked="{Binding LabelKind, Converter={StaticResource Eq}, ConverterParameter=after}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc bench.label.driver}" IsChecked="{Binding LabelKind, Converter={StaticResource Eq}, ConverterParameter=driver}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc bench.label.overclock}" IsChecked="{Binding LabelKind, Converter={StaticResource Eq}, ConverterParameter=overclock}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc bench.label.custom}" IsChecked="{Binding LabelKind, Converter={StaticResource Eq}, ConverterParameter=custom}"/>
+                        </WrapPanel>
+                        <TextBox Text="{Binding CustomLabel, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding LabelKind, Converter={StaticResource EqVis}, ConverterParameter=custom}" Margin="0,0,0,6"/>
+                        <Grid Margin="0,6,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{i:Loc bench.duration}" Style="{StaticResource Text.Caption}"/>
+                                <WrapPanel>
+                                    <RadioButton Style="{StaticResource Segment}" Content="30 s" IsChecked="{Binding DurationSeconds, Converter={StaticResource Eq}, ConverterParameter=30}"/>
+                                    <RadioButton Style="{StaticResource Segment}" Content="60 s" IsChecked="{Binding DurationSeconds, Converter={StaticResource Eq}, ConverterParameter=60}"/>
+                                    <RadioButton Style="{StaticResource Segment}" Content="120 s" IsChecked="{Binding DurationSeconds, Converter={StaticResource Eq}, ConverterParameter=120}"/>
+                                </WrapPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="{i:Loc bench.runs}" Style="{StaticResource Text.Caption}"/>
+                                <WrapPanel>
+                                    <RadioButton Style="{StaticResource Segment}" Content="1" IsChecked="{Binding Runs, Converter={StaticResource Eq}, ConverterParameter=1}"/>
+                                    <RadioButton Style="{StaticResource Segment}" Content="3" IsChecked="{Binding Runs, Converter={StaticResource Eq}, ConverterParameter=3}"/>
+                                    <RadioButton Style="{StaticResource Segment}" Content="5" IsChecked="{Binding Runs, Converter={StaticResource Eq}, ConverterParameter=5}"/>
+                                </WrapPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="{i:Loc bench.method}" Style="{StaticResource Text.Caption}"/>
+                                <WrapPanel>
+                                    <RadioButton Style="{StaticResource Segment}" Content="ETW (DX)" IsChecked="{Binding Method, Converter={StaticResource Eq}, ConverterParameter=etw}"/>
+                                    <RadioButton Style="{StaticResource Segment}" Content="PresentMon" IsChecked="{Binding Method, Converter={StaticResource Eq}, ConverterParameter=presentmon}"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="{Binding PresentMonState}" Style="{StaticResource Text.Caption}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,6">
+                            <Button Content="{i:Loc bench.start}" Style="{StaticResource Button.Primary}" Command="{Binding StartCommand}" IsEnabled="{Binding Running, Converter={StaticResource Not}}" Margin="0,0,8,0"/>
+                            <Button Content="{i:Loc common.stop}" Style="{StaticResource Button.Secondary}" Command="{Binding CancelCommand}" IsEnabled="{Binding Running}" Margin="0,0,8,0"/>
+                            <Button Content="{i:Loc bench.import}" Style="{StaticResource Button.Secondary}" Command="{Binding ImportCsvCommand}" Margin="0,0,8,0"/>
+                            <Button Content="{i:Loc bench.synthetic}" Style="{StaticResource Button.Secondary}" Command="{Binding RunSyntheticCommand}" IsEnabled="{Binding Running, Converter={StaticResource Not}}"/>
+                        </StackPanel>
+                        <ProgressBar Value="{Binding Progress, Mode=OneWay}" Maximum="100" Visibility="{Binding Running, Converter={StaticResource BoolToVis}}"/>
+                        <TextBlock Text="{Binding Status}" Style="{StaticResource Text.Muted}" Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc bench.method.title}" Style="{StaticResource Text.CardTitle}"/>
+                        <TextBlock Text="{i:Loc bench.method.desc}" Style="{StaticResource Text.Muted}" Margin="0,4,0,8"/>
+                        <TextBlock Text="{i:Loc bench.honesty}" Style="{StaticResource Text.Body}"/>
+                        <Button Content="{i:Loc bench.pm.page}" Style="{StaticResource Button.Ghost}" HorizontalAlignment="Left" Command="{Binding OpenPresentMonPageCommand}" Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="14"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <Button DockPanel.Dock="Right" Content="{i:Loc common.delete}" Style="{StaticResource Button.Small}" Command="{Binding DeleteSessionCommand}"/>
+                            <TextBlock Text="{i:Loc bench.history}" Style="{StaticResource Text.CardTitle}" VerticalAlignment="Center"/>
+                        </DockPanel>
+                        <ListBox ItemsSource="{Binding Sessions}" SelectedItem="{Binding SelectedSession}" MaxHeight="420"
+                                 Style="{StaticResource List.Plain}" ItemContainerStyle="{StaticResource ListItem.Selectable}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Caption}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Button Content="{i:Loc bench.setA}" Style="{StaticResource Button.Small}" Command="{Binding SetACommand}" Margin="0,0,6,0"/>
+                            <Button Content="{i:Loc bench.setB}" Style="{StaticResource Button.Small}" Command="{Binding SetBCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <StackPanel Grid.Column="2">
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{Binding SelectedSession.Title}" Style="{StaticResource Text.CardTitle}" Margin="0,0,0,8"/>
+                            <ItemsControl ItemsSource="{Binding SelectedStats}" ItemTemplate="{StaticResource PropertyRowTemplate}"/>
+                            <TextBlock Text="{i:Loc bench.frametimes}" Style="{StaticResource Text.Caption}" Margin="0,8,0,4"/>
+                            <i:SparkChart Values="{Binding FrameTimes}" Height="90" AutoScale="True" Capacity="1500" Stroke="{DynamicResource Brush.Chart2}" GridBrush="{DynamicResource Brush.Grid}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{i:Loc bench.evolution}" Style="{StaticResource Text.CardTitle}" Margin="0,0,0,8"/>
+                            <i:LineChart Series="{Binding HistorySeries}" Labels="{Binding HistoryLabels}" Height="170" TextBrush="{DynamicResource Brush.TextMuted}" GridBrush="{DynamicResource Brush.Grid}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <Rectangle Width="10" Height="10" Fill="{DynamicResource Brush.Chart1}" Margin="0,0,6,0"/>
+                                <TextBlock Text="{i:Loc bench.metric.avgFps}" Style="{StaticResource Text.Caption}" Margin="0,0,14,0"/>
+                                <Rectangle Width="10" Height="10" Fill="{DynamicResource Brush.Chart2}" Margin="0,0,6,0"/>
+                                <TextBlock Text="{i:Loc bench.metric.low1}" Style="{StaticResource Text.Caption}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{i:Loc bench.compare}" Style="{StaticResource Text.CardTitle}"/>
+                            <TextBlock Style="{StaticResource Text.Caption}" Margin="0,2,0,8">
+                                <Run Text="A :"/> <Run Text="{Binding SessionA.Title, Mode=OneWay}"/> — <Run Text="B :"/> <Run Text="{Binding SessionB.Title, Mode=OneWay}"/>
+                            </TextBlock>
+                            <DataGrid ItemsSource="{Binding Comparison}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{i:Loc bench.col.metric}" Binding="{Binding Metric}" Width="*"/>
+                                    <DataGridTextColumn Header="A" Binding="{Binding A, StringFormat='{}{0:0.0}'}" Width="70"/>
+                                    <DataGridTextColumn Header="B" Binding="{Binding B, StringFormat='{}{0:0.0}'}" Width="70"/>
+                                    <DataGridTextColumn Header="Δ %" Binding="{Binding DeltaPercent, StringFormat='{}{0:+0.0;-0.0;0.0}'}" Width="70"/>
+                                    <DataGridTextColumn Header="{i:Loc bench.col.verdict}" Binding="{Binding Explanation}" Width="2*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Text="{i:Loc bench.bottleneck}" Style="{StaticResource Text.Section}" Visibility="{Binding Bottlenecks.Count, Converter={StaticResource BoolToVis}}"/>
+                    <ItemsControl ItemsSource="{Binding Bottlenecks}" ItemTemplate="{StaticResource FindingTemplate}"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

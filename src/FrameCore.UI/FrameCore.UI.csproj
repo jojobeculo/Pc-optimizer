@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>FrameCore.UI</RootNamespace>
+    <AssemblyName>FrameCore</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\framecore.ico</ApplicationIcon>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PlatformTarget>x64</PlatformTarget>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <Title>FrameCore</Title>
+    <Description>FrameCore - centre de contrôle des performances Windows 11 pour le jeu</Description>
+    <SatelliteResourceLanguages>en;fr</SatelliteResourceLanguages>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FrameCore.Core\FrameCore.Core.csproj" />
+    <ProjectReference Include="..\FrameCore.HardwareDetection\FrameCore.HardwareDetection.csproj" />
+    <ProjectReference Include="..\FrameCore.WindowsOptimization\FrameCore.WindowsOptimization.csproj" />
+    <ProjectReference Include="..\FrameCore.StartupManager\FrameCore.StartupManager.csproj" />
+    <ProjectReference Include="..\FrameCore.CpuManager\FrameCore.CpuManager.csproj" />
+    <ProjectReference Include="..\FrameCore.GpuManager\FrameCore.GpuManager.csproj" />
+    <ProjectReference Include="..\FrameCore.MemoryManager\FrameCore.MemoryManager.csproj" />
+    <ProjectReference Include="..\FrameCore.DriverManager\FrameCore.DriverManager.csproj" />
+    <ProjectReference Include="..\FrameCore.BiosManager\FrameCore.BiosManager.csproj" />
+    <ProjectReference Include="..\FrameCore.StorageManager\FrameCore.StorageManager.csproj" />
+    <ProjectReference Include="..\FrameCore.NetworkManager\FrameCore.NetworkManager.csproj" />
+    <ProjectReference Include="..\FrameCore.DisplayManager\FrameCore.DisplayManager.csproj" />
+    <ProjectReference Include="..\FrameCore.BenchmarkManager\FrameCore.BenchmarkManager.csproj" />
+    <ProjectReference Include="..\FrameCore.BackupManager\FrameCore.BackupManager.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\catalog\**\*.json" LinkBase="catalog" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\lang\*.json" LinkBase="lang" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Resource Include="Assets\framecore.png" />
+    <Resource Include="Assets\framecore.ico" />
+  </ItemGroup>
+</Project>

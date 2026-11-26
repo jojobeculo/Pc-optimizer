@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FrameCore.Core\FrameCore.Core.csproj" />
+    <ProjectReference Include="..\..\src\FrameCore.WindowsOptimization\FrameCore.WindowsOptimization.csproj" />
+    <ProjectReference Include="..\..\src\FrameCore.BackupManager\FrameCore.BackupManager.csproj" />
+    <ProjectReference Include="..\..\src\FrameCore.BenchmarkManager\FrameCore.BenchmarkManager.csproj" />
+    <ProjectReference Include="..\..\src\FrameCore.MemoryManager\FrameCore.MemoryManager.csproj" />
+    <ProjectReference Include="..\..\src\FrameCore.DisplayManager\FrameCore.DisplayManager.csproj" />
+    <ProjectReference Include="..\..\src\FrameCore.HardwareDetection\FrameCore.HardwareDetection.csproj" />
+    <ProjectReference Include="..\..\src\FrameCore.StartupManager\FrameCore.StartupManager.csproj" />
+    <ProjectReference Include="..\..\src\FrameCore.GpuManager\FrameCore.GpuManager.csproj" />
+    <ProjectReference Include="..\..\src\FrameCore.CpuManager\FrameCore.CpuManager.csproj" />
+  </ItemGroup>
+</Project>

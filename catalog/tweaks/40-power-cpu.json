@@ -1,0 +1,597 @@
+{
+  "schemaVersion": 1,
+  "tweaks": [
+    {
+      "id": "power.repair.boost",
+      "category": "Cpu",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "Boost processeur actif (secteur)",
+        "en": "Processor boost enabled (AC)"
+      },
+      "description": {
+        "fr": "Réparation : remet le mode de boost du processeur sur « Agressif » (valeur par défaut du plan Équilibré) s'il a été désactivé.",
+        "en": "Repair: sets processor boost mode back to \"Aggressive\" (Balanced plan default) if it was disabled."
+      },
+      "impact": {
+        "fr": "Un boost désactivé bloque le CPU à sa fréquence de base : perte de performance importante.",
+        "en": "Disabled boost locks the CPU at base clock: major performance loss."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Repair",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "powerSetting",
+          "subgroup": "54533251-82be-4824-96c1-47eeb4c3c3a1",
+          "setting": "be337238-0d82-4146-a960-4f3749d470c7",
+          "ac": 2
+        }
+      ]
+    },
+    {
+      "id": "power.repair.maxstate",
+      "category": "Cpu",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "État maximal du processeur à 100 % (secteur)",
+        "en": "Maximum processor state 100% (AC)"
+      },
+      "description": {
+        "fr": "Réparation : une valeur inférieure à 100 % plafonne la fréquence du processeur.",
+        "en": "Repair: a value below 100% caps the processor frequency."
+      },
+      "impact": {
+        "fr": "Restaure la fréquence maximale.",
+        "en": "Restores maximum frequency."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Repair",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "powerSetting",
+          "subgroup": "54533251-82be-4824-96c1-47eeb4c3c3a1",
+          "setting": "bc5038f7-23e0-4960-96da-33abaf5935ec",
+          "ac": 100
+        }
+      ]
+    },
+    {
+      "id": "power.plan.high",
+      "category": "Cpu",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "Plan « Performances élevées »",
+        "en": "\"High performance\" plan"
+      },
+      "description": {
+        "fr": "État minimal du processeur à 100 % et pas de parcage des cœurs.",
+        "en": "Minimum processor state 100% and no core parking."
+      },
+      "impact": {
+        "fr": "Montée en fréquence plus rapide, parfois de meilleurs 1 % low ; gain variable selon la machine (à mesurer).",
+        "en": "Faster clock ramp-up, sometimes better 1% lows; machine-dependent gain (measure it)."
+      },
+      "regressions": {
+        "fr": "Consommation et chaleur au repos plus élevées.",
+        "en": "Higher idle power and heat."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Performance",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "powerScheme",
+          "scheme": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "system.isDesktop",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Réservé aux PC fixes (consommation sur batterie).",
+            "en": "Desktop PCs only (battery consumption)."
+          }
+        },
+        {
+          "fact": "cpu.isDualCcdX3D",
+          "op": "isFalse",
+          "reason": {
+            "fr": "Bloqué sur Ryzen X3D bi-CCD : le parcage du CCD sans cache exige le plan Équilibré et la Game Bar.",
+            "en": "Blocked on dual-CCD Ryzen X3D: parking the non-V-Cache CCD requires the Balanced plan and Game Bar."
+          }
+        },
+        {
+          "fact": "cpu.vendor",
+          "op": "!=",
+          "value": "amd",
+          "reason": {
+            "fr": "AMD recommande le plan Équilibré sous Windows 11 pour les Ryzen.",
+            "en": "AMD recommends the Balanced plan on Windows 11 for Ryzen."
+          }
+        },
+        {
+          "fact": "system.modernStandby",
+          "op": "isFalse",
+          "reason": {
+            "fr": "Les PC Modern Standby n'exposent que le plan Équilibré.",
+            "en": "Modern Standby PCs only expose the Balanced plan."
+          }
+        },
+        {
+          "fact": "power.highPerformanceAvailable",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Le plan n'existe pas sur cette machine.",
+            "en": "The plan does not exist on this machine."
+          }
+        }
+      ]
+    },
+    {
+      "id": "power.plan.ultimate",
+      "category": "Cpu",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "Plan « Performances optimales »",
+        "en": "\"Ultimate Performance\" plan"
+      },
+      "description": {
+        "fr": "Plan caché de Windows destiné aux stations de travail : supprime des micro-latences de gestion de l'énergie. Remplace le plan actif (ne pas combiner avec « Performances élevées »).",
+        "en": "Hidden Windows plan for workstations: removes power-management micro-latencies. Replaces the active plan (do not combine with High performance)."
+      },
+      "impact": {
+        "fr": "Aucun gain en jeu démontré de façon reproductible.",
+        "en": "No reproducibly demonstrated gaming gain."
+      },
+      "regressions": {
+        "fr": "Consommation et chaleur élevées en permanence.",
+        "en": "Permanently higher power and heat."
+      },
+      "confidence": "Experimental",
+      "risk": "Medium",
+      "kind": "Performance",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "powerScheme",
+          "scheme": "e9a42b02-d5df-448d-aa00-03f14749eb61",
+          "duplicateFrom": "e9a42b02-d5df-448d-aa00-03f14749eb61"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "system.isDesktop",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Réservé aux PC fixes (consommation sur batterie).",
+            "en": "Desktop PCs only (battery consumption)."
+          }
+        },
+        {
+          "fact": "cpu.isDualCcdX3D",
+          "op": "isFalse",
+          "reason": {
+            "fr": "Bloqué sur Ryzen X3D bi-CCD : le parcage du CCD sans cache exige le plan Équilibré et la Game Bar.",
+            "en": "Blocked on dual-CCD Ryzen X3D: parking the non-V-Cache CCD requires the Balanced plan and Game Bar."
+          }
+        },
+        {
+          "fact": "system.modernStandby",
+          "op": "isFalse",
+          "reason": {
+            "fr": "Indisponible avec Modern Standby.",
+            "en": "Unavailable with Modern Standby."
+          }
+        }
+      ]
+    },
+    {
+      "id": "power.overlay.best",
+      "category": "Cpu",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "Mode d'alimentation « Meilleures performances »",
+        "en": "\"Best performance\" power mode"
+      },
+      "description": {
+        "fr": "Équivalent du curseur Paramètres > Alimentation (mode actuel : secteur ou batterie). API Windows non documentée.",
+        "en": "Equivalent of the Settings > Power slider (current mode: AC or battery). Undocumented Windows API."
+      },
+      "impact": {
+        "fr": "Performances soutenues plus élevées sur portable.",
+        "en": "Higher sustained performance on laptops."
+      },
+      "regressions": {
+        "fr": "Autonomie et chaleur.",
+        "en": "Battery life and heat."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Performance",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "powerOverlay",
+          "scheme": "ded574b5-45a0-4f42-8737-46345c09c238"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "system.isLaptop",
+          "op": "isTrue",
+          "any": [
+            {
+              "fact": "system.isLaptop",
+              "op": "isTrue"
+            },
+            {
+              "fact": "system.modernStandby",
+              "op": "isTrue"
+            }
+          ],
+          "reason": {
+            "fr": "Destiné aux portables / Modern Standby.",
+            "en": "For laptops / Modern Standby."
+          }
+        }
+      ]
+    },
+    {
+      "id": "power.usb.suspend",
+      "category": "Input",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "Désactiver la suspension sélective USB (secteur)",
+        "en": "Disable USB selective suspend (AC)"
+      },
+      "description": {
+        "fr": "Empêche Windows de mettre en veille les périphériques USB inactifs.",
+        "en": "Prevents Windows from suspending idle USB devices."
+      },
+      "impact": {
+        "fr": "Évite les micro-coupures ou délais de réveil de souris, casques et DAC USB.",
+        "en": "Avoids micro-dropouts or wake delays of USB mice, headsets and DACs."
+      },
+      "regressions": {
+        "fr": "Légère hausse de consommation.",
+        "en": "Slightly higher power use."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Latency",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "powerSetting",
+          "subgroup": "2a737441-1930-4402-8d77-b2bebba308a3",
+          "setting": "48e6b7a6-50f5-4782-a5d4-53bb8f07e226",
+          "ac": 0
+        }
+      ]
+    },
+    {
+      "id": "power.pcie.aspm",
+      "category": "Cpu",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "Gestion d'état du lien PCIe désactivée (secteur)",
+        "en": "PCIe link state power management off (AC)"
+      },
+      "description": {
+        "fr": "Désactive l'ASPM côté Windows (le BIOS peut aussi l'imposer).",
+        "en": "Disables ASPM on the Windows side (the BIOS may also enforce it)."
+      },
+      "impact": {
+        "fr": "Évite la latence de sortie de veille L1 des liens GPU/NVMe.",
+        "en": "Avoids L1 exit latency of GPU/NVMe links."
+      },
+      "regressions": {
+        "fr": "Consommation au repos un peu plus élevée.",
+        "en": "Slightly higher idle power."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Latency",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "powerSetting",
+          "subgroup": "501a4d13-42af-4429-9fd1-a8218c268e20",
+          "setting": "ee12f906-d277-404b-b6da-e5fa1a576df5",
+          "ac": 0
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "system.isDesktop",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Réservé aux PC fixes (consommation sur batterie).",
+            "en": "Desktop PCs only (battery consumption)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "power.disk.timeout",
+      "category": "Storage",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "Ne jamais arrêter les disques durs (secteur)",
+        "en": "Never turn off hard disks (AC)"
+      },
+      "description": {
+        "fr": "Les HDD ne s'arrêtent plus après inactivité.",
+        "en": "HDDs no longer spin down after inactivity."
+      },
+      "impact": {
+        "fr": "Évite des saccades de plusieurs secondes au réveil d'un HDD contenant des jeux.",
+        "en": "Avoids multi-second stalls when a game HDD spins back up."
+      },
+      "regressions": {
+        "fr": "Usure et consommation légèrement supérieures.",
+        "en": "Slightly more wear and power."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Latency",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "powerSetting",
+          "subgroup": "0012ee47-9041-4b5d-9b77-535fba8b1442",
+          "setting": "6738e2c4-e8a5-4a42-b16a-e040e769756e",
+          "ac": 0
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "storage.hasHdd",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Aucun HDD détecté.",
+            "en": "No HDD detected."
+          }
+        }
+      ]
+    },
+    {
+      "id": "power.minstate",
+      "category": "Cpu",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "État minimal du processeur à 100 %",
+        "en": "Minimum processor state 100%"
+      },
+      "description": {
+        "fr": "Empêche le CPU de baisser sa fréquence au repos.",
+        "en": "Prevents the CPU from lowering its clock when idle."
+      },
+      "impact": {
+        "fr": "Peut réduire le boost (chaleur, limites de puissance) : effet souvent nul ou négatif.",
+        "en": "May reduce boost (heat, power limits): often no or negative effect."
+      },
+      "regressions": {
+        "fr": "Chaleur et consommation.",
+        "en": "Heat and power."
+      },
+      "confidence": "Experimental",
+      "risk": "Low",
+      "kind": "Performance",
+      "restart": "None",
+      "profiles": [],
+      "actions": [
+        {
+          "type": "powerSetting",
+          "subgroup": "54533251-82be-4824-96c1-47eeb4c3c3a1",
+          "setting": "893dee8e-2bef-41e0-89c6-b55d0929964c",
+          "ac": 100
+        }
+      ]
+    },
+    {
+      "id": "power.coreparking",
+      "category": "Cpu",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "Désactiver le parcage des cœurs",
+        "en": "Disable core parking"
+      },
+      "description": {
+        "fr": "Garde tous les cœurs actifs.",
+        "en": "Keeps all cores unparked."
+      },
+      "impact": {
+        "fr": "Résultats variables ; Windows gère déjà finement le parcage.",
+        "en": "Variable results; Windows already manages parking finely."
+      },
+      "regressions": {
+        "fr": "Interdit sur CPU hybrides Intel et Ryzen X3D bi-CCD (parcage volontaire).",
+        "en": "Forbidden on Intel hybrid and dual-CCD Ryzen X3D (intentional parking)."
+      },
+      "confidence": "Experimental",
+      "risk": "Medium",
+      "kind": "Performance",
+      "restart": "None",
+      "profiles": [],
+      "actions": [
+        {
+          "type": "powerSetting",
+          "subgroup": "54533251-82be-4824-96c1-47eeb4c3c3a1",
+          "setting": "0cc5b647-c1df-4637-891a-dec35c318583",
+          "ac": 100
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "cpu.isDualCcdX3D",
+          "op": "isFalse",
+          "reason": {
+            "fr": "Bloqué sur Ryzen X3D bi-CCD : le parcage du CCD sans cache exige le plan Équilibré et la Game Bar.",
+            "en": "Blocked on dual-CCD Ryzen X3D: parking the non-V-Cache CCD requires the Balanced plan and Game Bar."
+          }
+        },
+        {
+          "fact": "cpu.isHybrid",
+          "op": "isFalse",
+          "reason": {
+            "fr": "CPU hybride : le parcage des E-cores est voulu par Thread Director.",
+            "en": "Hybrid CPU: E-core parking is intended by Thread Director."
+          }
+        }
+      ]
+    },
+    {
+      "id": "power.epp",
+      "category": "Cpu",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "Préférence énergétique : performance maximale",
+        "en": "Energy performance preference: maximum performance"
+      },
+      "description": {
+        "fr": "EPP = 0 sur secteur (CPU avec HWP/CPPC).",
+        "en": "EPP = 0 on AC (CPUs with HWP/CPPC)."
+      },
+      "impact": {
+        "fr": "Montée en fréquence plus agressive ; effet variable.",
+        "en": "More aggressive clock ramp; variable effect."
+      },
+      "regressions": {
+        "fr": "Chaleur.",
+        "en": "Heat."
+      },
+      "confidence": "Experimental",
+      "risk": "Low",
+      "kind": "Performance",
+      "restart": "None",
+      "profiles": [],
+      "actions": [
+        {
+          "type": "powerSetting",
+          "subgroup": "54533251-82be-4824-96c1-47eeb4c3c3a1",
+          "setting": "36687f9e-e3a5-4dbf-b1dc-15eb381c6863",
+          "ac": 0
+        }
+      ]
+    },
+    {
+      "id": "power.fastboot",
+      "category": "Windows",
+      "group": {
+        "fr": "Alimentation",
+        "en": "Power"
+      },
+      "name": {
+        "fr": "Désactiver le démarrage rapide",
+        "en": "Disable Fast Startup"
+      },
+      "description": {
+        "fr": "Le démarrage rapide restaure un noyau en veille prolongée au lieu d'un démarrage à froid.",
+        "en": "Fast Startup resumes a hibernated kernel instead of a cold boot."
+      },
+      "impact": {
+        "fr": "Noyau et pilotes réinitialisés à chaque démarrage (stabilité, mises à jour de pilotes).",
+        "en": "Kernel and drivers reset at every boot (stability, driver updates)."
+      },
+      "regressions": {
+        "fr": "Démarrage un peu plus long.",
+        "en": "Slightly longer boot."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Stability",
+      "restart": "Reboot",
+      "profiles": [],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
+          "name": "HiberbootEnabled",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ]
+    }
+  ]
+}

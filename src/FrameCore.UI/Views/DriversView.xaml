@@ -1,0 +1,99 @@
+<UserControl x:Class="FrameCore.UI.Views.DriversView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="clr-namespace:FrameCore.UI.Infrastructure">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,4,28,28">
+        <StackPanel>
+            <TextBlock Text="{i:Loc drivers.title}" Style="{StaticResource Text.PageTitle}"/>
+            <TextBlock Text="{i:Loc drivers.subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,2,0,16"/>
+
+            <ItemsControl ItemsSource="{Binding Findings}" ItemTemplate="{StaticResource FindingTemplate}"/>
+
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                <StackPanel>
+                    <TextBlock Text="{i:Loc drivers.wu.title}" Style="{StaticResource Text.Section}"/>
+                    <TextBlock Text="{i:Loc drivers.wu.desc}" Style="{StaticResource Text.Muted}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,8">
+                        <Button Content="{i:Loc drivers.wu.search}" Style="{StaticResource Button.Primary}" Command="{Binding SearchWindowsUpdateCommand}"
+                                IsEnabled="{Binding Searching, Converter={StaticResource Not}}" Margin="0,0,8,0"/>
+                        <Button Content="{i:Loc drivers.wu.install}" Style="{StaticResource Button.Secondary}" Command="{Binding InstallSelectedCommand}"
+                                Visibility="{Binding Updates.Count, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding WuStatus}" Style="{StaticResource Text.Muted}"/>
+                    <ItemsControl ItemsSource="{Binding Updates}" Margin="0,8,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalAlignment="Top" Margin="0,2,10,0"/>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" Style="{StaticResource Text.CardTitle}"/>
+                                            <TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Muted}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="{i:Loc drivers.policy}" Style="{StaticResource Text.Caption}" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                <StackPanel>
+                    <TextBlock Text="{i:Loc drivers.official.title}" Style="{StaticResource Text.Section}"/>
+                    <TextBlock Text="{i:Loc drivers.official.desc}" Style="{StaticResource Text.Muted}" Margin="0,0,0,6"/>
+                    <ItemsControl ItemsSource="{Binding OfficialSources}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource Button.Ghost}" HorizontalAlignment="Left" Content="{Binding Label}" ToolTip="{Binding Url}"
+                                        Command="{Binding DataContext.OpenUriCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Url}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <Button Content="{i:Loc drivers.deviceManager}" Style="{StaticResource Button.Small}" Command="{Binding OpenDeviceManagerCommand}" Margin="0,0,8,0"/>
+                        <Button Content="{i:Loc drivers.rollback.title}" Style="{StaticResource Button.Small}" Command="{Binding OpenRollbackHelpCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="{i:Loc drivers.installed}" Style="{StaticResource Text.Section}"/>
+                    <WrapPanel Margin="0,0,0,8">
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.All}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=All}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.Gpu}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=Gpu}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.Chipset}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=Chipset}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.Audio}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=Audio}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.Ethernet}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=Ethernet}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.WiFi}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=WiFi}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.Bluetooth}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=Bluetooth}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.Usb}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=Usb}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.Storage}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=Storage}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.Input}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=Input}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc drivers.cat.Other}" IsChecked="{Binding Category, Converter={StaticResource Eq}, ConverterParameter=Other}"/>
+                    </WrapPanel>
+                    <DataGrid ItemsSource="{Binding Drivers}" SelectedItem="{Binding Selected}" MaxHeight="560">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="{i:Loc drivers.col.device}" Binding="{Binding DeviceName}" Width="2*"/>
+                            <DataGridTextColumn Header="{i:Loc drivers.col.category}" Binding="{Binding Category, Converter={StaticResource LocKey}, ConverterParameter=drivers.cat.}" Width="100"/>
+                            <DataGridTextColumn Header="{i:Loc drivers.col.version}" Binding="{Binding Version}" Width="130"/>
+                            <DataGridTextColumn Header="{i:Loc drivers.col.date}" Binding="{Binding Date, StringFormat=d}" Width="95"/>
+                            <DataGridTextColumn Header="{i:Loc drivers.col.provider}" Binding="{Binding Provider}" Width="*"/>
+                            <DataGridTextColumn Header="{i:Loc drivers.col.signer}" Binding="{Binding Signer}" Width="*"/>
+                            <DataGridTemplateColumn Header="{i:Loc drivers.col.source}" Width="150">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource Button.Ghost}" Content="{Binding OfficialSource}" ToolTip="{Binding OfficialUrl}"
+                                                Command="{Binding DataContext.OpenUriCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding OfficialUrl}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

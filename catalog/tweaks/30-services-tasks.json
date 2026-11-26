@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 1,
+  "tweaks": [
+    {
+      "id": "svc.diagtrack",
+      "category": "Services",
+      "group": {
+        "fr": "Services Windows",
+        "en": "Windows services"
+      },
+      "name": {
+        "fr": "Service de télémétrie (DiagTrack) désactivé",
+        "en": "Telemetry service (DiagTrack) disabled"
+      },
+      "description": {
+        "fr": "« Expériences des utilisateurs connectés et télémétrie » collecte et envoie les données de diagnostic.",
+        "en": "\"Connected User Experiences and Telemetry\" collects and uploads diagnostic data."
+      },
+      "impact": {
+        "fr": "Supprime une activité disque/réseau ponctuelle ; gain de FPS non démontré.",
+        "en": "Removes occasional disk/network activity; FPS gain not demonstrated."
+      },
+      "regressions": {
+        "fr": "Programme Windows Insider et certains diagnostics indisponibles.",
+        "en": "Windows Insider and some diagnostics unavailable."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "service",
+          "name": "DiagTrack",
+          "startType": "Disabled"
+        }
+      ]
+    },
+    {
+      "id": "svc.mapsbroker",
+      "category": "Services",
+      "group": {
+        "fr": "Services Windows",
+        "en": "Windows services"
+      },
+      "name": {
+        "fr": "Gestionnaire de cartes téléchargées en manuel",
+        "en": "Downloaded Maps Manager to manual"
+      },
+      "description": {
+        "fr": "Ne démarre plus automatiquement ; démarre si une application Cartes en a besoin.",
+        "en": "No longer starts automatically; starts when a Maps app needs it."
+      },
+      "impact": {
+        "fr": "Négligeable (démarrage un peu plus léger).",
+        "en": "Negligible (slightly lighter startup)."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "service",
+          "name": "MapsBroker",
+          "startType": "Manual"
+        }
+      ]
+    },
+    {
+      "id": "svc.trkwks",
+      "category": "Services",
+      "group": {
+        "fr": "Services Windows",
+        "en": "Windows services"
+      },
+      "name": {
+        "fr": "Client de suivi des liens distribués en manuel",
+        "en": "Distributed Link Tracking Client to manual"
+      },
+      "description": {
+        "fr": "Suivi des fichiers liés sur des volumes NTFS en réseau.",
+        "en": "Tracks linked files across networked NTFS volumes."
+      },
+      "impact": {
+        "fr": "Négligeable.",
+        "en": "Negligible."
+      },
+      "regressions": {
+        "fr": "Raccourcis réseau déplacés moins bien résolus.",
+        "en": "Moved network shortcuts resolved less reliably."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "service",
+          "name": "TrkWks",
+          "startType": "Manual"
+        }
+      ]
+    },
+    {
+      "id": "svc.pcasvc",
+      "category": "Services",
+      "group": {
+        "fr": "Services Windows",
+        "en": "Windows services"
+      },
+      "name": {
+        "fr": "Assistant Compatibilité des programmes en manuel",
+        "en": "Program Compatibility Assistant to manual"
+      },
+      "description": {
+        "fr": "Surveille les programmes pour proposer des correctifs de compatibilité.",
+        "en": "Monitors programs to suggest compatibility fixes."
+      },
+      "impact": {
+        "fr": "Négligeable.",
+        "en": "Negligible."
+      },
+      "regressions": {
+        "fr": "Moins de propositions de compatibilité pour les vieux logiciels.",
+        "en": "Fewer compatibility prompts for old software."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "service",
+          "name": "PcaSvc",
+          "startType": "Manual"
+        }
+      ]
+    },
+    {
+      "id": "svc.spooler",
+      "category": "Services",
+      "group": {
+        "fr": "Services Windows",
+        "en": "Windows services"
+      },
+      "name": {
+        "fr": "Spouleur d'impression en manuel (sans imprimante)",
+        "en": "Print Spooler to manual (no printer)"
+      },
+      "description": {
+        "fr": "Proposé uniquement si aucune imprimante physique n'est installée.",
+        "en": "Offered only when no physical printer is installed."
+      },
+      "impact": {
+        "fr": "Négligeable en FPS ; réduit la surface d'attaque (failles PrintNightmare).",
+        "en": "Negligible for FPS; reduces attack surface (PrintNightmare)."
+      },
+      "regressions": {
+        "fr": "Impression et « Imprimer en PDF » indisponibles jusqu'à restauration.",
+        "en": "Printing and Print to PDF unavailable until restored."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "service",
+          "name": "Spooler",
+          "startType": "Manual"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "printers.physicalCount",
+          "op": "==",
+          "value": 0,
+          "reason": {
+            "fr": "Une imprimante physique est installée.",
+            "en": "A physical printer is installed."
+          }
+        }
+      ]
+    },
+    {
+      "id": "svc.sysmain",
+      "category": "Services",
+      "group": {
+        "fr": "Services Windows",
+        "en": "Windows services"
+      },
+      "name": {
+        "fr": "SysMain (Superfetch) en manuel",
+        "en": "SysMain (Superfetch) to manual"
+      },
+      "description": {
+        "fr": "SysMain précharge en mémoire les applications fréquemment utilisées.",
+        "en": "SysMain preloads frequently used applications into memory."
+      },
+      "impact": {
+        "fr": "Aucun gain de FPS démontré ; peut ralentir le lancement des applications et des jeux.",
+        "en": "No demonstrated FPS gain; can slow down application and game launches."
+      },
+      "regressions": {
+        "fr": "Lancements plus lents, surtout sur HDD.",
+        "en": "Slower launches, especially on HDDs."
+      },
+      "confidence": "Experimental",
+      "risk": "Low",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [],
+      "actions": [
+        {
+          "type": "service",
+          "name": "SysMain",
+          "startType": "Manual"
+        }
+      ]
+    },
+    {
+      "id": "svc.wsearch",
+      "category": "Services",
+      "group": {
+        "fr": "Services Windows",
+        "en": "Windows services"
+      },
+      "name": {
+        "fr": "Indexation Windows Search en manuel",
+        "en": "Windows Search indexing to manual"
+      },
+      "description": {
+        "fr": "Arrête l'indexation des fichiers. Windows réduit déjà l'indexation pendant l'activité de l'utilisateur.",
+        "en": "Stops file indexing. Windows already throttles indexing while the user is active."
+      },
+      "impact": {
+        "fr": "Réduit l'activité disque après de gros changements de fichiers ; gain en jeu non démontré.",
+        "en": "Reduces disk activity after large file changes; in-game gain not demonstrated."
+      },
+      "regressions": {
+        "fr": "Recherche Démarrer/Explorateur/Outlook beaucoup plus lente.",
+        "en": "Start/Explorer/Outlook search much slower."
+      },
+      "confidence": "Experimental",
+      "risk": "Medium",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [],
+      "actions": [
+        {
+          "type": "service",
+          "name": "WSearch",
+          "startType": "Manual"
+        }
+      ]
+    },
+    {
+      "id": "task.appraiser",
+      "category": "Services",
+      "group": {
+        "fr": "Tâches planifiées",
+        "en": "Scheduled tasks"
+      },
+      "name": {
+        "fr": "Tâche Microsoft Compatibility Appraiser",
+        "en": "Microsoft Compatibility Appraiser task"
+      },
+      "description": {
+        "fr": "Évaluation de compatibilité (CompatTelRunner.exe) parfois très gourmande en CPU.",
+        "en": "Compatibility assessment (CompatTelRunner.exe), sometimes CPU-heavy."
+      },
+      "impact": {
+        "fr": "Supprime des pics CPU/disque imprévisibles.",
+        "en": "Removes unpredictable CPU/disk spikes."
+      },
+      "regressions": {
+        "fr": "Windows peut évaluer moins bien la compatibilité avant une mise à jour de fonctionnalités (la tâche peut être réactivée par Windows).",
+        "en": "Windows may assess feature-update compatibility less well (Windows may re-enable the task)."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "task",
+          "path": "\\Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "task.ceip",
+      "category": "Services",
+      "group": {
+        "fr": "Tâches planifiées",
+        "en": "Scheduled tasks"
+      },
+      "name": {
+        "fr": "Tâches du Programme d'amélioration de l'expérience",
+        "en": "Customer Experience Improvement tasks"
+      },
+      "description": {
+        "fr": "Collecte de données d'usage (Consolidator, UsbCeip).",
+        "en": "Usage data collection (Consolidator, UsbCeip)."
+      },
+      "impact": {
+        "fr": "Négligeable.",
+        "en": "Negligible."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "task",
+          "path": "\\Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator",
+          "enabled": false
+        },
+        {
+          "type": "task",
+          "path": "\\Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "task.diskdiag",
+      "category": "Services",
+      "group": {
+        "fr": "Tâches planifiées",
+        "en": "Scheduled tasks"
+      },
+      "name": {
+        "fr": "Collecte de diagnostics disque",
+        "en": "Disk diagnostic data collector"
+      },
+      "description": {
+        "fr": "Envoie des informations de diagnostic disque à Microsoft.",
+        "en": "Sends disk diagnostic information to Microsoft."
+      },
+      "impact": {
+        "fr": "Négligeable.",
+        "en": "Negligible."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "task",
+          "path": "\\Microsoft\\Windows\\DiskDiagnostic\\Microsoft-Windows-DiskDiagnosticDataCollector",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "task.feedback",
+      "category": "Services",
+      "group": {
+        "fr": "Tâches planifiées",
+        "en": "Scheduled tasks"
+      },
+      "name": {
+        "fr": "Tâches de commentaires Windows",
+        "en": "Windows feedback tasks"
+      },
+      "description": {
+        "fr": "Sollicitations de commentaires (DmClient).",
+        "en": "Feedback prompts (DmClient)."
+      },
+      "impact": {
+        "fr": "Négligeable.",
+        "en": "Negligible."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "task",
+          "path": "\\Microsoft\\Windows\\Feedback\\Siuf\\DmClient",
+          "enabled": false
+        },
+        {
+          "type": "task",
+          "path": "\\Microsoft\\Windows\\Feedback\\Siuf\\DmClientOnScenarioDownload",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "task.maps",
+      "category": "Services",
+      "group": {
+        "fr": "Tâches planifiées",
+        "en": "Scheduled tasks"
+      },
+      "name": {
+        "fr": "Mise à jour des cartes hors connexion",
+        "en": "Offline maps update task"
+      },
+      "description": {
+        "fr": "Télécharge les mises à jour des cartes hors connexion.",
+        "en": "Downloads offline map updates."
+      },
+      "impact": {
+        "fr": "Négligeable.",
+        "en": "Negligible."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "task",
+          "path": "\\Microsoft\\Windows\\Maps\\MapsUpdateTask",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "storage.optimize.task",
+      "category": "Storage",
+      "group": {
+        "fr": "Stockage et maintenance",
+        "en": "Storage & maintenance"
+      },
+      "name": {
+        "fr": "Réactiver l'optimisation planifiée des disques",
+        "en": "Re-enable scheduled drive optimization"
+      },
+      "description": {
+        "fr": "Réparation : la tâche ScheduledDefrag exécute ReTrim sur SSD et la défragmentation sur HDD. Certains « optimiseurs » la désactivent à tort.",
+        "en": "Repair: the ScheduledDefrag task runs ReTrim on SSDs and defragmentation on HDDs. Some \"optimizers\" wrongly disable it."
+      },
+      "impact": {
+        "fr": "Maintient les performances des SSD dans le temps.",
+        "en": "Keeps SSD performance over time."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Repair",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "task",
+          "path": "\\Microsoft\\Windows\\Defrag\\ScheduledDefrag",
+          "enabled": true
+        }
+      ]
+    }
+  ]
+}

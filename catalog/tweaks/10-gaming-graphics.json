@@ -1,0 +1,434 @@
+{
+  "schemaVersion": 1,
+  "tweaks": [
+    {
+      "id": "gaming.gamemode",
+      "category": "Windows",
+      "group": {
+        "fr": "Jeu et graphismes",
+        "en": "Gaming & graphics"
+      },
+      "name": {
+        "fr": "Activer le Mode Jeu",
+        "en": "Enable Game Mode"
+      },
+      "description": {
+        "fr": "Le Mode Jeu donne la priorité au jeu au premier plan et empêche Windows Update d'installer des pilotes ou d'afficher des notifications de redémarrage pendant une partie.",
+        "en": "Game Mode prioritizes the foreground game and prevents Windows Update from installing drivers or showing restart notifications while playing."
+      },
+      "impact": {
+        "fr": "Évite des interruptions et une partie de l'activité de fond pendant le jeu ; gain de FPS faible ou nul sur une machine déjà inactive.",
+        "en": "Avoids interruptions and some background activity while gaming; little or no FPS gain on an otherwise idle machine."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Performance",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\GameBar",
+          "name": "AutoGameModeEnabled",
+          "valueKind": "DWord",
+          "value": 1
+        },
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\GameBar",
+          "name": "AllowAutoGameMode",
+          "valueKind": "DWord",
+          "value": 1
+        }
+      ],
+      "sources": [
+        "https://support.microsoft.com/en-us/windows/options-to-optimize-gaming-performance-in-windows-11-a255f612-2949-4373-a566-ff6f3f474613"
+      ]
+    },
+    {
+      "id": "gaming.dvr.background",
+      "category": "Windows",
+      "group": {
+        "fr": "Jeu et graphismes",
+        "en": "Gaming & graphics"
+      },
+      "name": {
+        "fr": "Désactiver l'enregistrement en arrière-plan",
+        "en": "Disable background recording"
+      },
+      "description": {
+        "fr": "« Enregistrer ce qui vient de se passer » encode en permanence la vidéo du jeu (encodeur GPU, disque).",
+        "en": "\"Record what happened\" continuously encodes gameplay video (GPU encoder, disk)."
+      },
+      "impact": {
+        "fr": "Supprime un encodage vidéo permanent s'il était activé.",
+        "en": "Removes a permanent video encode if it was enabled."
+      },
+      "regressions": {
+        "fr": "La capture rétroactive de la Game Bar n'est plus disponible.",
+        "en": "Game Bar retroactive capture is no longer available."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Performance",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+          "name": "HistoricalCaptureEnabled",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "gaming.dvr.capture",
+      "category": "Windows",
+      "group": {
+        "fr": "Jeu et graphismes",
+        "en": "Gaming & graphics"
+      },
+      "name": {
+        "fr": "Désactiver les captures de la Game Bar",
+        "en": "Disable Game Bar captures"
+      },
+      "description": {
+        "fr": "Désactive la capture vidéo/screenshots de la Xbox Game Bar (Win+Alt+R).",
+        "en": "Disables Xbox Game Bar video/screenshot capture (Win+Alt+R)."
+      },
+      "impact": {
+        "fr": "Retire des hooks de capture ; gain de FPS non démontré.",
+        "en": "Removes capture hooks; FPS gain not demonstrated."
+      },
+      "regressions": {
+        "fr": "Plus de capture via la Game Bar. Ne pas utiliser sur Ryzen X3D bi-CCD.",
+        "en": "No Game Bar capture. Not for dual-CCD Ryzen X3D."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+          "name": "AppCaptureEnabled",
+          "valueKind": "DWord",
+          "value": 0
+        },
+        {
+          "type": "registry",
+          "path": "HKCU\\System\\GameConfigStore",
+          "name": "GameDVR_Enabled",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "cpu.isDualCcdX3D",
+          "op": "isFalse",
+          "reason": {
+            "fr": "Bloqué sur Ryzen X3D bi-CCD : le parcage du CCD sans cache exige le plan Équilibré et la Game Bar.",
+            "en": "Blocked on dual-CCD Ryzen X3D: parking the non-V-Cache CCD requires the Balanced plan and Game Bar."
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphics.windowed",
+      "category": "Windows",
+      "group": {
+        "fr": "Jeu et graphismes",
+        "en": "Gaming & graphics"
+      },
+      "name": {
+        "fr": "Optimisations pour les jeux fenêtrés",
+        "en": "Optimizations for windowed games"
+      },
+      "description": {
+        "fr": "Utilise le modèle de présentation « flip » pour les jeux DirectX 10/11 en fenêtré ou sans bordure.",
+        "en": "Uses the flip presentation model for DirectX 10/11 games in windowed or borderless mode."
+      },
+      "impact": {
+        "fr": "Latence réduite en fenêtré/sans bordure ; rend possibles la VRR et Auto HDR dans ces modes (documentation Microsoft).",
+        "en": "Lower latency in windowed/borderless; enables VRR and Auto HDR in these modes (Microsoft documentation)."
+      },
+      "regressions": {
+        "fr": "Rares jeux anciens incompatibles (désactivable par jeu dans Paramètres > Graphismes).",
+        "en": "Rare incompatible old games (can be disabled per game in Settings > Graphics)."
+      },
+      "confidence": "Confirmed",
+      "risk": "Low",
+      "kind": "Latency",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "dxSetting",
+          "name": "SwapEffectUpgradeEnable",
+          "value": "1"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "os.build",
+          "op": ">=",
+          "value": 22621,
+          "reason": {
+            "fr": "Windows 11 22H2 ou plus récent requis.",
+            "en": "Windows 11 22H2 or later required."
+          }
+        }
+      ],
+      "sources": [
+        "https://support.microsoft.com/en-us/topic/3f006843-2c7e-4ed0-9a5e-f9389e535952"
+      ]
+    },
+    {
+      "id": "graphics.vrr",
+      "category": "Windows",
+      "group": {
+        "fr": "Jeu et graphismes",
+        "en": "Gaming & graphics"
+      },
+      "name": {
+        "fr": "Taux d'actualisation variable (Windows)",
+        "en": "Variable refresh rate (Windows)"
+      },
+      "description": {
+        "fr": "Active la VRR de Windows pour les jeux DirectX 11 plein écran qui ne la gèrent pas nativement.",
+        "en": "Enables Windows VRR for DirectX 11 full-screen games that do not support it natively."
+      },
+      "impact": {
+        "fr": "Supprime le tearing sans la latence de la V-Sync classique, si l'écran est compatible.",
+        "en": "Removes tearing without classic V-Sync latency, if the display is compatible."
+      },
+      "regressions": {
+        "fr": "Scintillement possible sur certaines dalles à faible fréquence.",
+        "en": "Possible flicker on some panels at low frame rates."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Latency",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "dxSetting",
+          "name": "VRROptimizeEnable",
+          "value": "1"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "display.vrrCapable",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Aucun écran compatible VRR détecté (EDID).",
+            "en": "No VRR-capable display detected (EDID)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphics.hags",
+      "category": "Gpu",
+      "group": {
+        "fr": "Jeu et graphismes",
+        "en": "Gaming & graphics"
+      },
+      "name": {
+        "fr": "Planification GPU accélérée matériellement",
+        "en": "Hardware-accelerated GPU scheduling"
+      },
+      "description": {
+        "fr": "Le GPU gère lui-même sa file de travail (WDDM 2.7+).",
+        "en": "The GPU manages its own work queue (WDDM 2.7+)."
+      },
+      "impact": {
+        "fr": "Réduit un peu l'overhead CPU de planification ; requis par DLSS Frame Generation. Effet variable selon les jeux.",
+        "en": "Slightly reduces CPU scheduling overhead; required by DLSS Frame Generation. Variable effect per game."
+      },
+      "regressions": {
+        "fr": "Incompatibilités ponctuelles (VR, logiciels de capture anciens).",
+        "en": "Occasional incompatibilities (VR, old capture software)."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Performance",
+      "restart": "Reboot",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+          "name": "HwSchMode",
+          "valueKind": "DWord",
+          "value": 2
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "gpu.hagsSupported",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Le GPU ou son pilote ne prend pas en charge HAGS.",
+            "en": "The GPU or its driver does not support HAGS."
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphics.mpo.disable",
+      "category": "Gpu",
+      "group": {
+        "fr": "Jeu et graphismes",
+        "en": "Gaming & graphics"
+      },
+      "name": {
+        "fr": "Désactiver le Multi-Plane Overlay (dépannage)",
+        "en": "Disable Multi-Plane Overlay (troubleshooting)"
+      },
+      "description": {
+        "fr": "Désactive les plans de superposition matériels du DWM. Contournement de scintillements signalés par certains pilotes.",
+        "en": "Disables DWM hardware overlay planes. Workaround for flicker reported with some drivers."
+      },
+      "impact": {
+        "fr": "Aucun gain de FPS : uniquement pour le dépannage.",
+        "en": "No FPS gain: troubleshooting only."
+      },
+      "regressions": {
+        "fr": "Peut augmenter la latence et la consommation en fenêtré.",
+        "en": "May increase windowed latency and power."
+      },
+      "confidence": "NotRecommended",
+      "risk": "Medium",
+      "kind": "Stability",
+      "restart": "Reboot",
+      "profiles": [],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKLM\\SOFTWARE\\Microsoft\\Windows\\Dwm",
+          "name": "OverlayTestMode",
+          "valueKind": "DWord",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "id": "graphics.autohdr",
+      "category": "Display",
+      "group": {
+        "fr": "Jeu et graphismes",
+        "en": "Gaming & graphics"
+      },
+      "name": {
+        "fr": "Auto HDR",
+        "en": "Auto HDR"
+      },
+      "description": {
+        "fr": "Convertit automatiquement les jeux SDR (DX11/12) en HDR.",
+        "en": "Automatically converts SDR games (DX11/12) to HDR."
+      },
+      "impact": {
+        "fr": "Préférence visuelle : aucun gain de performance (léger coût GPU).",
+        "en": "Visual preference: no performance gain (small GPU cost)."
+      },
+      "regressions": {
+        "fr": "Rendu parfois trop lumineux selon les jeux.",
+        "en": "Sometimes over-bright depending on the game."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Comfort",
+      "restart": "None",
+      "profiles": [],
+      "actions": [
+        {
+          "type": "dxSetting",
+          "name": "AutoHDREnable",
+          "value": "1"
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "display.hdrCapable",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Aucun écran HDR détecté.",
+            "en": "No HDR display detected."
+          }
+        }
+      ]
+    },
+    {
+      "id": "display.maxRefresh",
+      "category": "Display",
+      "group": {
+        "fr": "Affichage",
+        "en": "Display"
+      },
+      "name": {
+        "fr": "Utiliser la fréquence maximale de l'écran",
+        "en": "Use the display's maximum refresh rate"
+      },
+      "description": {
+        "fr": "Règle chaque écran sur la fréquence la plus élevée proposée par Windows à sa résolution actuelle (testé avant application).",
+        "en": "Sets each display to the highest refresh rate Windows offers at its current resolution (tested before applying)."
+      },
+      "impact": {
+        "fr": "Un écran 144 Hz réglé à 60 Hz n'affiche que 60 images/s : gain de fluidité majeur.",
+        "en": "A 144 Hz display running at 60 Hz shows only 60 frames per second: major smoothness gain."
+      },
+      "regressions": {
+        "fr": "Retour automatique à l'ancien mode si l'affichage n'est pas confirmé dans les 15 secondes.",
+        "en": "Automatic revert to the previous mode if not confirmed within 15 seconds."
+      },
+      "confidence": "Confirmed",
+      "risk": "Low",
+      "kind": "Performance",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "handler",
+          "name": "display.maxRefresh"
+        }
+      ]
+    }
+  ]
+}

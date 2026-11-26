@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FrameCore.BackupManager/FrameCore.BackupManager.csproj" />
+    <Project Path="src/FrameCore.BenchmarkManager/FrameCore.BenchmarkManager.csproj" />
+    <Project Path="src/FrameCore.BiosManager/FrameCore.BiosManager.csproj" />
+    <Project Path="src/FrameCore.Core/FrameCore.Core.csproj" />
+    <Project Path="src/FrameCore.CpuManager/FrameCore.CpuManager.csproj" />
+    <Project Path="src/FrameCore.DisplayManager/FrameCore.DisplayManager.csproj" />
+    <Project Path="src/FrameCore.DriverManager/FrameCore.DriverManager.csproj" />
+    <Project Path="src/FrameCore.GpuManager/FrameCore.GpuManager.csproj" />
+    <Project Path="src/FrameCore.HardwareDetection/FrameCore.HardwareDetection.csproj" />
+    <Project Path="src/FrameCore.MemoryManager/FrameCore.MemoryManager.csproj" />
+    <Project Path="src/FrameCore.NetworkManager/FrameCore.NetworkManager.csproj" />
+    <Project Path="src/FrameCore.StartupManager/FrameCore.StartupManager.csproj" />
+    <Project Path="src/FrameCore.StorageManager/FrameCore.StorageManager.csproj" />
+    <Project Path="src/FrameCore.UI/FrameCore.UI.csproj" />
+    <Project Path="src/FrameCore.WindowsOptimization/FrameCore.WindowsOptimization.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FrameCore.Tests/FrameCore.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,609 @@
+{
+  "schemaVersion": 1,
+  "tweaks": [
+    {
+      "id": "visual.transparency",
+      "category": "Windows",
+      "group": {
+        "fr": "Effets visuels et interface",
+        "en": "Visual effects & shell"
+      },
+      "name": {
+        "fr": "Désactiver la transparence",
+        "en": "Disable transparency effects"
+      },
+      "description": {
+        "fr": "Désactive l'effet acrylique/mica de l'interface Windows.",
+        "en": "Disables Windows acrylic/mica effects."
+      },
+      "impact": {
+        "fr": "Améliore la réactivité du bureau sur GPU intégré modeste ; aucun effet en jeu plein écran.",
+        "en": "Improves desktop responsiveness on modest integrated GPUs; no effect in full-screen games."
+      },
+      "regressions": {
+        "fr": "Esthétique uniquement.",
+        "en": "Cosmetic only."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Responsiveness",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+          "name": "EnableTransparency",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "visual.animations",
+      "category": "Windows",
+      "group": {
+        "fr": "Effets visuels et interface",
+        "en": "Visual effects & shell"
+      },
+      "name": {
+        "fr": "Désactiver les animations",
+        "en": "Disable animations"
+      },
+      "description": {
+        "fr": "Désactive les effets d'animation de Windows (Accessibilité > Effets visuels).",
+        "en": "Turns off Windows animation effects (Accessibility > Visual effects)."
+      },
+      "impact": {
+        "fr": "Interface plus réactive (suppression des délais d'animation). Pas d'effet sur les FPS.",
+        "en": "Snappier UI (no animation delays). No FPS effect."
+      },
+      "regressions": {
+        "fr": "Esthétique uniquement.",
+        "en": "Cosmetic only."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Responsiveness",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "spi",
+          "name": "clientAreaAnimation",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "id": "visual.menudelay",
+      "category": "Windows",
+      "group": {
+        "fr": "Effets visuels et interface",
+        "en": "Visual effects & shell"
+      },
+      "name": {
+        "fr": "Menus plus rapides",
+        "en": "Faster menus"
+      },
+      "description": {
+        "fr": "Réduit le délai d'ouverture des sous-menus de 400 à 200 ms.",
+        "en": "Reduces submenu open delay from 400 to 200 ms."
+      },
+      "impact": {
+        "fr": "Réactivité perçue ; pas d'effet sur les FPS.",
+        "en": "Perceived responsiveness; no FPS effect."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Responsiveness",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "spi",
+          "name": "menuShowDelay",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "id": "content.suggestions",
+      "category": "Privacy",
+      "group": {
+        "fr": "Arrière-plan et confidentialité",
+        "en": "Background & privacy"
+      },
+      "name": {
+        "fr": "Désactiver suggestions et astuces",
+        "en": "Disable suggestions and tips"
+      },
+      "description": {
+        "fr": "Désactive les contenus suggérés de Démarrer, des Paramètres et les astuces Windows.",
+        "en": "Disables suggested content in Start, Settings and Windows tips."
+      },
+      "impact": {
+        "fr": "Confort et moins de contenus promotionnels ; pas d'effet sur les FPS.",
+        "en": "Comfort and less promotional content; no FPS effect."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Comfort",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SubscribedContent-338388Enabled",
+          "valueKind": "DWord",
+          "value": 0
+        },
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SubscribedContent-338389Enabled",
+          "valueKind": "DWord",
+          "value": 0
+        },
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SubscribedContent-353694Enabled",
+          "valueKind": "DWord",
+          "value": 0
+        },
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SubscribedContent-353696Enabled",
+          "valueKind": "DWord",
+          "value": 0
+        },
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SoftLandingEnabled",
+          "valueKind": "DWord",
+          "value": 0
+        },
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SystemPaneSuggestionsEnabled",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "content.silentapps",
+      "category": "Privacy",
+      "group": {
+        "fr": "Arrière-plan et confidentialité",
+        "en": "Background & privacy"
+      },
+      "name": {
+        "fr": "Bloquer l'installation silencieuse d'applications promues",
+        "en": "Block silent install of promoted apps"
+      },
+      "description": {
+        "fr": "Empêche Windows d'installer automatiquement des applications sponsorisées.",
+        "en": "Prevents Windows from automatically installing sponsored apps."
+      },
+      "impact": {
+        "fr": "Évite des téléchargements et installations en arrière-plan.",
+        "en": "Avoids background downloads and installs."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SilentInstalledAppsEnabled",
+          "valueKind": "DWord",
+          "value": 0
+        },
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "PreInstalledAppsEnabled",
+          "valueKind": "DWord",
+          "value": 0
+        },
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "OemPreInstalledAppsEnabled",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "widgets.disable",
+      "category": "Windows",
+      "group": {
+        "fr": "Arrière-plan et confidentialité",
+        "en": "Background & privacy"
+      },
+      "name": {
+        "fr": "Désactiver les Widgets",
+        "en": "Disable Widgets"
+      },
+      "description": {
+        "fr": "Stratégie officielle qui désactive le tableau Widgets (processus WebView2).",
+        "en": "Official policy that disables the Widgets board (WebView2 processes)."
+      },
+      "impact": {
+        "fr": "Libère de la mémoire et de l'activité de fond ; pas de gain de FPS démontré.",
+        "en": "Frees memory and background activity; no demonstrated FPS gain."
+      },
+      "regressions": {
+        "fr": "Plus de Widgets ni de météo dans la barre des tâches.",
+        "en": "No Widgets or taskbar weather."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Background",
+      "restart": "SignOut",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Dsh",
+          "name": "AllowNewsAndInterests",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "os.isWindows11",
+          "op": "isTrue",
+          "reason": {
+            "fr": "Windows 11 requis.",
+            "en": "Windows 11 required."
+          }
+        }
+      ]
+    },
+    {
+      "id": "search.websuggestions",
+      "category": "Privacy",
+      "group": {
+        "fr": "Arrière-plan et confidentialité",
+        "en": "Background & privacy"
+      },
+      "name": {
+        "fr": "Désactiver la recherche Web dans Démarrer",
+        "en": "Disable web search in Start"
+      },
+      "description": {
+        "fr": "Stratégie officielle qui retire les suggestions Bing de la recherche Windows.",
+        "en": "Official policy removing Bing suggestions from Windows search."
+      },
+      "impact": {
+        "fr": "Recherche locale plus rapide et confidentialité ; pas d'effet sur les FPS.",
+        "en": "Faster local search and privacy; no FPS effect."
+      },
+      "regressions": {
+        "fr": "Plus de résultats Web dans Démarrer.",
+        "en": "No web results in Start."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Privacy",
+      "restart": "ExplorerRestart",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Policies\\Microsoft\\Windows\\Explorer",
+          "name": "DisableSearchBoxSuggestions",
+          "valueKind": "DWord",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "notifications.scoobe",
+      "category": "Windows",
+      "group": {
+        "fr": "Arrière-plan et confidentialité",
+        "en": "Background & privacy"
+      },
+      "name": {
+        "fr": "Désactiver « Terminer la configuration de l'appareil »",
+        "en": "Disable \"Finish setting up your device\""
+      },
+      "description": {
+        "fr": "Supprime les écrans de suggestion de configuration après les mises à jour.",
+        "en": "Removes setup suggestion screens after updates."
+      },
+      "impact": {
+        "fr": "Confort.",
+        "en": "Comfort."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Comfort",
+      "restart": "None",
+      "profiles": [
+        "Light",
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement",
+          "name": "ScoobeSystemSettingEnabled",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "privacy.backgroundapps",
+      "category": "Privacy",
+      "group": {
+        "fr": "Arrière-plan et confidentialité",
+        "en": "Background & privacy"
+      },
+      "name": {
+        "fr": "Empêcher les applications du Store de tourner en arrière-plan",
+        "en": "Stop Store apps running in the background"
+      },
+      "description": {
+        "fr": "Désactive globalement l'exécution en arrière-plan des applications UWP/Store.",
+        "en": "Globally disables background execution of UWP/Store apps."
+      },
+      "impact": {
+        "fr": "Moins d'activité CPU/réseau de fond.",
+        "en": "Less background CPU/network activity."
+      },
+      "regressions": {
+        "fr": "Les notifications de certaines applications Store (Courrier, Mobile connecté, nouvelle version de Teams) peuvent ne plus arriver.",
+        "en": "Notifications from some Store apps (Mail, Phone Link, new Teams) may stop."
+      },
+      "confidence": "Probable",
+      "risk": "Low",
+      "kind": "Background",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
+          "name": "GlobalUserDisabled",
+          "valueKind": "DWord",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "privacy.adid",
+      "category": "Privacy",
+      "group": {
+        "fr": "Arrière-plan et confidentialité",
+        "en": "Background & privacy"
+      },
+      "name": {
+        "fr": "Désactiver l'identifiant publicitaire",
+        "en": "Disable advertising ID"
+      },
+      "description": {
+        "fr": "Les applications ne peuvent plus utiliser l'identifiant publicitaire.",
+        "en": "Apps can no longer use the advertising ID."
+      },
+      "impact": {
+        "fr": "Confidentialité ; pas d'effet sur les performances.",
+        "en": "Privacy; no performance effect."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Privacy",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",
+          "name": "Enabled",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "privacy.tailored",
+      "category": "Privacy",
+      "group": {
+        "fr": "Arrière-plan et confidentialité",
+        "en": "Background & privacy"
+      },
+      "name": {
+        "fr": "Désactiver les expériences personnalisées",
+        "en": "Disable tailored experiences"
+      },
+      "description": {
+        "fr": "Windows n'utilise plus les données de diagnostic pour personnaliser astuces et publicités.",
+        "en": "Windows stops using diagnostic data to personalize tips and ads."
+      },
+      "impact": {
+        "fr": "Confidentialité.",
+        "en": "Privacy."
+      },
+      "regressions": {
+        "fr": "Aucune connue.",
+        "en": "None known."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Privacy",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Privacy",
+          "name": "TailoredExperiencesWithDiagnosticDataEnabled",
+          "valueKind": "DWord",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "privacy.telemetry",
+      "category": "Privacy",
+      "group": {
+        "fr": "Arrière-plan et confidentialité",
+        "en": "Background & privacy"
+      },
+      "name": {
+        "fr": "Télémétrie au minimum (données requises)",
+        "en": "Minimum telemetry (required data)"
+      },
+      "description": {
+        "fr": "Stratégie officielle « AllowTelemetry = 1 » (données de diagnostic requises). La valeur 0 n'est effective qu'en Entreprise/Éducation.",
+        "en": "Official policy AllowTelemetry = 1 (required diagnostic data). Value 0 only applies to Enterprise/Education."
+      },
+      "impact": {
+        "fr": "Confidentialité ; aucun gain de performance démontré.",
+        "en": "Privacy; no demonstrated performance gain."
+      },
+      "regressions": {
+        "fr": "Certaines fonctions du programme Insider ou de diagnostic sont limitées.",
+        "en": "Some Insider/diagnostic features are limited."
+      },
+      "confidence": "Confirmed",
+      "risk": "None",
+      "kind": "Privacy",
+      "restart": "None",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+          "name": "AllowTelemetry",
+          "valueKind": "DWord",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "privacy.recall",
+      "category": "Privacy",
+      "group": {
+        "fr": "Arrière-plan et confidentialité",
+        "en": "Background & privacy"
+      },
+      "name": {
+        "fr": "Désactiver Recall (captures IA)",
+        "en": "Disable Recall (AI snapshots)"
+      },
+      "description": {
+        "fr": "Stratégie officielle qui désactive l'enregistrement de captures par Recall (PC Copilot+).",
+        "en": "Official policy disabling Recall snapshot saving (Copilot+ PCs)."
+      },
+      "impact": {
+        "fr": "Évite l'analyse et l'écriture de captures en arrière-plan.",
+        "en": "Avoids background snapshot analysis and writes."
+      },
+      "regressions": {
+        "fr": "Plus de recherche Recall.",
+        "en": "No Recall search."
+      },
+      "confidence": "Probable",
+      "risk": "None",
+      "kind": "Background",
+      "restart": "SignOut",
+      "profiles": [
+        "Balanced",
+        "Maximum"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKCU\\Software\\Policies\\Microsoft\\Windows\\WindowsAI",
+          "name": "DisableAIDataAnalysis",
+          "valueKind": "DWord",
+          "value": 1
+        }
+      ],
+      "conditions": [
+        {
+          "fact": "os.build",
+          "op": ">=",
+          "value": 26100,
+          "reason": {
+            "fr": "Windows 11 24H2 ou plus récent.",
+            "en": "Windows 11 24H2 or later."
+          }
+        }
+      ]
+    }
+  ]
+}

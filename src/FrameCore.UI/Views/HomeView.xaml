@@ -1,0 +1,138 @@
+<UserControl x:Class="FrameCore.UI.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="clr-namespace:FrameCore.UI.Infrastructure">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,4,28,28">
+        <StackPanel>
+            <TextBlock Text="{i:Loc home.title}" Style="{StaticResource Text.PageTitle}"/>
+            <TextBlock Text="{Binding Signature}" Style="{StaticResource Text.Subtitle}" Margin="0,2,0,18"/>
+
+            <!-- Health + last optimization -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="14"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Width="56" Height="56" CornerRadius="14" Background="{Binding HealthLevel, Converter={StaticResource LevelBrush}, ConverterParameter=soft}">
+                            <TextBlock Text="&#xE9D9;" Style="{StaticResource Text.Icon}" FontSize="24" HorizontalAlignment="Center"
+                                       Foreground="{Binding HealthLevel, Converter={StaticResource LevelBrush}}"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="{i:Loc home.health}" Style="{StaticResource Text.Caption}"/>
+                            <TextBlock Text="{Binding HealthTitle}" Style="{StaticResource Text.Section}" Margin="0,2,0,6"/>
+                            <WrapPanel>
+                                <Border Style="{StaticResource Badge}" Background="{DynamicResource Brush.DangerSoft}">
+                                    <TextBlock Style="{StaticResource Text.Badge}" Foreground="{DynamicResource Brush.Danger}">
+                                        <Run Text="{Binding Critical, Mode=OneWay}"/> <Run Text="{i:Loc home.critical}"/>
+                                    </TextBlock>
+                                </Border>
+                                <Border Style="{StaticResource Badge}" Background="{DynamicResource Brush.WarningSoft}">
+                                    <TextBlock Style="{StaticResource Text.Badge}" Foreground="{DynamicResource Brush.Warning}">
+                                        <Run Text="{Binding Warnings, Mode=OneWay}"/> <Run Text="{i:Loc home.warnings}"/>
+                                    </TextBlock>
+                                </Border>
+                                <Border Style="{StaticResource Badge}" Background="{DynamicResource Brush.AccentSoft}">
+                                    <TextBlock Style="{StaticResource Text.Badge}" Foreground="{DynamicResource Brush.Accent}">
+                                        <Run Text="{Binding Suggestions, Mode=OneWay}"/> <Run Text="{i:Loc home.suggestions}"/>
+                                    </TextBlock>
+                                </Border>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc home.lastOptTitle}" Style="{StaticResource Text.Caption}"/>
+                        <TextBlock Text="{Binding LastOptimization}" Style="{StaticResource Text.Body}" Margin="0,4,0,10"/>
+                        <Button Content="{i:Loc home.goOptimize}" Style="{StaticResource Button.Small}" HorizontalAlignment="Left"
+                                Command="{Binding Shell.NavigateCommand}" CommandParameter="optimization"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Hardware cards -->
+            <UniformGrid Columns="3" Margin="-7,0,-7,14">
+                <Border Style="{StaticResource Card}" Margin="7">
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding CpuUsage}" Style="{StaticResource Text.Metric}" FontSize="22"/>
+                            <StackPanel>
+                                <TextBlock Text="{i:Loc hw.cpu}" Style="{StaticResource Text.Caption}"/>
+                                <TextBlock Text="{Binding CpuName}" Style="{StaticResource Text.CardTitle}"/>
+                            </StackPanel>
+                        </DockPanel>
+                        <TextBlock Text="{Binding CpuDetail}" Style="{StaticResource Text.Muted}" Margin="0,4,0,8"/>
+                        <i:SparkChart Values="{Binding CpuHistory}" Height="54" Stroke="{DynamicResource Brush.Chart1}" Fill="{DynamicResource Brush.ChartFill}" GridBrush="{DynamicResource Brush.Grid}" Capacity="120"/>
+                        <WrapPanel Margin="0,8,0,0">
+                            <TextBlock Text="{Binding CpuTemp}" Style="{StaticResource Text.Muted}" Margin="0,0,14,0"/>
+                            <TextBlock Text="{Binding CpuClock}" Style="{StaticResource Text.Muted}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="7">
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding GpuUsage}" Style="{StaticResource Text.Metric}" FontSize="22"/>
+                            <StackPanel>
+                                <TextBlock Text="{i:Loc hw.gpu}" Style="{StaticResource Text.Caption}"/>
+                                <TextBlock Text="{Binding GpuName}" Style="{StaticResource Text.CardTitle}"/>
+                            </StackPanel>
+                        </DockPanel>
+                        <TextBlock Text="{Binding GpuDetail}" Style="{StaticResource Text.Muted}" Margin="0,4,0,8"/>
+                        <i:SparkChart Values="{Binding GpuHistory}" Height="54" Stroke="{DynamicResource Brush.Chart2}" GridBrush="{DynamicResource Brush.Grid}" Capacity="120"/>
+                        <WrapPanel Margin="0,8,0,0">
+                            <TextBlock Text="{Binding GpuTemp}" Style="{StaticResource Text.Muted}" Margin="0,0,14,0"/>
+                            <TextBlock Text="{Binding GpuVram}" Style="{StaticResource Text.Muted}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="7">
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding RamUsage}" Style="{StaticResource Text.Metric}" FontSize="22"/>
+                            <StackPanel>
+                                <TextBlock Text="{i:Loc hw.ram}" Style="{StaticResource Text.Caption}"/>
+                                <TextBlock Text="{Binding RamTotal}" Style="{StaticResource Text.CardTitle}"/>
+                            </StackPanel>
+                        </DockPanel>
+                        <TextBlock Text="{Binding RamDetail}" Style="{StaticResource Text.Muted}" Margin="0,4,0,8"/>
+                        <i:SparkChart Values="{Binding RamHistory}" Height="54" Stroke="{DynamicResource Brush.Chart3}" GridBrush="{DynamicResource Brush.Grid}" Capacity="120"/>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="7">
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc hw.storage}" Style="{StaticResource Text.Caption}"/>
+                        <TextBlock Text="{Binding StorageTitle}" Style="{StaticResource Text.CardTitle}"/>
+                        <TextBlock Text="{Binding StorageDetail}" Style="{StaticResource Text.Muted}" Margin="0,4,0,8"/>
+                        <ProgressBar Value="{Binding SystemFreePercent, Mode=OneWay}" Maximum="100"/>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="7">
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc hw.display}" Style="{StaticResource Text.Caption}"/>
+                        <TextBlock Text="{Binding DisplayTitle}" Style="{StaticResource Text.CardTitle}"/>
+                        <TextBlock Text="{Binding DisplayDetail}" Style="{StaticResource Text.Muted}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="7">
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc hw.windows}" Style="{StaticResource Text.Caption}"/>
+                        <TextBlock Text="{Binding WindowsTitle}" Style="{StaticResource Text.CardTitle}"/>
+                        <TextBlock Text="{Binding WindowsDetail}" Style="{StaticResource Text.Muted}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <TextBlock Text="{i:Loc home.findings}" Style="{StaticResource Text.Section}"/>
+            <TextBlock Text="{i:Loc home.noDiagnostic}" Style="{StaticResource Text.Muted}" Visibility="{Binding HasDiagnostic, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
+            <ItemsControl ItemsSource="{Binding Findings}" ItemTemplate="{StaticResource FindingTemplate}"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
