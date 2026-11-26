@@ -34,10 +34,19 @@ public sealed class Loc : INotifyPropertyChanged
     public void LoadTable(string language, IDictionary<string, string> entries) =>
         _tables[language] = new Dictionary<string, string>(entries, StringComparer.OrdinalIgnoreCase);
 
+    private static CultureInfo? _systemCulture;
+
     public void SetLanguage(string language)
     {
         CurrentLanguage = language.StartsWith("en", StringComparison.OrdinalIgnoreCase) ? "en" : "fr";
-        try { CultureInfo.CurrentUICulture = new CultureInfo(CurrentLanguage == "en" ? "en-US" : "fr-FR"); } catch { /* invariant mode */ }
+        try
+        {
+            var system = _systemCulture ??= CultureInfo.CurrentCulture;
+            var culture = system.TwoLetterISOLanguageName == CurrentLanguage ? system : new CultureInfo(CurrentLanguage == "en" ? "en-US" : "fr-FR");
+            CultureInfo.CurrentUICulture = CultureInfo.CurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture = culture;
+        }
+        catch { /* invariant globalization mode */ }
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
         LanguageChanged?.Invoke(this, EventArgs.Empty);
     }

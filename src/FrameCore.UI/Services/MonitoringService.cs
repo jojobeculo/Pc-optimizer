@@ -91,10 +91,10 @@ public sealed class MonitoringService : IDisposable
         else s.Sensors = Last?.Sensors;
         if (s.Sensors != null)
         {
-            s.CpuTemp = s.Sensors.Find("Cpu", "Temperature", "CPU Package", "Core (Tctl/Tdie)", "Core Average", "CPU Cores") ?? s.Sensors.FindContains("Cpu", "Temperature", "Tctl");
+            s.CpuTemp = Plausible(s.Sensors.Find("Cpu", "Temperature", "CPU Package", "Core (Tctl/Tdie)", "Core Average", "CPU Cores") ?? s.Sensors.FindContains("Cpu", "Temperature", "Tctl"));
             s.CpuPowerW = s.Sensors.Find("Cpu", "Power", "CPU Package", "Package");
-            s.GpuTemp = s.Sensors.Find("GpuNvidia", "Temperature", "GPU Core") ?? s.Sensors.Find("GpuAmd", "Temperature", "GPU Core") ?? s.Sensors.Find("GpuIntel", "Temperature", "GPU Core");
-            s.GpuHotspot = s.Sensors.Find("GpuNvidia", "Temperature", "GPU Hot Spot") ?? s.Sensors.Find("GpuAmd", "Temperature", "GPU Hot Spot");
+            s.GpuTemp = Plausible(s.Sensors.Find("GpuNvidia", "Temperature", "GPU Core") ?? s.Sensors.Find("GpuAmd", "Temperature", "GPU Core") ?? s.Sensors.Find("GpuIntel", "Temperature", "GPU Core"));
+            s.GpuHotspot = Plausible(s.Sensors.Find("GpuNvidia", "Temperature", "GPU Hot Spot") ?? s.Sensors.Find("GpuAmd", "Temperature", "GPU Hot Spot"));
             s.Cpu.TemperatureC = (float?)s.CpuTemp;
             s.Cpu.PackagePowerW = (float?)s.CpuPowerW;
             if (s.PrimaryGpu is { } pg)
@@ -106,8 +106,8 @@ public sealed class MonitoringService : IDisposable
             }
         }
         s.GpuTemp ??= s.PrimaryGpu?.TemperatureC;
-        CpuHistory.Add(s.Cpu.TotalPercent ?? 0);
-        GpuHistory.Add(s.PrimaryGpu?.UtilizationPercent ?? 0);
+        CpuHistory.Add(s.Cpu.TotalPercent ?? double.NaN);
+        GpuHistory.Add(s.PrimaryGpu?.UtilizationPercent ?? double.NaN);
         RamHistory.Add(s.Memory.UsedPercent);
         if (s.CpuTemp != null) CpuTempHistory.Add(s.CpuTemp.Value);
         if (s.GpuTemp != null) GpuTempHistory.Add(s.GpuTemp.Value);
@@ -126,6 +126,8 @@ public sealed class MonitoringService : IDisposable
         Stop();
         _cpu?.Dispose(); _gpu?.Dispose(); _mem?.Dispose(); _localSensors?.Dispose();
     }
+    /// <summary>A die temperature outside 5–125 °C is a sensor artefact (VM, missing driver), never a real reading.</summary>
+    public static double? Plausible(double? celsius) => celsius is > 5 and < 125 ? celsius : null;
 }
 
 public sealed class RingBuffer
@@ -154,4 +156,5 @@ public sealed class RingBuffer
             return r;
         }
     }
+
 }

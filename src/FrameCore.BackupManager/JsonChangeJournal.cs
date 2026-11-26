@@ -46,6 +46,9 @@ public sealed class JsonChangeJournal : IChangeJournal
         // A "Pending" set means the app stopped between capture and completion: keep it restorable.
         foreach (var cs in _sets.Values.Where(s => s.Status == ChangeSetStatus.Pending))
         {
+            // The crash may have happened after the system write but before the entry was flagged as applied:
+            // every entry with a captured "before" state is treated as possibly applied (restoring it is harmless).
+            foreach (var e in cs.Entries.Where(e => e.Before != null)) e.Applied = true;
             cs.Status = cs.Entries.Any(e => e.Applied) ? ChangeSetStatus.Failed : ChangeSetStatus.RolledBack;
             cs.Error ??= "Interrupted";
             Save(cs);

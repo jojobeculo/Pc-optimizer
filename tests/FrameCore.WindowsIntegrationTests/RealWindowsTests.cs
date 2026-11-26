@@ -69,6 +69,7 @@ public class RealWindowsTests
         var dispatcher = new LocalDispatcher(s.Executors);
         var report = new StringBuilder("| Réglage | Compatible | Appliqué | Vérifié | Restauré | État d'origine retrouvé | Détail |\n|---|---|---|---|---|---|---|\n");
         var broken = new List<string>();
+        var notEffective = new List<string>();
         var skippedTypes = new HashSet<string> { "optionalFeature" }; // DISM changes need a reboot cycle
 
         foreach (var t in s.Catalog.Tweaks.Where(t => t.Reversible))
@@ -85,11 +86,12 @@ public class RealWindowsTests
             try
             {
                 var r = s.Engine.Apply(t, facts);
-                applied = r.Success ? "oui" : (r.RolledBack ? "échec (annulé)" : "échec");
+                applied = r.Success ? "oui" : r.NotApplicable ? "non applicable" : (r.RolledBack ? "échec (annulé)" : "échec");
                 detail = r.Error ?? "";
                 if (r.ChangeSet != null)
                 {
-                    verified = r.ChangeSet.Entries.All(e => e.Verified) ? "oui" : "non";
+                    verified = r.Verified switch { true => "oui", false => "**NON** (" + string.Join("; ", r.ChangeSet.Entries.Select(e => e.ObservedAfterApply)) + ")", null => r.Success ? "non vérifiable" : "—" };
+                    if (r.Verified == false) notEffective.Add(t.Id);
                     var rr = s.Engine.Restore(r.ChangeSet);
                     restored = rr.Success ? "oui" : "non (" + string.Join("; ", rr.Errors) + ")";
                 }
@@ -107,6 +109,7 @@ public class RealWindowsTests
             }
             report.Append($"| {t.Id} | oui | {applied} | {verified} | {restored} | {exact} | {detail.Replace("|", "/").Replace("\n", " ")} |\n");
         }
+        report.Append($"\nNon effectifs après application : {(notEffective.Count == 0 ? "aucun" : string.Join(", ", notEffective))}\n");
         File.WriteAllText(Path.Combine(OutputDir, "roundtrip.md"), report.ToString());
         _out.WriteLine(report.ToString());
         Assert.True(broken.Count == 0, "State not restored exactly for: " + string.Join(", ", broken));

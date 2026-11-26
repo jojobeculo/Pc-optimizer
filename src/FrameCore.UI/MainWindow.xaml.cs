@@ -9,7 +9,19 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        FitToWorkArea();
         SourceInitialized += (_, _) => ApplyTitleBarTheme(((App)Application.Current).Resources["Brush.Bg0"] is System.Windows.Media.SolidColorBrush b && b.Color.R < 128);
+    }
+
+    /// <summary>Never open larger than the screen (1366×768 laptops, 125–150 % scaling): shrink and center.</summary>
+    private void FitToWorkArea()
+    {
+        var area = SystemParameters.WorkArea;
+        MinWidth = Math.Min(MinWidth, area.Width);
+        MinHeight = Math.Min(MinHeight, area.Height);
+        Width = Math.Min(Width, area.Width - 16);
+        Height = Math.Min(Height, area.Height - 16);
+        if (area.Width < 1200 || area.Height < 760) WindowState = WindowState.Maximized;
     }
 
     /// <summary>Dark/light native title bar (DWMWA_USE_IMMERSIVE_DARK_MODE = 20, Windows 11).</summary>

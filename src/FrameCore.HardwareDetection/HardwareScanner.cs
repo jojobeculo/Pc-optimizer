@@ -42,6 +42,7 @@ public sealed class HardwareScanner
         Step(Loc.T("scan.security"), () => p.Security = DetectSecurity());
         Step(Loc.T("scan.tools"), () => p.InstalledVendorTools = DetectVendorTools());
         foreach (var e in _enrichers) Step(e.Name, () => e.Enrich(p));
+        Step(Loc.T("scan.quality"), () => p.DataQuality = DataQualityAssessor.Assess(p));
         p.CapturedUtc = DateTime.UtcNow;
         return p;
     }

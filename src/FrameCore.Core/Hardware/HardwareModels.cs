@@ -1,6 +1,9 @@
 using System.Text.Json.Serialization;
 using FrameCore.Core.Models;
 
+using FrameCore.Core.Localization;
+using FrameCore.Core.Models;
+
 namespace FrameCore.Core.Hardware;
 
 // All "unknown" values are represented by null and displayed as "Indéterminé" — never invented.
@@ -119,6 +122,7 @@ public sealed class MemoryInfo
     public int? SlotsTotal { get; set; }
     public ChannelMode Channels { get; set; }
     public string? ChannelReasoning { get; set; }
+    public DataConfidence ChannelsConfidence { get; set; } = DataConfidence.Unavailable;
     public XmpState Xmp { get; set; }
     public string? XmpReasoning { get; set; }
     public string? Type => Modules.Select(m => m.Type).FirstOrDefault(t => t != null);
@@ -138,6 +142,13 @@ public sealed class BoardInfo
     public string? SystemSku { get; set; }
     public int? ChassisType { get; set; }
     public bool IsLaptop { get; set; }
+
+    /// <summary>Virtual machine (Hyper-V, VMware, VirtualBox, QEMU/KVM, Xen, Parallels) from SMBIOS strings.</summary>
+    public bool IsVirtualMachine => LooksVirtual(SystemManufacturer, SystemModel, Manufacturer, Product);
+
+    public static bool LooksVirtual(params string?[] values) => values.Any(v => v != null &&
+        System.Text.RegularExpressions.Regex.IsMatch(v, @"Virtual Machine|VMware|VirtualBox|QEMU|\bKVM\b|\bXen\b|HVM domU|Parallels|Bochs",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase));
     public bool HasBattery { get; set; }
     public string? Chipset { get; set; }
     public bool IsOem { get; set; }
@@ -264,6 +275,8 @@ public sealed class MachineProfile
     public SecurityInfo Security { get; set; } = new();
     public List<string> InstalledVendorTools { get; set; } = new();
     public List<string> Warnings { get; set; } = new();
+    /// <summary>Provenance and reliability of the main values (see DataQualityAssessor).</summary>
+    public List<DataPoint> DataQuality { get; set; } = new();
 
     [JsonIgnore] public GpuInfo? PrimaryGpu =>
         Gpus.Where(g => !g.IsSoftware).OrderByDescending(g => g.IsIntegrated ? 0 : 1).ThenByDescending(g => g.DedicatedVramBytes ?? 0).FirstOrDefault();
@@ -279,9 +292,20 @@ public sealed class MachineProfile
                 GpuVendor.Nvidia => "NVIDIA", GpuVendor.Amd => g.IsIntegrated ? "Radeon (iGPU)" : "Radeon",
                 GpuVendor.Intel => g.IsIntegrated ? "Intel (iGPU)" : "Intel Arc", _ => g.Name,
             }).Distinct();
-            return $"{cpu} + {string.Join(" + ", gpus)} ({(Board.IsLaptop ? "portable" : "fixe")})";
+            var kind = Board.IsVirtualMachine ? Loc.T("hw.vm") : Loc.T(Board.IsLaptop ? "hw.laptop" : "hw.desktop");
+            return $"{cpu} + {string.Join(" + ", gpus)} ({kind.ToLowerInvariant()})";
         }
     }
+}
+
+/// <summary>One line of the "data reliability" table: which value, how it was obtained, and why if unavailable.</summary>
+public sealed class DataPoint
+{
+    public string Area { get; set; } = "";
+    public string Field { get; set; } = "";
+    public DataConfidence Confidence { get; set; }
+    public string Source { get; set; } = "";
+    public string? Note { get; set; }
 }
 
 /// <summary>A module that adds information to the machine profile (storage, displays, network, vendor APIs…).</summary>

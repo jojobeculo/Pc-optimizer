@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Runtime.InteropServices;
+using FrameCore.Core;
 using FrameCore.Core.Engine;
 using FrameCore.Core.Localization;
 using FrameCore.Core.Models;
@@ -75,10 +76,14 @@ public sealed class PowerSettingExecutor : IActionExecutor
 
     private Guid SchemeOf(ActionDefinition a) => a.Scheme is { } s ? Guid.Parse(s) : _power.GetActiveScheme();
 
+    /// <summary>Settings Windows refused to write because they do not exist on this machine (e.g. CPU power management in a VM).</summary>
+    private static readonly HashSet<Guid> MissingSettings = new();
+
     public ActionState Read(ActionDefinition a)
     {
         var scheme = SchemeOf(a);
         var sub = Guid.Parse(a.Subgroup!); var set = Guid.Parse(a.Setting!);
+        lock (MissingSettings) if (MissingSettings.Contains(set)) return ActionState.Absent(Loc.T("power.settingNotOnMachine"));
         var ac = _power.ReadAc(scheme, sub, set);
         var dc = _power.ReadDc(scheme, sub, set);
         if (ac == null && dc == null) return ActionState.Unreadable(Loc.T("state.powerSettingMissing"));
@@ -107,8 +112,16 @@ public sealed class PowerSettingExecutor : IActionExecutor
     {
         var scheme = SchemeOf(a);
         var sub = Guid.Parse(a.Subgroup!); var set = Guid.Parse(a.Setting!);
-        if (a.Ac is { } ac) _power.WriteAc(scheme, sub, set, (uint)ac);
-        if (a.Dc is { } dc) _power.WriteDc(scheme, sub, set, (uint)dc);
+        try
+        {
+            if (a.Ac is { } ac) _power.WriteAc(scheme, sub, set, (uint)ac);
+            if (a.Dc is { } dc) _power.WriteDc(scheme, sub, set, (uint)dc);
+        }
+        catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 2)
+        {
+            lock (MissingSettings) MissingSettings.Add(set);
+            throw new NotApplicableException(Loc.T("power.settingNotOnMachine"));
+        }
         if (scheme == _power.GetActiveScheme()) _power.SetActiveScheme(scheme); // re-apply so changes take effect
     }
 
@@ -162,7 +175,12 @@ public sealed class PowerSchemeExecutor : IActionExecutor
         if (!_power.SchemeExists(target))
         {
             if (a.DuplicateFrom == null) throw new InvalidOperationException(Loc.T("power.schemeMissing"));
-            _power.DuplicateScheme(Guid.Parse(a.DuplicateFrom), target);
+            try { _power.DuplicateScheme(Guid.Parse(a.DuplicateFrom), target); }
+            catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 183)
+            {
+                // Hidden scheme already present (not listed): it is simply activated, and never deleted on restore.
+                Log.Info("Power", $"Scheme {target} already exists (hidden); activating it");
+            }
         }
         _power.SetActiveScheme(target);
     }

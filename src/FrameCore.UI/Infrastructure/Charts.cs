@@ -41,22 +41,24 @@ public sealed class SparkChart : FrameworkElement
             for (var i = 1; i < 4; i++) dc.DrawLine(gp, new Point(0, Math.Round(h * i / 4) + 0.5), new Point(w, Math.Round(h * i / 4) + 0.5));
         }
         var values = Values;
-        if (values == null || values.Count < 2) return;
-        var max = AutoScale ? Math.Max(1e-6, values.Max() * 1.15) : Math.Max(1e-6, Maximum);
+        if (values == null || values.Count < 2 || values.All(double.IsNaN)) return;
+        var max = AutoScale ? Math.Max(1e-6, values.Where(v => !double.IsNaN(v)).Max() * 1.15) : Math.Max(1e-6, Maximum);
         var cap = Math.Max(Capacity, values.Count);
         var step = w / (cap - 1);
         var offset = (cap - values.Count) * step;
         var geo = new StreamGeometry();
         using (var ctx = geo.Open())
         {
+            var open = false;
             for (var i = 0; i < values.Count; i++)
             {
+                if (double.IsNaN(values[i])) { open = false; continue; }
                 var p = new Point(offset + i * step, h - Math.Clamp(values[i] / max, 0, 1) * (h - 2) - 1);
-                if (i == 0) ctx.BeginFigure(p, false, false); else ctx.LineTo(p, true, true);
+                if (!open) { ctx.BeginFigure(p, false, false); open = true; } else ctx.LineTo(p, true, true);
             }
         }
         geo.Freeze();
-        if (Fill != null)
+        if (Fill != null && !values.Any(double.IsNaN))
         {
             var area = new StreamGeometry();
             using (var ctx = area.Open())

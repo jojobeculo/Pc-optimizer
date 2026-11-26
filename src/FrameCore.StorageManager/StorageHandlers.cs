@@ -180,16 +180,38 @@ public sealed class PagefileHandler : IActionHandler
     {
         SetAuto(s.Value == "1");
         if (s.Value == "1") return;
-        var had = (s.Extra?.GetValueOrDefault("settings") ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries);
-        if (had.Length == 0)
+        var had = (s.Extra?.GetValueOrDefault("settings") ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var now = State().settings.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        // Remove settings that did not exist before (created by the automatic mode)…
+        using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PageFileSetting"))
+            foreach (ManagementObject mo in searcher.Get())
+                using (mo)
+                {
+                    var key = $"{mo["Name"]}|{mo["InitialSize"]}|{mo["MaximumSize"]}";
+                    if (!had.Contains(key)) mo.Delete();
+                }
+        // …and recreate the custom page files that the automatic mode removed (name, initial and maximum size; 0/0 = system managed).
+        foreach (var entry in had.Where(h => !now.Contains(h)))
         {
-            // It was disabled: remove page file settings created by the automatic mode.
-            using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PageFileSetting");
-            foreach (ManagementObject mo in searcher.Get()) using (mo) mo.Delete();
+            var parts = entry.Split('|');
+            if (parts.Length != 3 || string.IsNullOrWhiteSpace(parts[0])) continue;
+            using var cls = new ManagementClass("Win32_PageFileSetting");
+            using var inst = cls.CreateInstance();
+            inst["Name"] = parts[0];
+            inst["InitialSize"] = uint.TryParse(parts[1], out var i) ? i : 0u;
+            inst["MaximumSize"] = uint.TryParse(parts[2], out var m) ? m : 0u;
+            inst.Put();
         }
     }
 
-    public bool Verify(ActionDefinition a, StateSnapshot s) => State().auto == (s.Value == "1");
+    public bool Verify(ActionDefinition a, StateSnapshot s)
+    {
+        var (auto, settings) = State();
+        if (auto != (s.Value == "1")) return false;
+        if (s.Value == "1") return true;
+        var had = (s.Extra?.GetValueOrDefault("settings") ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x, StringComparer.OrdinalIgnoreCase);
+        return had.SequenceEqual(settings.OrderBy(x => x, StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
+    }
 }
 
 public sealed class HibernateHandler : IActionHandler
@@ -204,7 +226,7 @@ public sealed class HibernateHandler : IActionHandler
     public ActionState Read(ActionDefinition a)
     {
         var e = Enabled();
-        if (e == null) return ActionState.Unreadable(Loc.Unknown);
+        if (e == null) return ActionState.Absent(Loc.T("hibernate.unavailable"));
         long size = 0;
         try { var f = new FileInfo(Path.Combine(Path.GetPathRoot(Environment.SystemDirectory)!, "hiberfil.sys")); if (f.Exists) size = f.Length; } catch { }
         return new ActionState { Matches = e == false, Current = Loc.T(e.Value ? "state.enabled" : "state.disabled") + (size > 0 ? $" ({size / 1073741824.0:0.0} Go)" : ""), Target = Loc.T("state.disabled") };
@@ -212,8 +234,13 @@ public sealed class HibernateHandler : IActionHandler
 
     public StateSnapshot Capture(ActionDefinition a) => Enabled() is { } e ? StateSnapshot.Of(e ? "1" : "0") : StateSnapshot.Absent();
     public void Apply(ActionDefinition a) => Run(false);
-    public void Restore(ActionDefinition a, StateSnapshot s) { if (s.Existed && s.Value == "1") Run(true); }
-    public bool Verify(ActionDefinition a, StateSnapshot s) => !s.Existed || Enabled() == (s.Value == "1");
+    public void Restore(ActionDefinition a, StateSnapshot s)
+    {
+        if (s.Existed && s.Value == "1") Run(true);
+        else if (!s.Existed) _reg.DeleteValue(@"HKLM\SYSTEM\CurrentControlSet\Control\Power", "HibernateEnabled");
+    }
+
+    public bool Verify(ActionDefinition a, StateSnapshot s) => s.Existed ? Enabled() == (s.Value == "1") : Enabled() == null;
 
     private static void Run(bool on)
     {

@@ -39,6 +39,9 @@ public static class WindowsVersions
 
     public static (string? version, bool? ended, string note) Evaluate(int build, string? editionId, DateTime today)
     {
+        // Windows Server follows its own (LTSC) lifecycle: the client table does not apply.
+        if (editionId != null && editionId.StartsWith("Server", StringComparison.OrdinalIgnoreCase))
+            return (null, null, Loc.T("os.servicing.server"));
         var e = Entries.FirstOrDefault(x => x.Build == build);
         if (e == null)
         {

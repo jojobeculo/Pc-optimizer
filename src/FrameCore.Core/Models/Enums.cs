@@ -45,3 +45,16 @@ public enum TriState { Unknown, No, Yes }
 public enum ChangeSetStatus { Pending, Applied, Failed, RolledBack, Restored, PartiallyRestored }
 
 public enum PlanSection { Standard, Consent, Experimental }
+
+/// <summary>How a displayed hardware value was obtained (shown to the user next to the value).</summary>
+public enum DataConfidence
+{
+    /// <summary>Measured by FrameCore on this machine (counters, timers, topology).</summary>
+    Measured,
+    /// <summary>Reported by the hardware, firmware or driver (CPUID, SMBIOS, DXGI, EDID…).</summary>
+    Reported,
+    /// <summary>Deduced from indirect evidence (naming conventions, module count…): probable, not certain.</summary>
+    Inferred,
+    /// <summary>Not accessible on this machine (missing rights, sensor, API or virtual hardware).</summary>
+    Unavailable,
+}

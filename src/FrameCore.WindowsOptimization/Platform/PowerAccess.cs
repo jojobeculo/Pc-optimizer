@@ -79,7 +79,7 @@ public sealed class WindowsPowerAccess : IPowerAccess
         return list;
     }
 
-    public bool SchemeExists(Guid scheme) => ListSchemes().Any(s => s.Guid == scheme);
+    public bool SchemeExists(Guid scheme) => ListSchemes().Any(s => s.Guid == scheme) || FriendlyName(scheme) != null;
 
     private static string? FriendlyName(Guid scheme)
     {

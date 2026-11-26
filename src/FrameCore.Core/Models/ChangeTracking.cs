@@ -21,12 +21,15 @@ public sealed class StateSnapshot
 public sealed class ActionState
 {
     public bool Readable { get; set; } = true;
+    /// <summary>The target does not exist on this machine (e.g. processor power settings inside a VM).</summary>
+    public bool NotApplicable { get; set; }
     public bool Matches { get; set; }
     public string Current { get; set; } = "";
     public string Target { get; set; } = "";
     public string? Error { get; set; }
 
     public static ActionState Unreadable(string error, string target = "") => new() { Readable = false, Error = error, Target = target, Current = "?" };
+    public static ActionState Absent(string reason, string target = "") => new() { Readable = false, NotApplicable = true, Error = reason, Target = target, Current = reason };
 }
 
 public sealed class ChangeEntry
@@ -36,7 +39,12 @@ public sealed class ChangeEntry
     public StateSnapshot? Before { get; set; }
     public bool Applied { get; set; }
     public bool Restored { get; set; }
+    /// <summary>Restore/rollback verification: the captured state was read back after restoring.</summary>
     public bool Verified { get; set; }
+    /// <summary>Post-apply verification: true = target value read back, false = not effective, null = not verifiable.</summary>
+    public bool? ApplyVerified { get; set; }
+    /// <summary>Value read back right after applying (shown in the verification report).</summary>
+    public string? ObservedAfterApply { get; set; }
     public string? Error { get; set; }
 }
 

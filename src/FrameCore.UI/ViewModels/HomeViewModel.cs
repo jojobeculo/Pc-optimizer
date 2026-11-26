@@ -87,7 +87,9 @@ public sealed partial class HomeViewModel : ObservableObject, IDiagnosticConsume
         GpuName = g?.Name ?? Loc.Unknown;
         GpuDetail = g == null ? "" : Loc.T("home.gpu.detail", g.DedicatedVramBytes is { } v && v > 0 ? BytesConverter.Format(v) : Loc.Unknown, g.DriverVersion ?? Loc.Unknown);
         RamTotal = BytesConverter.Format(p.Memory.TotalBytes);
-        RamDetail = Loc.T("home.ram.detail", p.Memory.Type ?? Loc.Unknown, p.Memory.ConfiguredSpeedMts?.ToString() ?? "?", Loc.T("channels." + p.Memory.Channels));
+        var channels = Loc.T("channels." + p.Memory.Channels);
+        if (p.Memory.ChannelsConfidence == DataConfidence.Inferred) channels = Loc.T("channels.probable", channels);
+        RamDetail = Loc.T("home.ram.detail", p.Memory.Type ?? Loc.Unknown, p.Memory.ConfiguredSpeedMts?.ToString() ?? Loc.Unknown, channels);
         var sys = p.Storage.SelectMany(s => s.Volumes.Select(v => (s, v))).FirstOrDefault(x => x.v.IsSystem);
         if (sys.v != null)
         {

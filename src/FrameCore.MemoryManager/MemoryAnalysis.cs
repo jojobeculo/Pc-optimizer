@@ -1,3 +1,4 @@
+using FrameCore.Core.Models;
 using System.Text.RegularExpressions;
 using FrameCore.Core.Hardware;
 using FrameCore.Core.Localization;
@@ -51,12 +52,20 @@ public sealed class MemoryConfigAnalyzer : IHardwareEnricher
 {
     public string Name => Loc.T("scan.memoryAnalysis");
 
-    public void Enrich(MachineProfile profile) => Analyze(profile.Memory, profile.Board.IsLaptop);
+    public void Enrich(MachineProfile profile) => Analyze(profile.Memory, profile.Board.IsLaptop, profile.Board.IsVirtualMachine);
 
-    public static void Analyze(MemoryInfo mem, bool laptop)
+    public static void Analyze(MemoryInfo mem, bool laptop, bool virtualMachine = false)
     {
         foreach (var m in mem.Modules) m.PartNumberSpeedMts = RamPartNumberDecoder.Decode(m.PartNumber);
+        if (virtualMachine)
+        {
+            (mem.Channels, mem.ChannelReasoning, mem.ChannelsConfidence) = (ChannelMode.Unknown, Loc.T("ram.channels.vm"), DataConfidence.Unavailable);
+            (mem.Xmp, mem.XmpReasoning) = (XmpState.NotApplicable, Loc.T("ram.channels.vm"));
+            return;
+        }
         (mem.Channels, mem.ChannelReasoning) = Channels(mem.Modules);
+        mem.ChannelsConfidence = mem.Channels == ChannelMode.Unknown ? DataConfidence.Unavailable
+            : mem.ChannelReasoning == Loc.T("ram.channels.countBased", mem.Modules.Count) ? DataConfidence.Inferred : DataConfidence.Reported;
         (mem.Xmp, mem.XmpReasoning) = Xmp(mem, laptop);
     }
 

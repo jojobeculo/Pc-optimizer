@@ -20,6 +20,12 @@ public sealed class ApplyResult
 {
     public bool Success { get; init; }
     public bool RolledBack { get; init; }
+    /// <summary>The change does not exist on this machine; nothing was left modified.</summary>
+    public bool NotApplicable { get; init; }
+    /// <summary>All actions were read back with their target value (null when some action cannot be verified).</summary>
+    public bool? Verified => ChangeSet == null || !Success ? null
+        : ChangeSet.Entries.Any(e => e.ApplyVerified == false) ? false
+        : ChangeSet.Entries.All(e => e.ApplyVerified == true) ? true : null;
     public string? Error { get; init; }
     public ChangeSet? ChangeSet { get; init; }
     public RestartRequirement Restart { get; init; }
@@ -65,6 +71,12 @@ public sealed class TweakEngine
         }
 
         TweakStatus status;
+        var reasons = compat.FailedReasons.ToList();
+        if (states.Any(s => s.NotApplicable))
+        {
+            compat = compat with { Passed = false };
+            reasons.AddRange(states.Where(s => s.NotApplicable).Select(s => s.Error ?? Loc.T("engine.notApplicable")).Distinct());
+        }
         if (!compat.Passed) status = TweakStatus.Unsupported;
         else if (states.Any(s => !s.Readable)) status = states.All(s => !s.Readable) ? TweakStatus.Unknown : TweakStatus.Partial;
         else if (states.All(s => s.Matches)) status = TweakStatus.Applied;
@@ -76,7 +88,7 @@ public sealed class TweakEngine
 
         return new TweakEvaluation
         {
-            Tweak = tweak, Status = status, Compatible = compat.Passed, IncompatibilityReasons = compat.FailedReasons,
+            Tweak = tweak, Status = status, Compatible = compat.Passed, IncompatibilityReasons = reasons,
             ActionStates = states, NeedsElevation = needsElevation,
         };
     }
@@ -136,30 +148,49 @@ public sealed class TweakEngine
                 catch (Exception ex)
                 {
                     entry.Error = ex.Message;
-                    Log.Error("Engine", $"Apply failed for {cs.TweakId} action #{entry.Index} ({entry.Action}); rolling back", ex);
-                    var rollbackErrors = RollBack(cs, ctx);
+                    var notApplicable = ex is NotApplicableException;
+                    if (notApplicable) Log.Info("Engine", $"{cs.TweakId} action #{entry.Index} not applicable on this machine: {ex.Message}");
+                    else Log.Error("Engine", $"Apply failed for {cs.TweakId} action #{entry.Index} ({entry.Action}); rolling back", ex);
+                    // The failing action may have been partially written before throwing: it is restored too.
+                    var rollbackErrors = RollBack(cs, ctx, failed: entry);
                     cs.Status = rollbackErrors == 0 ? ChangeSetStatus.RolledBack : ChangeSetStatus.Failed;
                     cs.Error = ex.Message;
                     _journal.Save(cs);
                     return new ApplyResult
                     {
-                        Success = false, RolledBack = rollbackErrors == 0, ChangeSet = cs,
-                        Error = Loc.T(rollbackErrors == 0 ? "engine.applyFailedRolledBack" : "engine.applyFailedRollbackIncomplete", ex.Message),
+                        Success = false, RolledBack = rollbackErrors == 0, NotApplicable = notApplicable && rollbackErrors == 0, ChangeSet = cs,
+                        Error = notApplicable && rollbackErrors == 0 ? Loc.T("engine.notApplicableDetail", ex.Message)
+                            : Loc.T(rollbackErrors == 0 ? "engine.applyFailedRolledBack" : "engine.applyFailedRollbackIncomplete", ex.Message),
                     };
                 }
             }
 
+            // 4. Read every value back: a change Windows silently ignored or overrode is reported, never assumed.
+            foreach (var entry in cs.Entries)
+            {
+                try
+                {
+                    var st = _dispatcher.Read(entry.Action, ctx);
+                    entry.ObservedAfterApply = st.Current;
+                    entry.ApplyVerified = st.Readable ? st.Matches : null;
+                }
+                catch (Exception ex) { entry.ApplyVerified = null; entry.ObservedAfterApply = ex.Message; }
+            }
+            if (!cs.Reversible) foreach (var e in cs.Entries) e.ApplyVerified = null; // maintenance operations have no target state
+
             cs.Status = ChangeSetStatus.Applied;
             _journal.Save(cs);
-            Log.Info("Engine", $"Applied {cs.TweakId ?? cs.Title.En} ({cs.Entries.Count} action(s))");
+            var notEffective = cs.Entries.Count(e => e.ApplyVerified == false);
+            if (notEffective > 0) Log.Warn("Engine", $"Applied {cs.TweakId ?? cs.Title.En} but {notEffective} action(s) did not read back the target value");
+            else Log.Info("Engine", $"Applied {cs.TweakId ?? cs.Title.En} ({cs.Entries.Count} action(s), verified)");
             return new ApplyResult { Success = true, ChangeSet = cs, Restart = cs.Restart };
         }
     }
 
-    private int RollBack(ChangeSet cs, ActionContext ctx)
+    private int RollBack(ChangeSet cs, ActionContext ctx, ChangeEntry? failed = null)
     {
         var errors = 0;
-        foreach (var entry in cs.Entries.Where(e => e.Applied).Reverse())
+        foreach (var entry in cs.Entries.Where(e => e.Applied || ReferenceEquals(e, failed)).Reverse())
         {
             try
             {
@@ -240,3 +271,6 @@ public sealed class TweakEngine
         _journal.ChangeSets.Where(c => string.Equals(c.TweakId, tweakId, StringComparison.OrdinalIgnoreCase)
                                        && c.Status is ChangeSetStatus.Applied or ChangeSetStatus.PartiallyRestored);
 }
+
+/// <summary>Thrown by an executor when the target does not exist on this machine (not an error of FrameCore).</summary>
+public sealed class NotApplicableException(string message) : Exception(message);
