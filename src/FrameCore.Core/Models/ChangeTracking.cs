@@ -65,14 +65,30 @@ public sealed class ChangeSet
     public bool Reversible { get; set; } = true;
     public string? Error { get; set; }
     public List<ChangeEntry> Entries { get; set; } = new();
+    /// <summary>Automatic repair attempts (re-writes of a value Windows did not keep). Bounded to 2.</summary>
+    public int RepairAttempts { get; set; }
+    /// <summary>Audit trail: what happened to this change and why (verification, repair, rollback decisions).</summary>
+    public List<ChangeEvent> History { get; set; } = new();
 }
 
 /// <summary>A profile application (or any group of changes applied together).</summary>
+public sealed class ChangeEvent
+{
+    public DateTime Utc { get; set; } = DateTime.UtcNow;
+    /// <summary>applied | verified | notEffective | repaired | repairFailed | restored | rolledBack | regression | reapplied | postReboot</summary>
+    public string Kind { get; set; } = "";
+    public string Detail { get; set; } = "";
+}
+
 public sealed class ChangeBatch
 {
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public LocalizedText Title { get; set; } = new();
     public ProfileLevel? Profile { get; set; }
+    /// <summary>Every optimisation the user validated for this batch (to resume an interrupted application).</summary>
+    public List<string> PlannedTweakIds { get; set; } = new();
+    /// <summary>Set once the batch finished (success or not). An unfinished batch can be resumed without re-applying.</summary>
+    public DateTime? CompletedUtc { get; set; }
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
     public bool RestorePointCreated { get; set; }
     public string? RestorePointNote { get; set; }

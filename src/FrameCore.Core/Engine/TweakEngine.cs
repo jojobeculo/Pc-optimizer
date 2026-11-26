@@ -252,6 +252,56 @@ public sealed class TweakEngine
         }
     }
 
+    /// <summary>
+    /// Re-writes the actions of an applied change set whose value is not (or no longer) the target, keeping the original
+    /// captured state untouched so that a later restore still returns to the real initial value.
+    /// Returns true when every action reads back its target afterwards.
+    /// </summary>
+    public bool Reapply(ChangeSet cs, string reason)
+    {
+        lock (_gate)
+        {
+            var ctx = new ActionContext(cs.TweakId, cs.Origin);
+            cs.RepairAttempts++;
+            foreach (var entry in cs.Entries.Where(e => e.Applied && !e.Restored))
+            {
+                try
+                {
+                    var st = _dispatcher.Read(entry.Action, ctx);
+                    if (st.Readable && !st.Matches) _dispatcher.Apply(entry.Action, ctx);
+                    var after = _dispatcher.Read(entry.Action, ctx);
+                    entry.ObservedAfterApply = after.Current;
+                    entry.ApplyVerified = after.Readable ? after.Matches : null;
+                }
+                catch (Exception ex) { entry.ApplyVerified = false; entry.Error = ex.Message; }
+            }
+            var ok = cs.Entries.Where(e => e.Applied && !e.Restored).All(e => e.ApplyVerified != false);
+            cs.History.Add(new ChangeEvent { Kind = ok ? "repaired" : "repairFailed", Detail = reason });
+            _journal.Save(cs);
+            return ok;
+        }
+    }
+
+    /// <summary>Re-reads every action of an applied change set (post-apply or post-reboot verification).</summary>
+    public bool? Verify(ChangeSet cs)
+    {
+        var ctx = new ActionContext(cs.TweakId, cs.Origin);
+        bool? all = true;
+        foreach (var entry in cs.Entries.Where(e => e.Applied && !e.Restored))
+        {
+            try
+            {
+                var st = _dispatcher.Read(entry.Action, ctx);
+                entry.ObservedAfterApply = st.Current;
+                entry.ApplyVerified = st.Readable ? st.Matches : null;
+            }
+            catch (Exception ex) { entry.ApplyVerified = null; entry.ObservedAfterApply = ex.Message; }
+            if (entry.ApplyVerified == false) all = false;
+            else if (entry.ApplyVerified == null && all == true) all = null;
+        }
+        return all;
+    }
+
     /// <summary>Restores several change sets, most recent first (category, profile batch or everything).</summary>
     public RestoreResult RestoreMany(IEnumerable<ChangeSet> sets)
     {
