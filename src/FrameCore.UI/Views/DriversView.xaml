@@ -8,6 +8,17 @@
             <TextBlock Text="{i:Loc drivers.subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,2,0,16"/>
 
             <ItemsControl ItemsSource="{Binding Findings}" ItemTemplate="{StaticResource FindingTemplate}"/>
+            <Border Style="{StaticResource Card}" Visibility="{Binding History.Count, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <i:Icon Glyph="{StaticResource Icon.Clock}" Width="16" Height="16" Foreground="{DynamicResource Brush.TextMuted}" Margin="0,0,8,0"/>
+                        <TextBlock Text="{i:Loc drivers.history.title}" Style="{StaticResource Text.CardTitle}"/>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding History}">
+                        <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" Style="{StaticResource Text.Muted}"/></DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
 
             <Border Style="{StaticResource Card}" Margin="0,0,0,14">
                 <StackPanel>

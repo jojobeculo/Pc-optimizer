@@ -54,7 +54,7 @@
                 </Border>
 
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
-                    <ItemsControl ItemsSource="{Binding Navigation}" Focusable="False" KeyboardNavigation.TabNavigation="Once">
+                    <ItemsControl ItemsSource="{Binding Navigation}" Focusable="False" KeyboardNavigation.TabNavigation="Continue">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid>

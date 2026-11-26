@@ -8,7 +8,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  installer:
+    # The installer is built on Linux exactly like build/build.sh does locally (native x64 NSIS stub).
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Install NSIS
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq nsis
+      - name: Build installer
+        run: build/build.sh --skip-tests
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: artifacts
+          retention-days: 7
+
   windows:
+    needs: installer
     runs-on: windows-latest
     timeout-minutes: 80
     env:
@@ -55,25 +75,17 @@ jobs:
           "Exit code: $($p.ExitCode)"
           Get-Content "$dir\report.json" -ErrorAction SilentlyContinue | Select-Object -First 400
 
-      - name: Build installer
+      - uses: actions/download-artifact@v4
         if: success() || failure()
-        shell: pwsh
-        run: |
-          $makensis = (Get-Command makensis -ErrorAction SilentlyContinue).Source
-          if (-not $makensis) { $makensis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe" }
-          if (-not (Test-Path $makensis)) { choco install nsis -y --no-progress; $makensis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe" }
-          New-Item -ItemType Directory -Force out\installer | Out-Null
-          Copy-Item README.md, LICENSE publish\FrameCore\
-          New-Item -ItemType Directory -Force publish\FrameCore\docs | Out-Null
-          Copy-Item docs\*.md publish\FrameCore\docs\
-          & $makensis -V2 "-DVERSION=1.0.0" "-DSOURCE_DIR=$pwd\publish\FrameCore" "-DOUT_FILE=$pwd\out\installer\FrameCore-Setup.exe" installer\FrameCore.nsi
-          if ($LASTEXITCODE -ne 0) { throw "makensis failed" }
+        with:
+          name: installer
+          path: out/installer
 
       - name: Silent install, launch, uninstall
         if: success() || failure()
         shell: pwsh
         run: |
-          $setup = "$pwd\out\installer\FrameCore-Setup.exe"
+          $setup = (Get-ChildItem "$pwd\out\installer\FrameCore-Setup-*-x64.exe" | Select-Object -First 1).FullName
           $log = "$pwd\out\installer\install-test.txt"
           $p = Start-Process $setup -ArgumentList '/S' -PassThru -Wait
           "install exit: $($p.ExitCode)" | Tee-Object $log

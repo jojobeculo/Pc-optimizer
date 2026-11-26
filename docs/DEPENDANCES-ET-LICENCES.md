@@ -56,9 +56,18 @@ FrameCore lui-même est distribué sous licence **MIT** (fichier `LICENSE`).
 | xUnit 2.9.3, xunit.runner.visualstudio 3.1.5, Microsoft.NET.Test.Sdk 18.0.1 | Apache-2.0 / MIT | Tests unitaires |
 | pandoc (facultatif) | GPL-2.0+ | Conversion de la documentation en HTML au moment du build (le résultat n'est pas soumis à la GPL) |
 
-## 4. Ressources graphiques
+## 4. Ressources graphiques (relevé du 2026-11-26)
 
-| Ressource | Origine | Licence |
-|---|---|---|
-| Icône FrameCore (`src/FrameCore.UI/Assets/icon.svg`, `.ico`, `.png`) | Création originale pour ce projet | MIT (comme le projet) |
-| Polices Segoe UI Variable, Segoe Fluent Icons, Segoe MDL2 Assets | Fournies par Windows 11, **non redistribuées** (référencées par nom) | Licence Windows |
+| Ressource | Version | Auteur / projet | Source | Licence | Attribution |
+|---|---|---|---|---|---|
+| Police Inter (400–700) | via @fontsource/inter 5.3.0 | The Inter Project Authors | github.com/rsms/inter | SIL OFL 1.1 | texte de licence fourni (`licenses/OFL-Inter.txt`) |
+| Police Space Grotesk (500–700) | via @fontsource/space-grotesk 5.3.0 | The Space Grotesk Project Authors | github.com/floriankarsten/space-grotesk | SIL OFL 1.1 | `licenses/OFL-SpaceGrotesk.txt` |
+| Police JetBrains Mono (400–600) | via @fontsource/jetbrains-mono 5.3.0 | The JetBrains Mono Project Authors | github.com/JetBrains/JetBrainsMono | SIL OFL 1.1 | `licenses/OFL-JetBrainsMono.txt` |
+| Icônes Lucide (68) | lucide-static 1.81.0 | Lucide Contributors (une partie issue de Feather, Cole Bemis) | lucide.dev | ISC (+ MIT pour les icônes Feather) | `licenses/LICENSE-Lucide.txt` |
+| Icône et logo FrameCore | — | création originale | dépôt | MIT | — |
+
+Les polices sont des sous-ensembles « latin » (français et anglais) convertis de WOFF2 en TTF ; seules les métadonnées
+de nom ont été harmonisées (aucun « Reserved Font Name » n'est déclaré par ces polices). Aucune illustration tierce n'est
+utilisée : les visuels (jauge, barres, progression) sont dessinés par le code. Aucun outil de design externe (Penpot,
+Figma) n'était connecté à cette session ; le système de design est entièrement défini dans le projet
+(`src/FrameCore.UI/Themes/Tokens.xaml`, `Colors.*.xaml`, `Styles.xaml`, `Icons.xaml`).

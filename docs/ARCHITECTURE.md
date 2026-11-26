@@ -33,7 +33,9 @@ FrameCore.slnx
 │   ├── FrameCore.StorageManager       Disques (NVMe/SSD/HDD, SMART, TRIM), nettoyage, retrim, fichier d'échange, hibernation
 │   ├── FrameCore.NetworkManager       Interfaces réseau, test de latence local, autotuning TCP
 │   ├── FrameCore.DisplayManager       Écrans (QueryDisplayConfig, EDID, VRR, HDR, fréquence maximale)
-│   ├── FrameCore.BenchmarkManager     Capture ETW des présentations, PresentMon, statistiques de frametimes, comparaison statistique, détecteur de goulot
+│   ├── FrameCore.BenchmarkManager     Capture ETW des présentations, PresentMon, statistiques de frametimes, comparaison statistique, détecteur de goulot,
+│   │                                  QuickBench (benchmark rapide, laboratoire, statistiques), Verification (vérification & réparation),
+│   │                                  Games (bibliothèque de 91 jeux, tables matériel, estimateur de FPS)
 │   ├── FrameCore.BackupManager        Journal des modifications (JSON atomique), export/import, points de restauration
 │   └── FrameCore.UI                   Application WPF (exécutable FrameCore.exe), vues, ViewModels, services, worker élevé
 ├── catalog/
@@ -41,6 +43,8 @@ FrameCore.slnx
 │   └── knowledge/*.json               Versions de Windows, règles de classification du démarrage
 ├── lang/fr.json, lang/en.json         Textes de l'interface
 ├── tests/FrameCore.Tests              Tests unitaires xUnit (logique indépendante de Windows)
+├── tests/FrameCore.WindowsIntegrationTests  Tests sur Windows réel (CI, machine jetable uniquement) : scan matériel, appliquer/restaurer tout le catalogue
+├── .github/workflows/windows-ci.yml   CI : installateur (Linux) + tests, intégration, visite automatique de l'interface et parcours utilisateur, installation/désinstallation (Windows)
 ├── build/                             Scripts de build (bash, PowerShell)
 └── installer/                         Script NSIS
 ```
@@ -151,3 +155,26 @@ lancés avec `ArgumentList` (aucune interprétation par un shell) et des argumen
 | Réglages, journal des modifications, sauvegardes, benchmarks, rapports, journaux | `%LOCALAPPDATA%\FrameCore` |
 
 L'installateur ne contient jamais de données propres à une machine : chaque installation réalise sa propre détection.
+
+## 9. Vérification & réparation, benchmark rapide, estimation des FPS (version 2)
+
+```
+TweakService.ApplyAsync ─► lot enregistré (réglages prévus) ─► point de restauration ─► Engine.Apply (relecture après écriture)
+        └─► VerifyRepairService.VerifyAndRepair : relit, réécrit ≤ 2 fois, restaure sinon ─► rapport (Verification/*.json)
+OptimizationViewModel (option « mesurer ») : QuickBench express avant ─► application ─► QuickBench express après
+        └─► VerifyRepairService.CheckPerformance : régression confirmée ─► restaurer les réglages liés ─► contre-mesure ─► garder ou réappliquer une fois
+GamesViewModel : GameLibrary + FpsEstimator(mesures en jeu) + QuickBenchComparer(deux derniers benchmarks) ─► 91 estimations + 3 jeux
+```
+
+Les détails (formules, seuils, répétitions) sont dans [BENCHMARKS.md](BENCHMARKS.md).
+
+## 10. Interface (version 2)
+
+- Système de design : `Themes/Colors.*.xaml`, `Tokens.xaml`, `Icons.xaml`, `Styles.xaml`, `Templates.xaml` — voir [DESIGN.md](DESIGN.md).
+- Contrôles dessinés : `Infrastructure/Controls.cs` (icône vectorielle, jauge annulaire), `Charts.cs` (courbes), `Motion.cs`
+  (transitions, entrées, comptage, barres ; respect du réglage Windows des animations).
+- Navigation : Tableau de bord ; Performances (Optimisation, Jeux & FPS, Benchmark) ; Système (Matériel, Pilotes, Overclocking) ;
+  Contrôle (Restauration, Mode Pro, Paramètres).
+- `FrameCore.exe --ui-tour <dossier>` : visite automatique de chaque écran (captures PNG, erreurs de liaison, temps de rendu,
+  mémoire, CPU au repos, profil détecté) ; sur une machine jetable (`FRAMECORE_DISPOSABLE_VM=1`), exécute aussi les parcours
+  benchmark → optimisation mesurée → vérification → restauration.

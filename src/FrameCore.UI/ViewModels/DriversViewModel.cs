@@ -32,11 +32,20 @@ public sealed partial class DriversViewModel : ObservableObject, IDiagnosticCons
     public ObservableCollection<DriverUpdateRow> Updates { get; } = new();
     public ObservableCollection<Finding> Findings { get; } = new();
     public ObservableCollection<LinkInfo> OfficialSources { get; } = new();
+    /// <summary>Driver versions seen changing between diagnostics on this PC.</summary>
+    public ObservableCollection<string> History { get; } = new();
 
     public DriversViewModel(ShellViewModel shell) => _shell = shell;
 
     public void OnDiagnostic(DiagnosticResult r)
     {
+        History.Clear();
+        try
+        {
+            foreach (var c in DriverHistory.Record(r.Drivers).Take(30))
+                History.Add(Loc.T("drivers.history.line", c.DetectedUtc.ToLocalTime().ToString("g"), c.Device, c.OldVersion ?? "?", c.NewVersion ?? "?"));
+        }
+        catch (Exception ex) { Core.Log.Warn("Drivers", ex.Message); }
         _all = r.Drivers;
         Filter();
         Findings.Clear();

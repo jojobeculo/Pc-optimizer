@@ -98,8 +98,8 @@ LangString TXT_NOT_WIN11    ${LANG_FRENCH}  "Ce PC n'exécute pas Windows 11. Fr
 LangString TXT_NOT_WIN11    ${LANG_ENGLISH} "This PC is not running Windows 11. FrameCore is designed for Windows 11; some optimisations will not be offered. Continue?"
 LangString TXT_RUNNING      ${LANG_FRENCH}  "FrameCore est en cours d'exécution. Fermez-le puis cliquez sur Réessayer."
 LangString TXT_RUNNING      ${LANG_ENGLISH} "FrameCore is running. Close it, then click Retry."
-LangString TXT_PURGE_WARN   ${LANG_FRENCH}  "Vous avez choisi de supprimer les données de FrameCore (sauvegardes, journal des modifications, benchmarks).$\r$\n$\r$\nSi des optimisations sont encore appliquées, vous ne pourrez plus les annuler automatiquement. Il est recommandé de les restaurer d'abord depuis FrameCore (Mode Pro > Restauration).$\r$\n$\r$\nSupprimer quand même ces données ?"
-LangString TXT_PURGE_WARN   ${LANG_ENGLISH} "You chose to delete FrameCore data (backups, change journal, benchmarks).$\r$\n$\r$\nIf optimisations are still applied you will no longer be able to undo them automatically. Restore them first from FrameCore (Pro mode > Restore).$\r$\n$\r$\nDelete the data anyway?"
+LangString TXT_PURGE_WARN   ${LANG_FRENCH}  "Vous avez choisi de supprimer les données de FrameCore (sauvegardes, journal des modifications, benchmarks).$\r$\n$\r$\nSi des optimisations sont encore appliquées, vous ne pourrez plus les annuler automatiquement. Il est recommandé de les restaurer d'abord depuis FrameCore (page Restauration > Tout restaurer).$\r$\n$\r$\nSupprimer quand même ces données ?"
+LangString TXT_PURGE_WARN   ${LANG_ENGLISH} "You chose to delete FrameCore data (backups, change journal, benchmarks).$\r$\n$\r$\nIf optimisations are still applied you will no longer be able to undo them automatically. Restore them first from FrameCore (Restore page > Restore everything).$\r$\n$\r$\nDelete the data anyway?"
 
 LangString SEC_APP_NAME     ${LANG_FRENCH}  "FrameCore (requis)"
 LangString SEC_APP_NAME     ${LANG_ENGLISH} "FrameCore (required)"

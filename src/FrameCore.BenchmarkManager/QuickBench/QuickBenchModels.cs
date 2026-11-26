@@ -53,6 +53,9 @@ public sealed class QuickBenchResult
     public string MachineSignature { get; set; } = "";
     /// <summary>Optimisations active when the benchmark ran (change set ids), to relate results to changes.</summary>
     public List<string> ActiveTweakIds { get; set; } = new();
+    /// <summary>Context that can explain a change between two runs (driver update, Windows update).</summary>
+    public string? GpuDriver { get; set; }
+    public int? OsBuild { get; set; }
     public List<BenchMetric> Metrics { get; set; } = new();
     public ThermalSummary Thermals { get; set; } = new();
     public ThrottleVerdict Throttling { get; set; } = ThrottleVerdict.Unknown;

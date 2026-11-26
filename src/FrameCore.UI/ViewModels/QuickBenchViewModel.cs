@@ -126,6 +126,8 @@ public sealed partial class QuickBenchViewModel : ObservableObject
         {
             var result = await Task.Run(() => new QuickBenchRunner(options).Run(label, progress, _cts.Token));
             result.MachineSignature = _shell.Diagnostic.Profile.Signature;
+            result.GpuDriver = _shell.Diagnostic.Profile.PrimaryGpu?.DriverVersion;
+            result.OsBuild = _shell.Diagnostic.Profile.Os.Build * 100000 + _shell.Diagnostic.Profile.Os.Ubr;
             result.ActiveTweakIds = _shell.Services.Journal.ChangeSets.Where(c => c.Status == ChangeSetStatus.Applied && c.TweakId != null).Select(c => c.TweakId!).Distinct().ToList();
             foreach (var s in Steps.Where(s => s.State != "done")) s.State = result.Cancelled ? "skipped" : "done";
             if (!result.Cancelled) _shell.Services.QuickBenches.Save(result);
@@ -201,6 +203,10 @@ public sealed partial class QuickBenchViewModel : ObservableObject
         IndexText = cmp.IndexAfterRelativeToBefore is { } idx ? Loc.T("quick.index", idx.ToString("0.0")) : Loc.T("quick.indexNone");
         ComparisonTitle = Loc.T("quick.compareTitle", CompareBefore.Title, CompareAfter.Title)
             + (cmp.CpuTempDeltaC is { } dc ? " · " + Loc.T("quick.tempDelta", (dc >= 0 ? "+" : "") + dc.ToString("0.#")) : "");
+        // Regression after an update: say when the driver or Windows changed between the two runs.
+        var rb = CompareBefore.Result; var ra = CompareAfter.Result;
+        if (rb.GpuDriver != null && ra.GpuDriver != null && rb.GpuDriver != ra.GpuDriver) ComparisonTitle += " · " + Loc.T("quick.driverChanged", rb.GpuDriver, ra.GpuDriver);
+        if (rb.OsBuild != null && ra.OsBuild != null && rb.OsBuild != ra.OsBuild) ComparisonTitle += " · " + Loc.T("quick.osChanged");
         HasComparison = true;
     }
 
