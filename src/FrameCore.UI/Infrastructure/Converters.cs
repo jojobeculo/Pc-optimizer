@@ -116,9 +116,10 @@ public sealed class UnknownConverter : IValueConverter
 
 public sealed class SeverityIconConverter : IValueConverter
 {
-    public object Convert(object value, Type t, object p, CultureInfo c) => value switch
+    public object? Convert(object value, Type t, object p, CultureInfo c) => value switch
     {
-        Severity.Critical => "", Severity.Warning => "", Severity.Suggestion => "", _ => "",
+        Severity.Critical => Application.Current.TryFindResource("Icon.XCircle"), Severity.Warning => Application.Current.TryFindResource("Icon.Warning"),
+        Severity.Suggestion => Application.Current.TryFindResource("Icon.Sparkles"), _ => Application.Current.TryFindResource("Icon.Info"),
     };
     public object ConvertBack(object value, Type t, object p, CultureInfo c) => Binding.DoNothing;
 }

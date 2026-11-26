@@ -14,7 +14,9 @@ public sealed class NavItem
 {
     public string Key { get; init; } = "";
     public string Icon { get; init; } = "";
-    public string TitleKey => "nav." + Key;
+    public bool IsHeader { get; init; }
+    public string TitleKey => (IsHeader ? "nav.group." : "nav.") + Key;
+    public System.Windows.Media.Geometry? Glyph => Application.Current?.TryFindResource("Icon." + Icon) as System.Windows.Media.Geometry;
 }
 
 /// <summary>Main window: navigation, global diagnostic, busy state and cross-page actions.</summary>
@@ -34,12 +36,18 @@ public sealed partial class ShellViewModel : ObservableObject
     public ProModeViewModel Pro { get; }
     public BenchmarkViewModel Benchmark { get; }
     public SettingsViewModel Settings { get; }
+    public GamesViewModel Games { get; }
+    public RestoreViewModel Restore { get; }
 
     public ObservableCollection<NavItem> Navigation { get; } = new()
     {
-        new() { Key = "home", Icon = "" }, new() { Key = "optimization", Icon = "" }, new() { Key = "hardware", Icon = "" },
-        new() { Key = "drivers", Icon = "" }, new() { Key = "overclock", Icon = "" }, new() { Key = "pro", Icon = "" },
-        new() { Key = "benchmark", Icon = "" }, new() { Key = "settings", Icon = "" },
+        new() { Key = "home", Icon = "Home" },
+        new() { Key = "performance", IsHeader = true },
+        new() { Key = "optimization", Icon = "Optimize" }, new() { Key = "games", Icon = "Games" }, new() { Key = "benchmark", Icon = "Bench" },
+        new() { Key = "system", IsHeader = true },
+        new() { Key = "hardware", Icon = "Hardware" }, new() { Key = "drivers", Icon = "Drivers" }, new() { Key = "overclock", Icon = "Overclock" },
+        new() { Key = "control", IsHeader = true },
+        new() { Key = "restore", Icon = "Restore" }, new() { Key = "pro", Icon = "Pro" }, new() { Key = "settings", Icon = "Settings" },
     };
 
     [ObservableProperty] private string _currentKey = "home";
@@ -68,6 +76,8 @@ public sealed partial class ShellViewModel : ObservableObject
         Pro = new ProModeViewModel(this);
         Benchmark = new BenchmarkViewModel(this);
         Settings = new SettingsViewModel(this);
+        Games = new GamesViewModel(this);
+        Restore = new RestoreViewModel(this);
         CurrentPage = Home;
         services.Broker.StateChanged += (_, _) => Ui(() => WorkerConnected = services.Broker.IsConnected || AppInfo.IsElevated);
         WorkerConnected = AppInfo.IsElevated;
@@ -85,7 +95,7 @@ public sealed partial class ShellViewModel : ObservableObject
         CurrentPage = value switch
         {
             "optimization" => Optimization, "hardware" => Hardware, "drivers" => Drivers, "overclock" => Overclock,
-            "pro" => Pro, "benchmark" => Benchmark, "settings" => Settings, _ => Home,
+            "pro" => Pro, "benchmark" => Benchmark, "settings" => Settings, "games" => Games, "restore" => Restore, _ => Home,
         };
         (CurrentPage as IPageActivated)?.OnActivated();
     }
@@ -110,7 +120,7 @@ public sealed partial class ShellViewModel : ObservableObject
             Diagnostic = r;
             Monitoring.Gpus = r.Profile.Gpus;
             StatusText = Loc.T("status.diagDone", r.CompletedAt.ToString("t"), r.Findings.Count);
-            foreach (var p in new object[] { Home, Optimization, Hardware, Drivers, Overclock, Pro, Benchmark, Settings })
+            foreach (var p in new object[] { Home, Optimization, Hardware, Drivers, Overclock, Pro, Benchmark, Settings, Games, Restore })
                 (p as IDiagnosticConsumer)?.OnDiagnostic(r);
             if (!Services.Settings.FirstRunCompleted) { Services.Settings.FirstRunCompleted = true; Services.Settings.Save(); }
         }
@@ -128,7 +138,7 @@ public sealed partial class ShellViewModel : ObservableObject
         if (Diagnostic == null) return;
         var evals = await Task.Run(() => Diagnostics.EvaluateAll(Diagnostic.Facts));
         Diagnostic.Evaluations = evals;
-        foreach (var p in new object[] { Optimization, Pro, Home })
+        foreach (var p in new object[] { Optimization, Pro, Home, Restore, Games })
             (p as IDiagnosticConsumer)?.OnEvaluationsRefreshed(Diagnostic);
     }
 

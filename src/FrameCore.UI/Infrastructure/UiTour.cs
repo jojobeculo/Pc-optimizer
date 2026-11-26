@@ -63,14 +63,77 @@ public static class UiTour
             DumpJson(Path.Combine(dir, "findings.json"), shell.Diagnostic?.Findings.Select(f => new { f.Id, f.Category, f.Severity, f.Title, f.Detail, f.Recommendation, f.Context }));
             DumpJson(Path.Combine(dir, "evaluations.json"), shell.Diagnostic?.Evaluations.Select(e => new { e.Tweak.Id, Status = e.Status.ToString(), e.Compatible, e.IncompatibilityReasons, Current = e.CurrentSummary, e.NeedsElevation }));
 
-            foreach (var nav in shell.Navigation.Select(n => n.Key).ToList())
+            foreach (var nav in shell.Navigation.Where(n => !n.IsHeader).Select(n => n.Key).ToList())
                 pages.Add(await Visit(shell, window, dir, nav, () => shell.CurrentKey = nav, scrollShots: 3));
 
             foreach (var cat in shell.Pro.Categories.Select(c => c.Key).ToList())
                 pages.Add(await Visit(shell, window, dir, "pro-" + cat, () => { shell.CurrentKey = "pro"; shell.Pro.SelectedCategory = cat; }, scrollShots: 2));
 
-            foreach (var section in new[] { "cpu", "gpu", "ram", "board", "storage", "display", "network", "windows" })
+            foreach (var section in new[] { "cpu", "gpu", "ram", "board", "storage", "display", "network", "windows", "quality" })
                 pages.Add(await Visit(shell, window, dir, "hardware-" + section, () => { shell.CurrentKey = "hardware"; shell.Hardware.Section = section; }, scrollShots: 2));
+
+            foreach (var level in new[] { "Balanced", "Performance", "Maximum" })
+                pages.Add(await Visit(shell, window, dir, "plan-" + level, () => { shell.CurrentKey = "optimization"; shell.Optimization.PrepareCommand.Execute(level); }, scrollShots: 3));
+
+            foreach (var section in new[] { "quick", "lab", "ingame" })
+                pages.Add(await Visit(shell, window, dir, "bench-" + section, () => { shell.CurrentKey = "benchmark"; shell.Benchmark.Section = section; }, scrollShots: 2));
+
+            shell.CurrentKey = "games";
+            await WaitUntil(() => shell.Games.Ready, TimeSpan.FromSeconds(60));
+            shell.Games.ShowExplorer = true;
+            shell.Games.Selected = shell.Games.Rows.FirstOrDefault();
+            pages.Add(await Visit(shell, window, dir, "games-explorer", () => { }, scrollShots: 3));
+            report["gamesEstimated"] = shell.Games.Rows.Count(r => r.Estimate.Fps != null);
+            report["gamesShowcase"] = shell.Games.Showcase.Select(r => $"{r.Name}: {r.FpsText} ({r.RangeText}) {r.LimiterText} / {r.ConfidenceText} / {r.BasisText}").ToList();
+
+            // User-like flows. They change system settings, so they only run on a disposable CI machine.
+            if (Environment.GetEnvironmentVariable("FRAMECORE_DISPOSABLE_VM") == "1")
+            {
+                Dialogs.AutoConfirm = true;
+                var flow = Stopwatch.StartNew();
+                shell.CurrentKey = "benchmark"; shell.Benchmark.Section = "quick";
+                shell.Benchmark.Quick.Mode = "express";
+                await shell.Benchmark.Quick.RunFromTourAsync();
+                report["flowQuickBenchMs"] = flow.ElapsedMilliseconds;
+                pages.Add(await Visit(shell, window, dir, "flow-quickbench-result", () => { }, scrollShots: 3));
+                report["quickBenchMetrics"] = shell.Benchmark.Quick.Metrics.Select(m => $"{m.Name}: {m.Value} {m.Unit} [{m.Spread}]").ToList();
+                report["quickBenchThrottle"] = shell.Benchmark.Quick.ThrottleText;
+
+                flow.Restart();
+                shell.CurrentKey = "optimization";
+                shell.Optimization.PrepareCommand.Execute("Balanced");
+                await Settle();
+                shell.Optimization.MeasureBeforeAfter = true;
+                await shell.Optimization.ApplyCommand.ExecuteAsync(null);
+                report["flowApplyMs"] = flow.ElapsedMilliseconds;
+                report["applyResult"] = shell.Optimization.ResultText;
+                report["applyVerification"] = shell.Optimization.VerificationText;
+                report["applyPerformance"] = shell.Optimization.PerformanceText;
+                report["applyLines"] = shell.Optimization.ResultLines.ToList();
+                pages.Add(await Visit(shell, window, dir, "flow-apply-outcome", () => { }, scrollShots: 4));
+
+                shell.Games.Ready = false;
+                pages.Add(await Visit(shell, window, dir, "flow-games-after", () => shell.CurrentKey = "games", scrollShots: 2));
+                await WaitUntil(() => shell.Games.Ready, TimeSpan.FromSeconds(60));
+                pages.Add(await Visit(shell, window, dir, "flow-games-after-loaded", () => { }, scrollShots: 2));
+                report["gamesShowcaseAfter"] = shell.Games.Showcase.Select(r => $"{r.Name}: {r.FpsText} -> {r.AfterText} ({r.GainText}) {r.GainReason}").ToList();
+
+                pages.Add(await Visit(shell, window, dir, "flow-restore-before", () => shell.CurrentKey = "restore", scrollShots: 3));
+                await shell.Restore.VerifyNowCommand.ExecuteAsync(null);
+                await shell.Pro.RestoreAllCommand.ExecuteAsync(null);
+                pages.Add(await Visit(shell, window, dir, "flow-restore-after", () => { shell.CurrentKey = "home"; shell.CurrentKey = "restore"; }, scrollShots: 3));
+                report["restoreStatus"] = shell.Pro.BackupStatus;
+                report["activeAfterRestore"] = shell.Services.Journal.ChangeSets.Count(c => c.Status == Core.Models.ChangeSetStatus.Applied);
+
+                foreach (var lab in new[] { "system", "inference" })
+                {
+                    shell.CurrentKey = "benchmark"; shell.Benchmark.Section = "lab";
+                    await shell.Benchmark.Quick.LabCommand.ExecuteAsync(lab);
+                    pages.Add(await Visit(shell, window, dir, "flow-lab-" + lab, () => { }, scrollShots: 1));
+                    report["lab-" + lab] = shell.Benchmark.Quick.LabResults.Select(m => $"{m.Name}: {m.Value} {m.Unit}").Append(shell.Benchmark.Quick.LabStatus).ToList();
+                }
+                Dialogs.AutoConfirm = false;
+            }
 
             // Responsiveness of the layout at a small window size, light theme and English.
             window.Width = 1100; window.Height = 700;
@@ -141,6 +204,12 @@ public static class UiTour
         }
         catch (Exception ex) { entry["error"] = ex.Message; }
         return entry;
+    }
+
+    private static async Task WaitUntil(Func<bool> condition, TimeSpan timeout)
+    {
+        var sw = Stopwatch.StartNew();
+        while (!condition() && sw.Elapsed < timeout) await Task.Delay(250);
     }
 
     private static async Task Settle()

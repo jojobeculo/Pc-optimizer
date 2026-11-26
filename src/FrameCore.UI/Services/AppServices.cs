@@ -34,6 +34,11 @@ public sealed class AppServices
     public TweakEngine Engine { get; }
     public StartupKnowledgeBase StartupKb { get; }
     public BenchmarkStore Benchmarks { get; } = new();
+    public FrameCore.BenchmarkManager.QuickBench.JsonFolderStore<FrameCore.BenchmarkManager.QuickBench.QuickBenchResult> QuickBenches { get; } = FrameCore.BenchmarkManager.QuickBench.Stores.QuickBench();
+    public FrameCore.BenchmarkManager.QuickBench.JsonFolderStore<FrameCore.BenchmarkManager.Verification.VerifyRepairReport> VerificationReports { get; } = FrameCore.BenchmarkManager.QuickBench.Stores.Verification();
+    private FrameCore.BenchmarkManager.Games.GameLibrary? _games;
+    /// <summary>Game library and hardware reference tables, loaded on first use (keeps start-up fast).</summary>
+    public FrameCore.BenchmarkManager.Games.GameLibrary Games => _games ??= FrameCore.BenchmarkManager.Games.GameLibrary.Load(Path.Combine(AppPaths.CatalogDir, "knowledge"));
 
     public AppServices(AppSettings settings, bool forWorker = false)
     {

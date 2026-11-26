@@ -18,6 +18,19 @@ public sealed class ProCategory
     public string Key { get; init; } = "";
     public string Icon { get; init; } = "";
     public string Label => Loc.T("pro.cat." + Key);
+    public System.Windows.Media.Geometry? Glyph => System.Windows.Application.Current?.TryFindResource("Icon." + Icon) as System.Windows.Media.Geometry;
+}
+
+/// <summary>A popular tweak FrameCore refuses to apply, with the reason (catalog/knowledge/rejected-tweaks.json).</summary>
+public sealed class RejectedRow
+{
+    public string Name { get; init; } = "";
+    public string Claim { get; init; } = "";
+    public string Verdict { get; init; } = "";
+    public string Kind { get; init; } = "";
+    public string KindLabel => Loc.T("rejected.kind." + Kind);
+    public string LevelKey => Kind switch { "Harmful" => "Danger", "SecurityTradeoff" => "Warning", _ => "Neutral" };
+    public string Sources { get; init; } = "";
 }
 
 public sealed partial class StartupRowViewModel : ObservableObject
@@ -51,7 +64,14 @@ public sealed partial class ChangeSetRow : ObservableObject
     public string Category => Set.Category;
     public ChangeSetStatus Status => Set.Status;
     public string StatusLabel => Loc.T("changeStatus." + Set.Status);
-    public string Details => string.Join("\n", Set.Entries.Select(e => $"{e.Action} ← {e.Before?.Describe()}"));
+    public string Details => string.Join("\n", Set.Entries.Select(e =>
+        $"{e.Action}\n    {Loc.T("backup.before")} {e.Before?.Describe()}" + (e.ObservedAfterApply != null ? $"\n    {Loc.T("backup.readBack")} {e.ObservedAfterApply}" : "")))
+        + (Set.History.Count == 0 ? "" : "\n\n" + string.Join("\n", Set.History.Select(h => $"{h.Utc.ToLocalTime():g} — {h.Detail}")));
+    /// <summary>Verified (read back), NotEffective, NotVerifiable or empty for restored/failed sets.</summary>
+    public string VerificationKey => Set.Status != ChangeSetStatus.Applied ? "" :
+        Set.Entries.Any(e => e.ApplyVerified == false) ? "NotEffective" : Set.Entries.All(e => e.ApplyVerified == true) ? "Verified" : "NotVerifiable";
+    public string VerificationLabel => VerificationKey == "" ? "" : Loc.T("verifyState." + VerificationKey);
+    public bool HasVerification => VerificationKey != "";
     public bool CanRestore => Set.Reversible && Set.Status is ChangeSetStatus.Applied or ChangeSetStatus.PartiallyRestored or ChangeSetStatus.Failed;
     [RelayCommand] private Task Restore() => _restore(this);
 }
@@ -71,13 +91,32 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
 
     public ObservableCollection<ProCategory> Categories { get; } = new()
     {
-        new() { Key = "Windows", Icon = "" }, new() { Key = "Services", Icon = "" }, new() { Key = "Startup", Icon = "" },
-        new() { Key = "Cpu", Icon = "" }, new() { Key = "Gpu", Icon = "" }, new() { Key = "Ram", Icon = "" },
-        new() { Key = "Bios", Icon = "" }, new() { Key = "Drivers", Icon = "" }, new() { Key = "Storage", Icon = "" },
-        new() { Key = "Network", Icon = "" }, new() { Key = "Display", Icon = "" }, new() { Key = "Input", Icon = "" },
-        new() { Key = "Privacy", Icon = "" }, new() { Key = "Security", Icon = "" }, new() { Key = "Benchmark", Icon = "" },
-        new() { Key = "Profiles", Icon = "" }, new() { Key = "Backups", Icon = "" }, new() { Key = "Monitoring", Icon = "" },
+        new() { Key = "Windows", Icon = "Layers" }, new() { Key = "Services", Icon = "Wrench" }, new() { Key = "Startup", Icon = "Rocket" },
+        new() { Key = "Cpu", Icon = "Chip" }, new() { Key = "Gpu", Icon = "Gpu" }, new() { Key = "Ram", Icon = "Ram" },
+        new() { Key = "Bios", Icon = "Board" }, new() { Key = "Drivers", Icon = "Drivers" }, new() { Key = "Storage", Icon = "Disk" },
+        new() { Key = "Network", Icon = "Network" }, new() { Key = "Display", Icon = "Monitor" }, new() { Key = "Input", Icon = "Target" },
+        new() { Key = "Privacy", Icon = "Eye" }, new() { Key = "Security", Icon = "Shield" }, new() { Key = "Benchmark", Icon = "Bench" },
+        new() { Key = "Profiles", Icon = "Save" }, new() { Key = "Monitoring", Icon = "Activity" }, new() { Key = "Rejected", Icon = "Ban" },
     };
+
+    private List<RejectedRow>? _rejected;
+    public IReadOnlyList<RejectedRow> Rejected => _rejected ??= LoadRejected();
+
+    private static List<RejectedRow> LoadRejected()
+    {
+        try
+        {
+            var path = Path.Combine(Core.AppPaths.CatalogDir, "knowledge", "rejected-tweaks.json");
+            using var doc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path));
+            string L(System.Text.Json.JsonElement e) => e.GetProperty(Loc.Instance.CurrentLanguage).GetString() ?? "";
+            return doc.RootElement.GetProperty("entries").EnumerateArray().Select(e => new RejectedRow
+            {
+                Name = L(e.GetProperty("name")), Claim = L(e.GetProperty("claim")), Verdict = L(e.GetProperty("verdict")),
+                Kind = e.GetProperty("kind").GetString() ?? "", Sources = string.Join("\n", e.GetProperty("sources").EnumerateArray().Select(x => x.GetString())),
+            }).ToList();
+        }
+        catch (Exception ex) { Core.Log.Warn("Pro", "rejected tweaks: " + ex.Message); return new(); }
+    }
 
     [ObservableProperty] private string _selectedCategory = "Windows";
     [ObservableProperty] private string _startupFilter = "All";
@@ -100,7 +139,7 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
     public ObservableCollection<CustomProfile> CustomProfiles { get; } = new();
     private List<StartupEntry> _startup = new();
 
-    public bool IsCatalogCategory => SelectedCategory is not ("Startup" or "Benchmark" or "Profiles" or "Backups" or "Monitoring" or "Drivers");
+    public bool IsCatalogCategory => SelectedCategory is not ("Startup" or "Benchmark" or "Profiles" or "Backups" or "Monitoring" or "Drivers" or "Rejected");
 
     public ProModeViewModel(ShellViewModel shell)
     {
@@ -220,7 +259,10 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
     [RelayCommand] private void OpenAppsSettings() => Dialogs.OpenUri("ms-settings:appsfeatures");
     [RelayCommand] private void OpenUri(string uri) => Dialogs.OpenUri(uri);
 
-    // ---------------------------------------------------------------- Backups
+    // ---------------------------------------------------------------- Backups (shown in the restore centre)
+    public void OnActivatedForRestore() => LoadBackups();
+    public void ReloadChangeSets() => LoadBackups();
+
     private void LoadBackups()
     {
         ChangeSets.Clear();

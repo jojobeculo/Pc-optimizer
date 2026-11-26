@@ -1,35 +1,41 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="Color.Bg0">#F4F5F9</Color>
-    <Color x:Key="Color.Accent">#6D4AFF</Color>
-    <SolidColorBrush x:Key="Brush.Bg0" Color="#F4F5F9"/>
-    <SolidColorBrush x:Key="Brush.Bg1" Color="#FFFFFF"/>
+    <Color x:Key="Color.Bg0">#F5F6F8</Color>
+    <Color x:Key="Color.Accent">#0E9F6E</Color>
+    <Color x:Key="Color.Card">#FFFFFF</Color>
+    <SolidColorBrush x:Key="Brush.Bg0" Color="#F5F6F8"/>
+    <SolidColorBrush x:Key="Brush.Bg1" Color="#FBFBFC"/>
     <SolidColorBrush x:Key="Brush.Card" Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="Brush.CardHover" Color="#F1F2F8"/>
-    <SolidColorBrush x:Key="Brush.Inset" Color="#F2F4F9"/>
-    <SolidColorBrush x:Key="Brush.Border" Color="#E1E5EE"/>
-    <SolidColorBrush x:Key="Brush.Text" Color="#151926"/>
-    <SolidColorBrush x:Key="Brush.TextMuted" Color="#56607A"/>
-    <SolidColorBrush x:Key="Brush.TextFaint" Color="#8A93A8"/>
-    <SolidColorBrush x:Key="Brush.Accent" Color="#6D4AFF"/>
-    <SolidColorBrush x:Key="Brush.AccentHover" Color="#5B37F2"/>
-    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#ECE7FF"/>
-    <SolidColorBrush x:Key="Brush.Accent2" Color="#0891B2"/>
+    <SolidColorBrush x:Key="Brush.CardHover" Color="#F7F8FA"/>
+    <SolidColorBrush x:Key="Brush.Inset" Color="#F0F2F5"/>
+    <SolidColorBrush x:Key="Brush.Border" Color="#E2E5EA"/>
+    <SolidColorBrush x:Key="Brush.BorderStrong" Color="#CDD2DA"/>
+    <SolidColorBrush x:Key="Brush.Text" Color="#11141A"/>
+    <SolidColorBrush x:Key="Brush.TextMuted" Color="#555D6A"/>
+    <SolidColorBrush x:Key="Brush.TextFaint" Color="#848B97"/>
+    <SolidColorBrush x:Key="Brush.Accent" Color="#0E9F6E"/>
+    <SolidColorBrush x:Key="Brush.AccentHover" Color="#0B8A5F"/>
+    <SolidColorBrush x:Key="Brush.AccentPressed" Color="#08734F"/>
+    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#DDF5EA"/>
+    <SolidColorBrush x:Key="Brush.AccentText" Color="#087A55"/>
+    <SolidColorBrush x:Key="Brush.Accent2" Color="#2F6FDB"/>
     <SolidColorBrush x:Key="Brush.OnAccent" Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="Brush.Success" Color="#059669"/>
-    <SolidColorBrush x:Key="Brush.SuccessSoft" Color="#DDF5EC"/>
-    <SolidColorBrush x:Key="Brush.Warning" Color="#B45309"/>
-    <SolidColorBrush x:Key="Brush.WarningSoft" Color="#FDF0D9"/>
-    <SolidColorBrush x:Key="Brush.Danger" Color="#DC2626"/>
-    <SolidColorBrush x:Key="Brush.DangerSoft" Color="#FDE3E3"/>
-    <SolidColorBrush x:Key="Brush.Info" Color="#2563EB"/>
-    <SolidColorBrush x:Key="Brush.InfoSoft" Color="#E1EBFD"/>
-    <SolidColorBrush x:Key="Brush.Neutral" Color="#56607A"/>
-    <SolidColorBrush x:Key="Brush.NeutralSoft" Color="#ECEEF4"/>
-    <SolidColorBrush x:Key="Brush.Chart1" Color="#6D4AFF"/>
-    <SolidColorBrush x:Key="Brush.Chart2" Color="#0891B2"/>
-    <SolidColorBrush x:Key="Brush.Chart3" Color="#059669"/>
-    <SolidColorBrush x:Key="Brush.Chart4" Color="#B45309"/>
-    <SolidColorBrush x:Key="Brush.ChartFill" Color="#1F6D4AFF"/>
-    <SolidColorBrush x:Key="Brush.Grid" Color="#E7EAF2"/>
+    <SolidColorBrush x:Key="Brush.Success" Color="#0E9F6E"/>
+    <SolidColorBrush x:Key="Brush.SuccessSoft" Color="#DDF5EA"/>
+    <SolidColorBrush x:Key="Brush.Warning" Color="#B7700A"/>
+    <SolidColorBrush x:Key="Brush.WarningSoft" Color="#FCEFD9"/>
+    <SolidColorBrush x:Key="Brush.Danger" Color="#D93C3C"/>
+    <SolidColorBrush x:Key="Brush.DangerSoft" Color="#FBE3E3"/>
+    <SolidColorBrush x:Key="Brush.Info" Color="#2F6FDB"/>
+    <SolidColorBrush x:Key="Brush.InfoSoft" Color="#E1ECFC"/>
+    <SolidColorBrush x:Key="Brush.Neutral" Color="#555D6A"/>
+    <SolidColorBrush x:Key="Brush.NeutralSoft" Color="#EEF0F3"/>
+    <SolidColorBrush x:Key="Brush.Chart1" Color="#0E9F6E"/>
+    <SolidColorBrush x:Key="Brush.Chart2" Color="#2F6FDB"/>
+    <SolidColorBrush x:Key="Brush.Chart3" Color="#8B5CF6"/>
+    <SolidColorBrush x:Key="Brush.Chart4" Color="#C77700"/>
+    <SolidColorBrush x:Key="Brush.ChartFill" Color="#1F0E9F6E"/>
+    <SolidColorBrush x:Key="Brush.Grid" Color="#E9ECF0"/>
+    <SolidColorBrush x:Key="Brush.Focus" Color="#2F6FDB"/>
+    <SolidColorBrush x:Key="Brush.Scrim" Color="#66000000"/>
 </ResourceDictionary>

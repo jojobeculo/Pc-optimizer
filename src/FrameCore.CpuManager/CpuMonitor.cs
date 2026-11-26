@@ -10,8 +10,10 @@ public sealed class CpuSample
     public List<double> PerCore { get; set; } = new();
     public double? EffectiveMhz { get; set; }
     public double? NominalMhz { get; set; }
-    /// <summary>"% Performance Limit": share of performance withheld by firmware/thermal/power limits.</summary>
+    /// <summary>"% Performance Limit": ceiling allowed by firmware/thermal/power limits (100 = no limitation).</summary>
     public double? PerformanceLimitPercent { get; set; }
+    /// <summary>"Performance Limit Flags": non-zero when the processor reports an active limitation.</summary>
+    public uint? PerformanceLimitFlags { get; set; }
     public double MaxCorePercent => PerCore.Count > 0 ? PerCore.Max() : TotalPercent ?? 0;
     public float? TemperatureC { get; set; }
     public float? PackagePowerW { get; set; }
@@ -31,6 +33,7 @@ public sealed class CpuMonitor : IDisposable
         _pdh.Add("perf", @"\Processor Information(_Total)\% Processor Performance");
         _pdh.Add("freq", @"\Processor Information(_Total)\Processor Frequency");
         _pdh.Add("limit", @"\Processor Information(_Total)\% Performance Limit");
+        _pdh.Add("flags", @"\Processor Information(_Total)\Performance Limit Flags");
         _pdh.Collect();
     }
 
@@ -44,6 +47,7 @@ public sealed class CpuMonitor : IDisposable
             TotalPercent = Clamp(_pdh.Get("total")),
             NominalMhz = _pdh.Get("freq"),
             PerformanceLimitPercent = _pdh.Get("limit"),
+            PerformanceLimitFlags = _pdh.Get("flags") is { } fl ? (uint)Math.Max(0, fl) : null,
         };
         var perf = _pdh.Get("perf");
         if (perf != null && s.NominalMhz != null) s.EffectiveMhz = s.NominalMhz * perf / 100.0;

@@ -40,6 +40,8 @@
     <Content Include="..\..\lang\*.json" LinkBase="lang" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Resource Include="Assets\framecore.png" />
     <Resource Include="Assets\framecore.ico" />
+    <Resource Include="Assets\Fonts\*.ttf" />
+    <Content Include="Assets\Licenses\*.txt" LinkBase="licenses" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
   <!-- TraceEvent ships native helpers for every architecture; only x64 is ever loaded. -->
   <Target Name="RemoveForeignArchitectureNatives" AfterTargets="Publish">

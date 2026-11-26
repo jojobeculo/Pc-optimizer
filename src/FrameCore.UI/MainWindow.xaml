@@ -4,86 +4,90 @@
         xmlns:i="clr-namespace:FrameCore.UI.Infrastructure"
         xmlns:vm="clr-namespace:FrameCore.UI.ViewModels"
         xmlns:v="clr-namespace:FrameCore.UI.Views"
-        Title="FrameCore" Width="1320" Height="860" MinWidth="980" MinHeight="640"
+        Title="FrameCore" Width="1360" Height="880" MinWidth="980" MinHeight="640"
         WindowStartupLocation="CenterScreen" Icon="Assets/framecore.ico"
         Background="{DynamicResource Brush.Bg0}" Foreground="{DynamicResource Brush.Text}"
-        FontFamily="{StaticResource Font.Ui}" FontSize="13"
+        FontFamily="{StaticResource Font.Ui}" FontSize="13.5"
         UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:HomeViewModel}"><v:HomeView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:OptimizationViewModel}"><v:OptimizationView/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:GamesViewModel}"><v:GamesView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:HardwareViewModel}"><v:HardwareView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:DriversViewModel}"><v:DriversView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:OverclockViewModel}"><v:OverclockView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:ProModeViewModel}"><v:ProModeView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:BenchmarkViewModel}"><v:BenchmarkView/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RestoreViewModel}"><v:RestoreView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:SettingsViewModel}"><v:SettingsView/></DataTemplate>
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="232"/>
+            <ColumnDefinition Width="224"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Navigation rail -->
+        <!-- ===================== Navigation rail ===================== -->
         <Border Background="{DynamicResource Brush.Bg1}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
-            <DockPanel Margin="14,18,14,14">
-                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="6,0,0,22">
-                    <Image Source="Assets/framecore.png" Width="30" Height="30"/>
-                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="FrameCore" FontFamily="{StaticResource Font.Display}" FontSize="17" FontWeight="SemiBold"/>
-                        <TextBlock Text="{i:Loc app.tagline}" FontSize="11" Foreground="{DynamicResource Brush.TextFaint}"/>
-                    </StackPanel>
+            <DockPanel Margin="12,18,12,14">
+                <!-- Brand -->
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8,0,0,20">
+                    <Image Source="Assets/framecore.png" Width="28" Height="28" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <TextBlock Text="FrameCore" FontFamily="{StaticResource Font.Display}" FontSize="19" FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <StackPanel DockPanel.Dock="Bottom" Margin="6,12,0,0">
-                    <Border CornerRadius="8" Padding="10,8" Background="{DynamicResource Brush.Inset}">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Ellipse Width="8" Height="8" Margin="0,0,8,0" VerticalAlignment="Center"
-                                         Fill="{Binding WorkerConnected, Converter={StaticResource LevelBrush}}"/>
-                                <TextBlock FontSize="11.5" Foreground="{DynamicResource Brush.TextMuted}" Text="{i:Loc nav.adminActive}"
-                                           Visibility="{Binding WorkerConnected, Converter={StaticResource BoolToVis}}"/>
-                                <TextBlock FontSize="11.5" Foreground="{DynamicResource Brush.TextMuted}" Text="{i:Loc nav.standardRights}"
-                                           Visibility="{Binding WorkerConnected, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
-                            </StackPanel>
-                            <TextBlock Text="{Binding Version}" FontSize="11" Foreground="{DynamicResource Brush.TextFaint}" Margin="16,2,0,0"/>
+                <!-- Rights + version -->
+                <Border DockPanel.Dock="Bottom" CornerRadius="10" Padding="12,10" Margin="0,12,0,0" Background="{DynamicResource Brush.Inset}"
+                        ToolTip="{i:Loc nav.rightsTip}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="7" Height="7" Margin="0,0,8,0" VerticalAlignment="Center"
+                                     Fill="{Binding WorkerConnected, Converter={StaticResource LevelBrush}}"/>
+                            <TextBlock FontSize="11.5" Foreground="{DynamicResource Brush.TextMuted}" Text="{i:Loc nav.adminActive}"
+                                       Visibility="{Binding WorkerConnected, Converter={StaticResource BoolToVis}}"/>
+                            <TextBlock FontSize="11.5" Foreground="{DynamicResource Brush.TextMuted}" Text="{i:Loc nav.standardRights}"
+                                       Visibility="{Binding WorkerConnected, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
                         </StackPanel>
-                    </Border>
-                </StackPanel>
+                        <TextBlock Text="{Binding Version}" FontSize="11" Foreground="{DynamicResource Brush.TextFaint}" Margin="15,2,0,0"/>
+                    </StackPanel>
+                </Border>
 
-                <ItemsControl ItemsSource="{Binding Navigation}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <RadioButton Style="{StaticResource NavButton}" GroupName="nav"
-                                         Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                         CommandParameter="{Binding Key}">
-                                <RadioButton.IsChecked>
-                                    <MultiBinding Mode="OneWay">
-                                        <MultiBinding.Converter>
-                                            <i:MultiEqualsConverter/>
-                                        </MultiBinding.Converter>
-                                        <Binding Path="Key"/>
-                                        <Binding Path="DataContext.CurrentKey" RelativeSource="{RelativeSource AncestorType=Window}"/>
-                                    </MultiBinding>
-                                </RadioButton.IsChecked>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Icon}" Style="{StaticResource Text.Icon}" Width="22"/>
-                                    <TextBlock Margin="8,0,0,0" VerticalAlignment="Center">
-                                        <TextBlock.Text>
-                                            <Binding Path="TitleKey" Converter="{StaticResource LocKey}"/>
-                                        </TextBlock.Text>
-                                    </TextBlock>
-                                </StackPanel>
-                            </RadioButton>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+                    <ItemsControl ItemsSource="{Binding Navigation}" Focusable="False" KeyboardNavigation.TabNavigation="Once">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <!-- Group header -->
+                                    <TextBlock Text="{Binding TitleKey, Converter={StaticResource LocKey}}" Style="{StaticResource Text.Overline}" Margin="12,14,0,6"
+                                               Visibility="{Binding IsHeader, Converter={StaticResource BoolToVis}}"/>
+                                    <RadioButton Style="{StaticResource NavButton}" GroupName="nav"
+                                                 Visibility="{Binding IsHeader, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"
+                                                 AutomationProperties.Name="{Binding TitleKey, Converter={StaticResource LocKey}}"
+                                                 Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                 CommandParameter="{Binding Key}">
+                                        <RadioButton.IsChecked>
+                                            <MultiBinding Mode="OneWay">
+                                                <MultiBinding.Converter><i:MultiEqualsConverter/></MultiBinding.Converter>
+                                                <Binding Path="Key"/>
+                                                <Binding Path="DataContext.CurrentKey" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                            </MultiBinding>
+                                        </RadioButton.IsChecked>
+                                        <StackPanel Orientation="Horizontal">
+                                            <i:Icon Glyph="{Binding Glyph}" Width="18" Height="18" StrokeWidth="1.9"
+                                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                            <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="{Binding TitleKey, Converter={StaticResource LocKey}}"/>
+                                        </StackPanel>
+                                    </RadioButton>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
             </DockPanel>
         </Border>
 
-        <!-- Content -->
+        <!-- ===================== Content ===================== -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -91,31 +95,35 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Border Padding="28,14,28,10">
+            <!-- Top bar: what happened last + global action -->
+            <Border Padding="32,14,32,6">
                 <DockPanel>
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Style="{StaticResource Button.Primary}" Command="{Binding RunDiagnosticCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource Not}}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE721;" Style="{StaticResource Text.Icon}" FontSize="14" Margin="0,0,8,0"/>
-                                <TextBlock Text="{i:Loc home.runDiagnostic}"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Style="{StaticResource Text.Muted}" Text="{Binding StatusText}"/>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Secondary}" Command="{Binding RunDiagnosticCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource Not}}" AutomationProperties.Name="{i:Loc home.runDiagnostic}">
+                        <StackPanel Orientation="Horizontal">
+                            <i:Icon Glyph="{StaticResource Icon.Refresh}" Width="15" Height="15" Foreground="{DynamicResource Brush.Text}" Margin="0,0,8,0"/>
+                            <TextBlock Text="{i:Loc home.runDiagnostic}"/>
+                        </StackPanel>
+                    </Button>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <i:Icon Glyph="{StaticResource Icon.Clock}" Width="14" Height="14" Foreground="{DynamicResource Brush.TextFaint}" Margin="0,0,8,0"/>
+                        <TextBlock Style="{StaticResource Text.Muted}" Text="{Binding StatusText}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </DockPanel>
             </Border>
 
-            <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" Focusable="False"/>
+            <i:TransitionContentControl Grid.Row="1" Content="{Binding CurrentPage}" Focusable="False"/>
 
-            <!-- Busy bar -->
-            <Border Grid.Row="2" Background="{DynamicResource Brush.Bg1}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,1,0,0" Padding="28,8"
+            <!-- Activity bar: always says what is running (indeterminate when the duration is unknown) -->
+            <Border Grid.Row="2" Background="{DynamicResource Brush.Bg1}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,1,0,0" Padding="32,10"
                     Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
-                <StackPanel>
-                    <TextBlock Text="{Binding BusyText}" Style="{StaticResource Text.Muted}" Margin="0,0,0,6"/>
-                    <ProgressBar IsIndeterminate="True" Height="4"/>
-                </StackPanel>
+                <DockPanel>
+                    <i:Icon DockPanel.Dock="Left" Glyph="{StaticResource Icon.Activity}" Width="16" Height="16" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0"/>
+                    <StackPanel>
+                        <TextBlock Text="{Binding BusyText}" Style="{StaticResource Text.Muted}" Margin="0,0,0,6"/>
+                        <ProgressBar IsIndeterminate="True" Height="4"/>
+                    </StackPanel>
+                </DockPanel>
             </Border>
         </Grid>
     </Grid>

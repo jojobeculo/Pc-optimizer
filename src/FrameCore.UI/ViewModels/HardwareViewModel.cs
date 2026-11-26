@@ -87,9 +87,21 @@ public sealed partial class HardwareViewModel : ObservableObject, IDiagnosticCon
     private static string YesNo(bool? b) => b == null ? Loc.Unknown : Loc.T(b.Value ? "common.yes" : "common.no");
     private static string Tri(TriState t) => Loc.T("tri." + t);
 
+    public ObservableCollection<DataQualityRow> DataQuality { get; } = new();
+    [ObservableProperty] private string _xmpGuide = "";
+    [ObservableProperty] private bool _showXmpGuide;
+
     public void OnDiagnostic(DiagnosticResult r)
     {
         var p = r.Profile;
+        DataQuality.Clear();
+        foreach (var d in p.DataQuality) DataQuality.Add(new DataQualityRow(d));
+        // XMP / EXPO: a BIOS setting. FrameCore explains where to find it for this board maker; it never changes it.
+        ShowXmpGuide = p.Memory.Xmp == XmpState.LikelyDisabled || p.Memory.Xmp == XmpState.Unknown && !p.Board.IsVirtualMachine;
+        var maker = (p.Board.Manufacturer ?? p.Board.SystemManufacturer ?? "").ToUpperInvariant();
+        var key = maker.Contains("ASUS") ? "asus" : maker.Contains("MICRO-STAR") || maker.Contains("MSI") ? "msi" : maker.Contains("GIGABYTE") ? "gigabyte"
+                : maker.Contains("ASROCK") ? "asrock" : p.Board.IsLaptop || p.Board.IsOem ? "oem" : "generic";
+        XmpGuide = Loc.T("xmp.guide.intro", p.Cpu.Vendor == CpuVendor.Amd ? "EXPO / A-XMP / DOCP" : "XMP") + "\n\n" + Loc.T("xmp.guide." + key) + "\n\n" + Loc.T("xmp.guide.after");
         CpuRows.Clear();
         foreach (var row in new[]
         {
@@ -316,4 +328,16 @@ public sealed partial class HardwareViewModel : ObservableObject, IDiagnosticCon
     [RelayCommand] private void OpenBiosPage() { if (BiosUrl != null) Dialogs.OpenUri(BiosUrl); }
     [RelayCommand] private Task ApplyMaxRefresh() => _shell.Services.Catalog.Find("display.maxRefresh") is { } t ? _shell.ApplySingleAsync(t) : Task.CompletedTask;
     [RelayCommand] private void OpenUri(string uri) => Dialogs.OpenUri(uri);
+}
+
+public sealed class DataQualityRow
+{
+    public DataQualityRow(DataPoint d) { Point = d; }
+    public DataPoint Point { get; }
+    public string Area => Loc.T("dq.area." + Point.Area);
+    public string Field => Point.Field;
+    public string Confidence => Loc.T("dq." + Point.Confidence);
+    public string LevelKey => Point.Confidence switch { DataConfidence.Measured => "Success", DataConfidence.Reported => "Info", DataConfidence.Inferred => "Warning", _ => "Neutral" };
+    public string Source => Point.Source;
+    public string Note => Point.Note ?? "";
 }

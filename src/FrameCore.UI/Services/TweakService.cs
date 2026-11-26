@@ -16,7 +16,13 @@ public sealed class BatchResult
     public bool SignOutRequired { get; set; }
     public List<string> Lines { get; } = new();
     public string? RestorePointMessage { get; set; }
+    public string? BatchId { get; set; }
+    public FrameCore.BenchmarkManager.Verification.VerifyRepairReport? Verification { get; set; }
+    public int NotApplicable { get; set; }
 }
+
+/// <summary>Stages of an application, reported to the step progress indicator (fraction null = indeterminate).</summary>
+public enum ApplyStage { Elevation, RestorePoint, Apply, Verify, Done }
 
 /// <summary>UI-level orchestration of applying/restoring optimizations (confirmation, elevation, restore point, display safety).</summary>
 public sealed class TweakService
@@ -31,10 +37,13 @@ public sealed class TweakService
         tweaks.SelectMany(t => t.Actions).Any(a => _s.Dispatcher.NeedsElevation(a));
 
     /// <summary>Applies tweaks one by one (each one transactional). Failures do not stop the batch; each is reported.</summary>
-    public async Task<BatchResult> ApplyAsync(IReadOnlyList<TweakDefinition> tweaks, LocalizedText title, ProfileLevel? profile, bool createRestorePoint, IProgress<string>? progress = null)
+    public async Task<BatchResult> ApplyAsync(IReadOnlyList<TweakDefinition> tweaks, LocalizedText title, ProfileLevel? profile, bool createRestorePoint,
+                                              IProgress<string>? progress = null, Action<ApplyStage, double?>? stage = null, ChangeBatch? resume = null)
     {
         var result = new BatchResult();
         if (tweaks.Count == 0) return result;
+        void Stage(ApplyStage s, double? f) => Application.Current?.Dispatcher.BeginInvoke(() => stage?.Invoke(s, f));
+        Stage(ApplyStage.Elevation, null);
         var facts = _diag.Last?.Facts ?? _diag.BuildFacts(_s.CreateScanner().Scan());
         var needsAdmin = NeedsElevation(tweaks) || createRestorePoint;
         if (needsAdmin && !_priv.IsConnected)
@@ -47,19 +56,34 @@ public sealed class TweakService
                 createRestorePoint = false;
             }
         }
-        var batch = new ChangeBatch { Title = title, Profile = profile };
+        // The batch is written before anything changes: if the PC stops, it can be resumed without re-applying.
+        var batch = resume ?? new ChangeBatch { Title = title, Profile = profile, PlannedTweakIds = tweaks.Select(t => t.Id).ToList() };
+        result.BatchId = batch.Id;
+        _s.Journal.Save(batch);
         if (createRestorePoint)
         {
+            Stage(ApplyStage.RestorePoint, null);
             progress?.Report(Loc.T("restorepoint.creating"));
             var rp = await Task.Run(() => _priv.CreateRestorePoint("FrameCore: " + title.ToString()));
             batch.RestorePointCreated = rp.Created;
             batch.RestorePointNote = result.RestorePointMessage = rp.Message;
         }
+        var done = 0;
         foreach (var t in tweaks)
         {
+            Stage(ApplyStage.Apply, (double)done++ / tweaks.Count);
             progress?.Report(t.Name.ToString());
+            // Resuming: an optimisation already active is never applied a second time.
+            if (resume != null && _s.Engine.ActiveChangeSets(t.Id).Any()) { result.Lines.Add("= " + t.Name + " — " + Loc.T("apply.alreadyActive")); continue; }
             var r = await Task.Run(() => _s.Engine.Apply(t, facts, batch.Id));
             if (r.ChangeSet != null) batch.ChangeSetIds.Add(r.ChangeSet.Id);
+            _s.Journal.Save(batch);
+            if (!r.Success && r.NotApplicable)
+            {
+                result.NotApplicable++;
+                result.Lines.Add("– " + t.Name + " — " + r.Error);
+                continue;
+            }
             if (r.Success)
             {
                 result.Applied++;
@@ -75,8 +99,50 @@ public sealed class TweakService
                 result.Lines.Add("✗ " + t.Name + " — " + r.Error);
             }
         }
+        // Auto verify & repair: every change is read back; values Windows did not keep are rewritten at most twice.
+        Stage(ApplyStage.Verify, null);
+        progress?.Report(Loc.T("verify.running"));
+        var sets = batch.ChangeSetIds.Select(id => _s.Journal.Find(id)).Where(c => c != null).Cast<ChangeSet>().ToList();
+        var verifier = new FrameCore.BenchmarkManager.Verification.VerifyRepairService(_s.Engine, _s.Catalog.Find);
+        result.Verification = await Task.Run(() => verifier.VerifyAndRepair(sets, batch.Id));
+        _s.VerificationReports.Save(result.Verification);
+        batch.CompletedUtc = DateTime.UtcNow;
         _s.Journal.Save(batch);
+        Stage(ApplyStage.Done, 1);
         return result;
+    }
+
+    /// <summary>Batches that were interrupted (PC turned off, crash) and still have planned optimisations not applied.</summary>
+    public List<(ChangeBatch Batch, List<TweakDefinition> Remaining)> InterruptedBatches()
+    {
+        var list = new List<(ChangeBatch, List<TweakDefinition>)>();
+        foreach (var b in _s.Journal.Batches.Where(b => b.CompletedUtc == null && b.PlannedTweakIds.Count > 0 && b.CreatedUtc < DateTime.UtcNow.AddMinutes(-2)))
+        {
+            var remaining = b.PlannedTweakIds.Where(id => !_s.Engine.ActiveChangeSets(id).Any())
+                                             .Select(id => _s.Catalog.Find(id)).Where(t => t != null).Cast<TweakDefinition>().ToList();
+            if (remaining.Count > 0) list.Add((b, remaining));
+        }
+        return list;
+    }
+
+    /// <summary>Marks an interrupted batch as finished without applying the rest (user choice).</summary>
+    public void DismissBatch(ChangeBatch b) { b.CompletedUtc = DateTime.UtcNow; _s.Journal.Save(b); }
+
+    /// <summary>After a reboot, re-reads the changes that needed one and records the result in their history.</summary>
+    public List<(ChangeSet Set, bool? Active)> VerifyAfterReboot(DateTime? lastBootUtc)
+    {
+        var list = new List<(ChangeSet, bool?)>();
+        if (lastBootUtc == null) return list;
+        foreach (var cs in _s.Journal.ChangeSets.Where(c => c.Status == ChangeSetStatus.Applied && c.Restart == RestartRequirement.Reboot
+                                                          && c.CreatedUtc < lastBootUtc && !c.History.Any(h => h.Kind == "postReboot")))
+        {
+            bool? ok;
+            try { ok = _s.Engine.Verify(cs); } catch { ok = null; }
+            cs.History.Add(new ChangeEvent { Kind = "postReboot", Detail = Loc.T(ok == true ? "verify.postRebootOk" : ok == false ? "verify.postRebootLost" : "verify.notVerifiable") });
+            _s.Journal.Save(cs);
+            list.Add((cs, ok));
+        }
+        return list;
     }
 
     private void ConfirmDisplay(ChangeSet cs, BatchResult result)

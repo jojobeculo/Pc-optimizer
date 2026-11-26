@@ -18,8 +18,8 @@
                 </Grid.ColumnDefinitions>
                 <Border Width="32" Height="32" CornerRadius="8" VerticalAlignment="Top"
                         Background="{Binding Severity, Converter={StaticResource T.LevelBrush}, ConverterParameter=soft}">
-                    <TextBlock Text="{Binding Severity, Converter={StaticResource T.SeverityIcon}}" FontFamily="{DynamicResource Font.Icons}" FontSize="15"
-                               HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding Severity, Converter={StaticResource T.LevelBrush}}"/>
+                    <i:Icon Glyph="{Binding Severity, Converter={StaticResource T.SeverityIcon}}" Width="17" Height="17"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding Severity, Converter={StaticResource T.LevelBrush}}"/>
                 </Border>
                 <StackPanel Grid.Column="1" Margin="12,0,12,0">
                     <TextBlock Text="{Binding Title}" FontSize="13.5" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Text}"/>
@@ -95,8 +95,21 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
+                <TextBlock Grid.Row="7" Text="{i:Loc tweak.objective}" Style="{DynamicResource Text.Label}" Margin="0,4,8,4"/>
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding Objective}" Style="{DynamicResource Text.Value}" Margin="0,4,0,4"/>
+                <TextBlock Grid.Row="8" Text="{i:Loc tweak.impactAreas}" Style="{DynamicResource Text.Label}" Margin="0,4,8,4"/>
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding ImpactAreasText}" Style="{DynamicResource Text.Value}" Margin="0,4,0,4"/>
+                <TextBlock Grid.Row="9" Text="{i:Loc tweak.persistence}" Style="{DynamicResource Text.Label}" Margin="0,4,8,4"/>
+                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding PersistenceText}" Style="{DynamicResource Text.Value}" Margin="0,4,0,4"/>
+                <TextBlock Grid.Row="10" Text="{i:Loc tweak.verification}" Style="{DynamicResource Text.Label}" Margin="0,4,8,4"/>
+                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding VerificationText}" Style="{DynamicResource Text.Value}" Margin="0,4,0,4"/>
+                <TextBlock Grid.Row="11" Text="{i:Loc tweak.restoration}" Style="{DynamicResource Text.Label}" Margin="0,4,8,4"/>
+                <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding RestorationText}" Style="{DynamicResource Text.Value}" Margin="0,4,0,4"/>
+                <TextBlock Grid.Row="12" Text="{i:Loc tweak.conflicts}" Style="{DynamicResource Text.Label}" Margin="0,4,8,4"/>
+                <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding ConflictsText}" Style="{DynamicResource Text.Value}" Margin="0,4,0,4"/>
                 <TextBlock Grid.Row="0" Text="{i:Loc tweak.impact}" Style="{DynamicResource Text.Label}"/>
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Impact}" Style="{DynamicResource Text.Value}"/>
                 <TextBlock Grid.Row="1" Text="{i:Loc tweak.regressions}" Style="{DynamicResource Text.Label}"/>

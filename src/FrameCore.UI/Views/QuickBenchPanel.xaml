@@ -1,0 +1,178 @@
+<UserControl x:Class="FrameCore.UI.Views.QuickBenchPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="clr-namespace:FrameCore.UI.Infrastructure">
+    <UserControl.Resources>
+        <!-- Step progress: one segment per real step, filled with the real fraction of that step -->
+        <DataTemplate x:Key="StepSegment">
+            <StackPanel Margin="0,0,6,0">
+                <Border Height="6" CornerRadius="3" Background="{DynamicResource Brush.Inset}" ClipToBounds="True">
+                    <Border x:Name="Fill" CornerRadius="3" Background="{DynamicResource Brush.Accent}" i:Motion.Fraction="{Binding Fraction}"/>
+                </Border>
+                <TextBlock x:Name="Label" Text="{Binding Title}" Style="{StaticResource Text.Caption}" Margin="0,6,0,0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding State}" Value="active">
+                    <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State}" Value="done">
+                    <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource Brush.AccentText}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State}" Value="skipped">
+                    <Setter TargetName="Fill" Property="Background" Value="{DynamicResource Brush.BorderStrong}"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+    <StackPanel>
+        <!-- Launch card -->
+        <Border Style="{StaticResource Card.Hero}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="{i:Loc quick.title}" Style="{StaticResource Text.Section}" Margin="0"/>
+                    <TextBlock Text="{i:Loc quick.desc}" Style="{StaticResource Text.Muted}" Margin="0,4,0,12" MaxWidth="640" HorizontalAlignment="Left"/>
+                    <WrapPanel>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc quick.mode.standard}" IsChecked="{Binding Mode, Converter={StaticResource Eq}, ConverterParameter=standard}" IsEnabled="{Binding Running, Converter={StaticResource Not}}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc quick.mode.express}" IsChecked="{Binding Mode, Converter={StaticResource Eq}, ConverterParameter=express}" IsEnabled="{Binding Running, Converter={StaticResource Not}}"/>
+                    </WrapPanel>
+                    <DockPanel Margin="0,6,0,0" MaxWidth="460" HorizontalAlignment="Left">
+                        <TextBlock DockPanel.Dock="Left" Text="{i:Loc bench.label}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBox Text="{Binding Label, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{i:Loc bench.label}" ToolTip="{i:Loc quick.labelHint}"/>
+                    </DockPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">
+                    <Button Style="{StaticResource Button.Primary}" Command="{Binding StartCommand}" IsEnabled="{Binding Running, Converter={StaticResource Not}}" MinWidth="190">
+                        <StackPanel Orientation="Horizontal">
+                            <i:Icon Glyph="{StaticResource Icon.Play}" Width="15" Height="15" Foreground="{DynamicResource Brush.OnAccent}" Margin="0,0,8,0"/>
+                            <TextBlock Text="{i:Loc quick.start}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource Button.Secondary}" Content="{i:Loc common.cancel}" Command="{Binding CancelCommand}" Margin="0,8,0,0"
+                            Visibility="{Binding Running, Converter={StaticResource BoolToVis}}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Running: real progress per step -->
+        <Border Style="{StaticResource Card}" Visibility="{Binding Running, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,12">
+                    <TextBlock DockPanel.Dock="Right" Style="{StaticResource Text.Metric}" FontSize="22" i:Motion.CountFormat="0 %" i:Motion.CountTo="{Binding Overall}"/>
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc quick.inProgress}" Style="{StaticResource Text.Overline}"/>
+                        <TextBlock Text="{Binding CurrentStep}" Style="{StaticResource Text.CardTitle}"/>
+                    </StackPanel>
+                </DockPanel>
+                <ItemsControl ItemsSource="{Binding Steps}" ItemTemplate="{StaticResource StepSegment}">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <TextBlock Text="{i:Loc quick.keepIdle}" Style="{StaticResource Text.Caption}" Margin="0,12,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Latest result -->
+        <StackPanel Visibility="{Binding HasResult, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{i:Loc quick.latest}" Style="{StaticResource Text.Section}" Margin="0,8,0,10"/>
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <WrapPanel Margin="0,0,0,10">
+                        <Border Style="{StaticResource Badge}" Background="{DynamicResource Brush.NeutralSoft}">
+                            <StackPanel Orientation="Horizontal">
+                                <i:Icon Glyph="{StaticResource Icon.Thermo}" Width="13" Height="13" Foreground="{DynamicResource Brush.TextMuted}" Margin="0,0,6,0"/>
+                                <TextBlock Style="{StaticResource Text.Badge}" Text="{Binding ThermalText}"/>
+                            </StackPanel>
+                        </Border>
+                    </WrapPanel>
+                    <TextBlock Text="{Binding ThrottleText}" Style="{StaticResource Text.Body}" Margin="0,0,0,12"/>
+                    <DataGrid ItemsSource="{Binding Metrics}" AutomationProperties.Name="{i:Loc quick.latest}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="{i:Loc quick.col.metric}" Binding="{Binding Name}" Width="2*"/>
+                            <DataGridTextColumn Header="{i:Loc quick.col.component}" Binding="{Binding Component}" Width="*"/>
+                            <DataGridTextColumn Header="{i:Loc quick.col.median}" Binding="{Binding Value}" Width="*"/>
+                            <DataGridTextColumn Header="{i:Loc quick.col.unit}" Binding="{Binding Unit}" Width="70"/>
+                            <DataGridTextColumn Header="{i:Loc quick.col.spread}" Binding="{Binding Spread}" Width="3*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Before / after -->
+        <TextBlock Text="{i:Loc quick.compare}" Style="{StaticResource Text.Section}" Margin="0,8,0,10"/>
+        <Border Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock Text="{i:Loc quick.compare.desc}" Style="{StaticResource Text.Muted}" Margin="0,0,0,10"/>
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc quick.before}" Style="{StaticResource Text.Overline}" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding History}" SelectedItem="{Binding CompareBefore}" DisplayMemberPath="Title" AutomationProperties.Name="{i:Loc quick.before}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="{i:Loc quick.after}" Style="{StaticResource Text.Overline}" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding History}" SelectedItem="{Binding CompareAfter}" DisplayMemberPath="Title" AutomationProperties.Name="{i:Loc quick.after}"/>
+                    </StackPanel>
+                </Grid>
+                <TextBlock Text="{i:Loc quick.needTwo}" Style="{StaticResource Text.Muted}" Visibility="{Binding HasComparison, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
+                <StackPanel Visibility="{Binding HasComparison, Converter={StaticResource BoolToVis}}">
+                    <DockPanel Margin="0,0,0,10">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource Text.Metric}" FontSize="24" i:Motion.CountFormat="0.0" i:Motion.CountTo="{Binding IndexValue}"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="{Binding ComparisonTitle}" Style="{StaticResource Text.CardTitle}"/>
+                            <TextBlock Text="{Binding IndexText}" Style="{StaticResource Text.Caption}"/>
+                        </StackPanel>
+                    </DockPanel>
+                    <DataGrid ItemsSource="{Binding Comparison}" AutomationProperties.Name="{i:Loc quick.compare}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="{i:Loc quick.col.metric}" Binding="{Binding Name}" Width="2*"/>
+                            <DataGridTextColumn Header="{i:Loc quick.before}" Binding="{Binding Before}" Width="*"/>
+                            <DataGridTextColumn Header="{i:Loc quick.after}" Binding="{Binding After}" Width="*"/>
+                            <DataGridTextColumn Header="{i:Loc quick.col.diff}" Binding="{Binding Absolute}" Width="0.8*"/>
+                            <DataGridTextColumn Header="%" Binding="{Binding Percent}" Width="0.8*"/>
+                            <DataGridTemplateColumn Header="{i:Loc quick.col.verdict}" Width="2.4*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Verdict}" TextWrapping="Wrap" Foreground="{Binding VerdictKey, Converter={StaticResource LevelBrush}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="{i:Loc quick.col.confidence}" Binding="{Binding Confidence}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- History -->
+        <TextBlock Text="{i:Loc quick.history}" Style="{StaticResource Text.Section}" Margin="0,8,0,10"/>
+        <TextBlock Text="{i:Loc quick.history.empty}" Style="{StaticResource Text.Muted}" Visibility="{Binding History.Count, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
+        <ItemsControl ItemsSource="{Binding History}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Icon}" ToolTip="{i:Loc common.delete}" AutomationProperties.Name="{i:Loc common.delete}"
+                                    Command="{Binding DataContext.DeleteRunCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                                <i:Icon Glyph="{StaticResource Icon.Trash}" Width="15" Height="15" Foreground="{DynamicResource Brush.TextMuted}"/>
+                            </Button>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Title}" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Caption}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

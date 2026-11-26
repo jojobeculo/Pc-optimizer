@@ -66,6 +66,11 @@ public sealed class BenchmarkSession
     /// <summary>before | after | driver | overclock | custom</summary>
     public string Kind { get; set; } = "custom";
     public string Target { get; set; } = "";
+    /// <summary>Game of the library this capture belongs to (used to calibrate FPS estimates), with its settings.</summary>
+    public string? GameId { get; set; }
+    public int? Width { get; set; }
+    public int? Height { get; set; }
+    public string? Preset { get; set; }
     public CaptureMethod Method { get; set; }
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
     public BenchmarkConditions Conditions { get; set; } = new();

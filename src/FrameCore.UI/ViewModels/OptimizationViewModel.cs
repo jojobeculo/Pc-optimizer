@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using FrameCore.BenchmarkManager.QuickBench;
 using CommunityToolkit.Mvvm.Input;
 using FrameCore.Core.Engine;
 using FrameCore.Core.Localization;
@@ -34,6 +35,17 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
     [ObservableProperty] private int _balancedCount;
     [ObservableProperty] private int _performanceCount;
     [ObservableProperty] private int _maximumCount;
+    [ObservableProperty] private bool _measureBeforeAfter = true;
+    [ObservableProperty] private bool _applyRunning;
+    [ObservableProperty] private string _currentStep = "";
+    [ObservableProperty] private bool _currentStepIndeterminate;
+    [ObservableProperty] private string _verificationText = "";
+    [ObservableProperty] private string _performanceText = "";
+    [ObservableProperty] private bool _hasOutcome;
+
+    public ObservableCollection<StepItem> Steps { get; } = new();
+    public ObservableCollection<string> VerificationLines { get; } = new();
+    public GamesViewModel Games => _shell.Games;
 
     public ObservableCollection<TweakRowViewModel> Standard { get; } = new();
     public ObservableCollection<TweakRowViewModel> Consent { get; } = new();
@@ -112,11 +124,39 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
         if (!Dialogs.Confirm(Loc.T("opt.confirm.title", Loc.T("profile." + level)), Loc.T("opt.confirm.detail"), Loc.T("common.apply"), false, bullets)) return;
 
         _shell.IsBusy = true;
+        ApplyRunning = true;
+        HasOutcome = false;
+        Steps.Clear();
+        var measure = MeasureBeforeAfter && _shell.Diagnostic != null;
+        if (measure) Steps.Add(new StepItem { Key = "benchBefore", Title = Loc.T("opt.step.benchBefore") });
+        if (CreateRestorePoint) Steps.Add(new StepItem { Key = "RestorePoint", Title = Loc.T("opt.step.restorePoint") });
+        Steps.Add(new StepItem { Key = "Apply", Title = Loc.T("opt.step.apply") });
+        Steps.Add(new StepItem { Key = "Verify", Title = Loc.T("opt.step.verify") });
+        if (measure) Steps.Add(new StepItem { Key = "benchAfter", Title = Loc.T("opt.step.benchAfter") });
+        void Step(string key, double? fraction)
+        {
+            var idx = Steps.ToList().FindIndex(s => s.Key == key);
+            if (idx < 0) return;
+            for (var i = 0; i < idx; i++) if (Steps[i].State != "done") { Steps[i].State = "done"; Steps[i].Fraction = 1; }
+            var st = Steps[idx];
+            st.State = fraction >= 1 ? "done" : "active";
+            st.Fraction = fraction ?? 0;
+            CurrentStep = st.Title;
+            CurrentStepIndeterminate = fraction == null;
+        }
+        QuickBenchResult? before = null;
         try
         {
             var progress = new Progress<string>(s => _shell.BusyText = s);
+            if (measure)
+            {
+                Step("benchBefore", 0);
+                before = await RunExpressBench(Loc.T("opt.bench.beforeLabel", Loc.T("profile." + level)), f => Step("benchBefore", f));
+            }
             var title = new LocalizedText($"Profil {Loc.Instance.Get("profile." + level)}", $"{level} profile");
-            var result = await _shell.TweakService.ApplyAsync(selected.Select(s => s.Tweak).ToList(), title, level, CreateRestorePoint, progress);
+            var result = await _shell.TweakService.ApplyAsync(selected.Select(s => s.Tweak).ToList(), title, level, CreateRestorePoint, progress,
+                (stage, f) => Step(stage switch { ApplyStage.RestorePoint => "RestorePoint", ApplyStage.Verify => "Verify", ApplyStage.Done => "Verify", _ => "Apply" },
+                                   stage == ApplyStage.Done ? 1 : stage == ApplyStage.Elevation ? null : f));
             var controller = new StartupController(_shell.Services.Engine);
             foreach (var s in startup)
             {
@@ -124,16 +164,64 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
                 result.Lines.Add((r.Success ? "✓ " : "✗ ") + Loc.T("opt.startupBullet", s.Name) + (r.Success ? "" : " — " + r.Error));
                 if (r.Success) result.Applied++; else result.Failed++;
             }
+            // Measure after, compare, and undo only changes behind a confirmed regression (never in a loop).
+            if (measure && before != null && !before.Cancelled && result.Applied > 0)
+            {
+                Step("benchAfter", 0);
+                var after = await RunExpressBench(Loc.T("opt.bench.afterLabel", Loc.T("profile." + level)), f => Step("benchAfter", f));
+                if (!after.Cancelled && result.Verification != null)
+                {
+                    var sets = _shell.Services.Journal.ChangeSets.Where(c => c.BatchId == result.BatchId).ToList();
+                    var verifier = new FrameCore.BenchmarkManager.Verification.VerifyRepairService(_shell.Services.Engine, _shell.Services.Catalog.Find);
+                    var facts = _shell.Diagnostic!.Facts;
+                    await Task.Run(() => verifier.CheckPerformance(result.Verification, sets, before, after,
+                        comps => RunBenchSync(Loc.T("opt.bench.recheck"), comps), () => facts));
+                    _shell.Services.VerificationReports.Save(result.Verification);
+                    var cmp = result.Verification.Performance;
+                    PerformanceText = cmp?.IndexAfterRelativeToBefore is { } idx ? Loc.T("opt.perf.index", idx.ToString("0.0")) + " " + string.Join(" ", result.Verification.Decisions.Skip(1)) : "";
+                }
+                Step("benchAfter", 1);
+            }
+            foreach (var s in Steps) { s.State = "done"; s.Fraction = 1; }
             ResultText = TweakService.Summary(result);
             ResultLines.Clear();
             foreach (var l in result.Lines) ResultLines.Add(l);
+            VerificationLines.Clear();
+            if (result.Verification != null)
+            {
+                VerificationText = string.Join(" ", result.Verification.Decisions.Take(1));
+                foreach (var i in result.Verification.Items.Where(i => i.Status != FrameCore.BenchmarkManager.Verification.VerifyStatus.Effective))
+                    VerificationLines.Add($"{Loc.T("verifyStatus." + i.Status)} — {i.Title} : {i.Explanation}");
+            }
+            HasOutcome = true;
             await _shell.RefreshEvaluationsAsync();
+            _ = _shell.Games.LoadAsync();
             Prepare(level.ToString());
             ResultText = TweakService.Summary(result);
             foreach (var l in result.Lines) ResultLines.Add(l);
         }
-        catch (Exception ex) { Dialogs.Error(ex.Message); }
-        finally { _shell.IsBusy = false; _shell.BusyText = ""; }
+        catch (Exception ex) { Core.Log.Error("Optimize", "Apply failed", ex); Dialogs.Error(ex.Message); }
+        finally { _shell.IsBusy = false; _shell.BusyText = ""; ApplyRunning = false; CurrentStep = ""; }
+    }
+
+    private Task<QuickBenchResult> RunExpressBench(string label, Action<double> onProgress)
+    {
+        var progress = new Progress<QuickBenchProgress>(p => onProgress(p.OverallFraction));
+        var options = QuickBenchFactory.Options(_shell.Services, _shell.Monitoring, _shell.Diagnostic?.Profile, "express");
+        return Task.Run(() =>
+        {
+            var r = new QuickBenchRunner(options).Run(label, progress, CancellationToken.None);
+            r.MachineSignature = _shell.Diagnostic?.Profile.Signature ?? "";
+            r.ActiveTweakIds = _shell.Services.Journal.ChangeSets.Where(c => c.Status == ChangeSetStatus.Applied && c.TweakId != null).Select(c => c.TweakId!).Distinct().ToList();
+            if (!r.Cancelled) _shell.Services.QuickBenches.Save(r);
+            return r;
+        });
+    }
+
+    private QuickBenchResult RunBenchSync(string label, HashSet<BenchComponent> only)
+    {
+        var options = QuickBenchFactory.Options(_shell.Services, _shell.Monitoring, _shell.Diagnostic?.Profile, "express", only);
+        return new QuickBenchRunner(options).Run(label, null, CancellationToken.None);
     }
 
     [RelayCommand] private void SelectAll() { foreach (var r in Standard) r.IsSelected = true; }

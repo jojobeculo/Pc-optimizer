@@ -39,6 +39,16 @@ public sealed partial class TweakRowViewModel : ObservableObject
     public bool NeedsRestart => Tweak.Restart != RestartRequirement.None;
     public bool Reversible => Tweak.Reversible;
     public string Sources => string.Join("\n", Tweak.Sources);
+    public string Objective => Tweak.Objective?.ToString() ?? "";
+    public string PersistenceText => Loc.T("persistence." + Tweak.Persistence);
+    public string ImpactAreasText => Tweak.ImpactAreas.Count == 0 ? "" : string.Join(", ", Tweak.ImpactAreas.Select(a => Loc.T("impact." + a)))
+        + (Tweak.CanAffectFrameRate ? "" : " — " + Loc.T("tweak.noFps"));
+    public string ConflictsText => Tweak.Conflicts.Count == 0 ? Loc.T("common.none") : string.Join(", ", Tweak.Conflicts);
+    /// <summary>How FrameCore checks and undoes this change, derived from its action types.</summary>
+    public string VerificationText => string.Join("\n", Tweak.Actions.Select(a => a.Type).Distinct().Select(t => Loc.T("method.verify." + t)));
+    public string RestorationText => Tweak.Reversible
+        ? string.Join("\n", Tweak.Actions.Select(a => a.Type).Distinct().Select(t => Loc.T("method.restore." + t)))
+        : Loc.T("method.restore.none");
     public bool HasSources => Tweak.Sources.Count > 0;
     public TweakStatus Status => Evaluation.Status;
     public bool Compatible => Evaluation.Compatible;

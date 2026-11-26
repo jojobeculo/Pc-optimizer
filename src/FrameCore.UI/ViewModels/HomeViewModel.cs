@@ -15,6 +15,30 @@ public sealed partial class HomeViewModel : ObservableObject, IDiagnosticConsume
     public ShellViewModel Shell => _shell;
 
     [ObservableProperty] private bool _hasDiagnostic;
+    [ObservableProperty] private bool _hasPending;
+    [ObservableProperty] private int _optimizedCount;
+    [ObservableProperty] private int _optimizableCount;
+    [ObservableProperty] private double _optimizedFraction = double.NaN;
+
+    /// <summary>Factual progress: Performance-profile changes active on this PC vs. compatible ones (no invented score).</summary>
+    private void UpdateOptimizationLevel(DiagnosticResult r)
+    {
+        var plan = Core.Engine.PlanBuilder.Build(ProfileLevel.Performance, r.Evaluations);
+        OptimizedCount = plan.AlreadyApplied.Count;
+        OptimizableCount = plan.AlreadyApplied.Count + plan.Items.Count(i => i.Section == PlanSection.Standard);
+        OptimizedFraction = OptimizableCount == 0 ? double.NaN : (double)OptimizedCount / OptimizableCount;
+    }
+    [ObservableProperty] private string _pendingText = "";
+
+    /// <summary>Banner for interrupted operations and post-reboot verification results.</summary>
+    public void SetPending(int interrupted, string postReboot)
+    {
+        var parts = new List<string>();
+        if (interrupted > 0) parts.Add(Loc.T("home.pending.interrupted", interrupted));
+        if (!string.IsNullOrEmpty(postReboot)) parts.Add(postReboot);
+        PendingText = string.Join(" ", parts);
+        HasPending = parts.Count > 0;
+    }
     [ObservableProperty] private string _signature = "";
     [ObservableProperty] private int _critical;
     [ObservableProperty] private int _warnings;
@@ -71,6 +95,7 @@ public sealed partial class HomeViewModel : ObservableObject, IDiagnosticConsume
 
     public void OnDiagnostic(DiagnosticResult r)
     {
+        UpdateOptimizationLevel(r);
         var p = r.Profile;
         HasDiagnostic = true;
         Signature = p.Signature;
@@ -110,7 +135,7 @@ public sealed partial class HomeViewModel : ObservableObject, IDiagnosticConsume
         UpdateLastOptimization();
     }
 
-    public void OnEvaluationsRefreshed(DiagnosticResult r) => UpdateLastOptimization();
+    public void OnEvaluationsRefreshed(DiagnosticResult r) { UpdateLastOptimization(); UpdateOptimizationLevel(r); }
 
     private void OnSample(MonitorSnapshot s)
     {

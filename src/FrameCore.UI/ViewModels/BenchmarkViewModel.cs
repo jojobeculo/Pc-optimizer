@@ -63,15 +63,28 @@ public sealed partial class BenchmarkViewModel : ObservableObject, IDiagnosticCo
     public ObservableCollection<MetricComparison> Comparison { get; } = new();
     public ObservableCollection<Finding> Bottlenecks { get; } = new();
 
+    /// <summary>quick | lab | ingame | history</summary>
+    [ObservableProperty] private string _section = "quick";
+    public QuickBenchViewModel Quick { get; }
+    /// <summary>Optional: the library game being captured, so the measurement calibrates its FPS estimate.</summary>
+    public ObservableCollection<FrameCore.BenchmarkManager.Games.GameInfo> GameChoices { get; } = new();
+    [ObservableProperty] private FrameCore.BenchmarkManager.Games.GameInfo? _captureGame;
+    [ObservableProperty] private string _capturePreset = "High";
+
     public BenchmarkViewModel(ShellViewModel shell)
     {
         _shell = shell;
+        Quick = new QuickBenchViewModel(shell);
         LoadSessions();
     }
 
     public void OnDiagnostic(DiagnosticResult r) { }
     public void OnActivated()
     {
+        Quick.Load();
+        if (GameChoices.Count == 0)
+            try { foreach (var g in _shell.Services.Games.Games.OrderBy(g => g.Name, StringComparer.CurrentCulture)) GameChoices.Add(g); }
+            catch (Exception ex) { Log.Warn("Bench", "game library: " + ex.Message); }
         RefreshProcesses();
         var pm = PresentMonRunner.Validate(_shell.Services.Settings.PresentMonPath);
         PresentMonState = pm.ok ? Loc.T("bench.pm.ready") : Loc.T("bench.pm.missing");
@@ -112,6 +125,7 @@ public sealed partial class BenchmarkViewModel : ObservableObject, IDiagnosticCo
         var session = new BenchmarkSession
         {
             Label = LabelText(), Kind = LabelKind, Target = target.Name, Method = Method == "presentmon" ? CaptureMethod.PresentMon : CaptureMethod.Etw,
+            GameId = CaptureGame?.Id, Width = display?.CurrentWidth, Height = display?.CurrentHeight, Preset = CaptureGame != null ? CapturePreset : null,
             Conditions = new BenchmarkConditions
             {
                 Resolution = display != null ? $"{display.CurrentWidth}x{display.CurrentHeight}" : null, RefreshHz = display?.CurrentRefreshHz,
