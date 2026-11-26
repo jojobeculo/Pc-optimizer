@@ -31,8 +31,8 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
     [ObservableProperty] private bool _experimentalAcknowledged;
     [ObservableProperty] private string _resultText = "";
     [ObservableProperty] private bool _needsElevation;
-    [ObservableProperty] private int _lightCount;
     [ObservableProperty] private int _balancedCount;
+    [ObservableProperty] private int _performanceCount;
     [ObservableProperty] private int _maximumCount;
 
     public ObservableCollection<TweakRowViewModel> Standard { get; } = new();
@@ -51,8 +51,8 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
 
     public void OnDiagnostic(DiagnosticResult r)
     {
-        LightCount = PlanBuilder.Build(ProfileLevel.Light, r.Evaluations).Items.Count(i => i.Section == PlanSection.Standard);
         BalancedCount = PlanBuilder.Build(ProfileLevel.Balanced, r.Evaluations).Items.Count(i => i.Section == PlanSection.Standard);
+        PerformanceCount = PlanBuilder.Build(ProfileLevel.Performance, r.Evaluations).Items.Count(i => i.Section == PlanSection.Standard);
         MaximumCount = PlanBuilder.Build(ProfileLevel.Maximum, r.Evaluations).Items.Count;
         if (SelectedProfile is { } p) Prepare(p.ToString());
     }

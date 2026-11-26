@@ -1,0 +1,344 @@
+{
+ "version": 1,
+ "entries": [
+  {
+   "id": "net.nagle",
+   "name": {
+    "fr": "Désactiver l'algorithme de Nagle (TcpAckFrequency / TCPNoDelay)",
+    "en": "Disable Nagle's algorithm (TcpAckFrequency / TCPNoDelay)"
+   },
+   "claim": {
+    "fr": "Réduirait le ping en jeu.",
+    "en": "Supposedly lowers in-game ping."
+   },
+   "verdict": {
+    "fr": "Les jeux modernes utilisent UDP ou activent eux-mêmes TCP_NODELAY sur leurs sockets. La clé système ne change rien au ping vers le serveur ; elle peut augmenter le nombre d'accusés de réception.",
+    "en": "Modern games use UDP or set TCP_NODELAY on their own sockets. The system key does not change ping to the server; it can increase ACK traffic."
+   },
+   "kind": "Myth",
+   "sources": [
+    "https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/registry-entry-control-tcp-acknowledgment-behavior"
+   ]
+  },
+  {
+   "id": "dns.fps",
+   "name": {
+    "fr": "Changer de DNS pour gagner des FPS ou du ping",
+    "en": "Change DNS servers to gain FPS or ping"
+   },
+   "claim": {
+    "fr": "Un DNS « gaming » améliorerait les performances.",
+    "en": "A 'gaming' DNS supposedly improves performance."
+   },
+   "verdict": {
+    "fr": "Le DNS ne sert qu'à résoudre les noms au moment de la connexion. Il n'influence ni les FPS ni la latence pendant la partie.",
+    "en": "DNS only resolves names when connecting. It affects neither FPS nor latency during a match."
+   },
+   "kind": "Myth",
+   "sources": []
+  },
+  {
+   "id": "mem.cleaner",
+   "name": {
+    "fr": "Nettoyeurs de RAM (vidage de la liste d'attente)",
+    "en": "RAM cleaners (purging the standby list)"
+   },
+   "claim": {
+    "fr": "Libérer la RAM accélérerait le PC.",
+    "en": "Freeing RAM supposedly speeds the PC up."
+   },
+   "verdict": {
+    "fr": "La mémoire « en attente » est un cache réutilisable instantanément. La vider force Windows à relire les données depuis le disque : cela crée des saccades au lieu d'en supprimer.",
+    "en": "Standby memory is a cache that can be reused instantly. Purging it forces Windows to read data again from disk: it creates stutter instead of removing it."
+   },
+   "kind": "Harmful",
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/memory/working-set"
+   ]
+  },
+  {
+   "id": "mem.largesystemcache",
+   "name": {
+    "fr": "LargeSystemCache = 1",
+    "en": "LargeSystemCache = 1"
+   },
+   "claim": {
+    "fr": "Améliorerait les performances mémoire.",
+    "en": "Supposedly improves memory performance."
+   },
+   "verdict": {
+    "fr": "Réglage prévu pour les serveurs de fichiers : il favorise le cache système au détriment des applications. Contre-productif pour un PC de jeu.",
+    "en": "A file-server setting that favours the system cache over applications. Counter-productive on a gaming PC."
+   },
+   "kind": "Harmful",
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows-hardware/drivers/kernel/registry-keys"
+   ]
+  },
+  {
+   "id": "mem.pagingexecutive",
+   "name": {
+    "fr": "DisablePagingExecutive = 1",
+    "en": "DisablePagingExecutive = 1"
+   },
+   "claim": {
+    "fr": "Garder le noyau en RAM accélérerait Windows.",
+    "en": "Keeping the kernel in RAM supposedly speeds Windows up."
+   },
+   "verdict": {
+    "fr": "Aucun gain mesurable avec 16 Go ou plus : le noyau actif n'est de toute façon pas paginé en pratique.",
+    "en": "No measurable gain with 16 GB or more: the active kernel is not paged out in practice."
+   },
+   "kind": "Myth",
+   "sources": []
+  },
+  {
+   "id": "mem.compression",
+   "name": {
+    "fr": "Désactiver la compression mémoire",
+    "en": "Disable memory compression"
+   },
+   "claim": {
+    "fr": "La compression coûterait des performances.",
+    "en": "Compression supposedly costs performance."
+   },
+   "verdict": {
+    "fr": "La compression n'intervient que sous pression mémoire ; elle évite alors des écritures dans le fichier d'échange, bien plus lentes. La désactiver aggrave les saccades quand la RAM manque.",
+    "en": "Compression only happens under memory pressure, where it avoids much slower page-file writes. Disabling it makes stutter worse when RAM runs short."
+   },
+   "kind": "Harmful",
+   "sources": []
+  },
+  {
+   "id": "pagefile.disable",
+   "name": {
+    "fr": "Supprimer le fichier d'échange",
+    "en": "Delete the page file"
+   },
+   "claim": {
+    "fr": "Avec beaucoup de RAM, il serait inutile.",
+    "en": "With lots of RAM it is supposedly useless."
+   },
+   "verdict": {
+    "fr": "Certains jeux et pilotes réservent de la mémoire « engagée » qui doit être adossée au fichier d'échange : sans lui, plantages « mémoire insuffisante » possibles, et pas de vidage mémoire en cas d'écran bleu.",
+    "en": "Games and drivers commit memory that must be backed by the page file: without it, out-of-memory crashes can occur and no crash dump is written."
+   },
+   "kind": "Harmful",
+   "sources": [
+    "https://learn.microsoft.com/en-us/troubleshoot/windows-client/performance/how-to-determine-the-appropriate-page-file-size-for-64-bit-versions-of-windows"
+   ]
+  },
+  {
+   "id": "hpet.force",
+   "name": {
+    "fr": "Forcer HPET (bcdedit useplatformclock true)",
+    "en": "Force HPET (bcdedit useplatformclock true)"
+   },
+   "claim": {
+    "fr": "Améliorerait la précision et la fluidité.",
+    "en": "Supposedly improves precision and smoothness."
+   },
+   "verdict": {
+    "fr": "Forcer HPET rend chaque lecture d'horloge beaucoup plus coûteuse et peut baisser les FPS dans les jeux qui mesurent souvent le temps. FrameCore propose au contraire de supprimer ce forçage.",
+    "en": "Forcing HPET makes every clock read much more expensive and can lower FPS in games that query time often. FrameCore instead offers to remove this override."
+   },
+   "kind": "Harmful",
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows-hardware/drivers/devtest/bcdedit--set"
+   ]
+  },
+  {
+   "id": "priosep.26",
+   "name": {
+    "fr": "Win32PrioritySeparation = 0x26 / 0x28",
+    "en": "Win32PrioritySeparation = 0x26 / 0x28"
+   },
+   "claim": {
+    "fr": "Donnerait plus de temps CPU au jeu.",
+    "en": "Supposedly gives the game more CPU time."
+   },
+   "verdict": {
+    "fr": "0x26 équivaut au comportement par défaut (2) de Windows client ; les autres valeurs ne montrent pas de gain reproductible dans les mesures publiées.",
+    "en": "0x26 equals the default client behaviour (2); other values show no reproducible gain in published measurements."
+   },
+   "kind": "Placebo",
+   "sources": []
+  },
+  {
+   "id": "fso.global",
+   "name": {
+    "fr": "Désactiver globalement les optimisations plein écran",
+    "en": "Globally disable fullscreen optimisations"
+   },
+   "claim": {
+    "fr": "Réduirait la latence.",
+    "en": "Supposedly reduces latency."
+   },
+   "verdict": {
+    "fr": "Sur Windows 11, le modèle de présentation flip offre une latence équivalente au plein écran exclusif tout en gardant les superpositions. Le réglage global peut dégrader HDR, VRR et le changement de fenêtre. À ajuster seulement par jeu si un problème est constaté.",
+    "en": "On Windows 11 the flip presentation model matches exclusive full-screen latency while keeping overlays. The global switch can break HDR, VRR and alt-tab. Adjust per game only if a problem is observed."
+   },
+   "kind": "Myth",
+   "sources": [
+    "https://devblogs.microsoft.com/directx/demystifying-full-screen-optimizations/"
+   ]
+  },
+  {
+   "id": "svc.manual",
+   "name": {
+    "fr": "Désactiver en masse les services en démarrage manuel",
+    "en": "Mass-disable manual-start services"
+   },
+   "claim": {
+    "fr": "Moins de services = plus de performances.",
+    "en": "Fewer services = more performance."
+   },
+   "verdict": {
+    "fr": "Un service en démarrage manuel ne consomme rien tant qu'il n'est pas sollicité. Le désactiver ne fait rien gagner et casse les fonctions qui en ont besoin (Bluetooth, impression, Xbox, VPN…).",
+    "en": "A manual-start service uses nothing until it is needed. Disabling it gains nothing and breaks the features that depend on it (Bluetooth, printing, Xbox, VPN…)."
+   },
+   "kind": "Harmful",
+   "sources": []
+  },
+  {
+   "id": "svchost.split",
+   "name": {
+    "fr": "SvcHostSplitThresholdInKB",
+    "en": "SvcHostSplitThresholdInKB"
+   },
+   "claim": {
+    "fr": "Regrouper les services économiserait des ressources.",
+    "en": "Grouping services supposedly saves resources."
+   },
+   "verdict": {
+    "fr": "Le gain mémoire est minime et un plantage d'un service entraîne alors tout son groupe.",
+    "en": "The memory saving is tiny and one crashing service then takes its whole group down."
+   },
+   "kind": "Myth",
+   "sources": []
+  },
+  {
+   "id": "ssd.defrag",
+   "name": {
+    "fr": "Désactiver l'optimisation des lecteurs sur SSD",
+    "en": "Disable drive optimisation on SSDs"
+   },
+   "claim": {
+    "fr": "L'optimisation userait le SSD.",
+    "en": "Optimisation supposedly wears the SSD out."
+   },
+   "verdict": {
+    "fr": "Sur SSD, Windows n'effectue pas de défragmentation classique : la tâche envoie surtout des commandes TRIM, utiles à la durée de vie et aux performances. FrameCore la garde active.",
+    "en": "On SSDs Windows does not run a classic defragmentation: the task mainly sends TRIM commands, which help lifespan and performance. FrameCore keeps it enabled."
+   },
+   "kind": "Harmful",
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/defrag"
+   ]
+  },
+  {
+   "id": "shadercache.clear",
+   "name": {
+    "fr": "Vider régulièrement le cache de shaders",
+    "en": "Regularly clear the shader cache"
+   },
+   "claim": {
+    "fr": "Libérerait de l'espace et réglerait les saccades.",
+    "en": "Supposedly frees space and fixes stutter."
+   },
+   "verdict": {
+    "fr": "Le cache évite de recompiler les shaders : le vider provoque justement des saccades au prochain lancement. À faire uniquement après un problème identifié de pilote.",
+    "en": "The cache avoids recompiling shaders: clearing it causes stutter on the next launch. Only do it after an identified driver problem."
+   },
+   "kind": "Harmful",
+   "sources": []
+  },
+  {
+   "id": "irq.priority",
+   "name": {
+    "fr": "IRQ8Priority et priorités d'IRQ",
+    "en": "IRQ8Priority and IRQ priorities"
+   },
+   "claim": {
+    "fr": "Prioriserait l'horloge ou la carte graphique.",
+    "en": "Supposedly prioritises the clock or graphics card."
+   },
+   "verdict": {
+    "fr": "Ces valeurs n'ont aucun effet sur les versions NT de Windows : le noyau ne les lit pas.",
+    "en": "These values have no effect on NT-based Windows: the kernel does not read them."
+   },
+   "kind": "Placebo",
+   "sources": []
+  },
+  {
+   "id": "vbs.disable",
+   "name": {
+    "fr": "Désactiver VBS / l'intégrité de la mémoire (HVCI)",
+    "en": "Disable VBS / Memory integrity (HVCI)"
+   },
+   "claim": {
+    "fr": "Augmenterait les FPS.",
+    "en": "Supposedly increases FPS."
+   },
+   "verdict": {
+    "fr": "Un gain de quelques pourcents est réel dans certains jeux limités par le processeur, mais cela retire une protection importante contre les pilotes malveillants. FrameCore ne le fait jamais ; vous pouvez le décider vous-même dans Sécurité Windows en connaissance de cause.",
+    "en": "A gain of a few percent is real in some CPU-bound games, but it removes an important protection against malicious drivers. FrameCore never does it; you can decide yourself in Windows Security."
+   },
+   "kind": "SecurityTradeoff",
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows/security/hardware-security/enable-virtualization-based-protection-of-code-integrity"
+   ]
+  },
+  {
+   "id": "mitigations.disable",
+   "name": {
+    "fr": "Désactiver les protections Spectre/Meltdown",
+    "en": "Disable Spectre/Meltdown mitigations"
+   },
+   "claim": {
+    "fr": "Récupérerait des performances CPU.",
+    "en": "Supposedly recovers CPU performance."
+   },
+   "verdict": {
+    "fr": "Gain faible dans les jeux et exposition à des failles exploitables. Interdit par FrameCore.",
+    "en": "Small gain in games and exposure to exploitable flaws. Forbidden by FrameCore."
+   },
+   "kind": "SecurityTradeoff",
+   "sources": []
+  },
+  {
+   "id": "defender.disable",
+   "name": {
+    "fr": "Désactiver Microsoft Defender pendant le jeu",
+    "en": "Disable Microsoft Defender while gaming"
+   },
+   "claim": {
+    "fr": "L'antivirus ralentirait les jeux.",
+    "en": "The antivirus supposedly slows games."
+   },
+   "verdict": {
+    "fr": "L'impact en jeu est négligeable une fois les fichiers analysés. Le Mode Jeu réduit déjà l'activité de fond. Interdit par FrameCore.",
+    "en": "In-game impact is negligible once files are scanned. Game Mode already reduces background activity. Forbidden by FrameCore."
+   },
+   "kind": "SecurityTradeoff",
+   "sources": []
+  },
+  {
+   "id": "gpu.msimode",
+   "name": {
+    "fr": "Forcer le mode MSI de la carte graphique",
+    "en": "Force MSI mode on the graphics card"
+   },
+   "claim": {
+    "fr": "Réduirait la latence.",
+    "en": "Supposedly reduces latency."
+   },
+   "verdict": {
+    "fr": "Les pilotes NVIDIA et AMD récents utilisent déjà les interruptions MSI. Modifier ce paramètre à la main peut empêcher le démarrage de Windows.",
+    "en": "Recent NVIDIA and AMD drivers already use MSI interrupts. Editing it by hand can prevent Windows from booting."
+   },
+   "kind": "Harmful",
+   "sources": []
+  }
+ ]
+}

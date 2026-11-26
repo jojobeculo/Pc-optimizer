@@ -1,298 +1,348 @@
 {
-  "schemaVersion": 1,
-  "tweaks": [
+ "schemaVersion": 1,
+ "tweaks": [
+  {
+   "id": "sched.priosep.38",
+   "category": "Cpu",
+   "group": {
+    "fr": "Planification et timers",
+    "en": "Scheduling & timers"
+   },
+   "name": {
+    "fr": "Win32PrioritySeparation = 0x26 (placebo)",
+    "en": "Win32PrioritySeparation = 0x26 (placebo)"
+   },
+   "description": {
+    "fr": "Réglage très répandu. Décodage : intervalles courts, variables, boost 3:1 du premier plan — exactement ce que signifie la valeur par défaut 2 sur un Windows client.",
+    "en": "Very common tweak. Decoding: short, variable quantums, 3:1 foreground boost — exactly what the default value 2 means on client Windows."
+   },
+   "impact": {
+    "fr": "Aucun : comportement identique à la valeur par défaut.",
+    "en": "None: identical behavior to the default."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "NotRecommended",
+   "risk": "Low",
+   "kind": "Performance",
+   "restart": "Reboot",
+   "profiles": [],
+   "actions": [
     {
-      "id": "sched.priosep.38",
-      "category": "Cpu",
-      "group": {
-        "fr": "Planification et timers",
-        "en": "Scheduling & timers"
-      },
-      "name": {
-        "fr": "Win32PrioritySeparation = 0x26 (placebo)",
-        "en": "Win32PrioritySeparation = 0x26 (placebo)"
-      },
-      "description": {
-        "fr": "Réglage très répandu. Décodage : intervalles courts, variables, boost 3:1 du premier plan — exactement ce que signifie la valeur par défaut 2 sur un Windows client.",
-        "en": "Very common tweak. Decoding: short, variable quantums, 3:1 foreground boost — exactly what the default value 2 means on client Windows."
-      },
-      "impact": {
-        "fr": "Aucun : comportement identique à la valeur par défaut.",
-        "en": "None: identical behavior to the default."
-      },
-      "regressions": {
-        "fr": "Aucune connue.",
-        "en": "None known."
-      },
-      "confidence": "NotRecommended",
-      "risk": "Low",
-      "kind": "Performance",
-      "restart": "Reboot",
-      "profiles": [],
-      "actions": [
-        {
-          "type": "registry",
-          "path": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\PriorityControl",
-          "name": "Win32PrioritySeparation",
-          "valueKind": "DWord",
-          "value": 38
-        }
-      ]
-    },
-    {
-      "id": "mmcss.responsiveness",
-      "category": "Cpu",
-      "group": {
-        "fr": "Planification et timers",
-        "en": "Scheduling & timers"
-      },
-      "name": {
-        "fr": "MMCSS SystemResponsiveness = 10",
-        "en": "MMCSS SystemResponsiveness = 10"
-      },
-      "description": {
-        "fr": "Part de CPU réservée aux tâches de faible priorité quand des threads MMCSS sont actifs. Selon Microsoft, 0 est ramené à 20 (défaut) : 10 est le minimum effectif.",
-        "en": "CPU share reserved for low-priority tasks while MMCSS threads run. Per Microsoft, 0 is clamped to 20 (default): 10 is the effective minimum."
-      },
-      "impact": {
-        "fr": "Ne concerne que les threads enregistrés auprès de MMCSS (audio, rares jeux).",
-        "en": "Only affects threads registered with MMCSS (audio, few games)."
-      },
-      "regressions": {
-        "fr": "Aucune connue.",
-        "en": "None known."
-      },
-      "confidence": "Experimental",
-      "risk": "Low",
-      "kind": "Latency",
-      "restart": "Reboot",
-      "profiles": [],
-      "actions": [
-        {
-          "type": "registry",
-          "path": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-          "name": "SystemResponsiveness",
-          "valueKind": "DWord",
-          "value": 10
-        }
-      ],
-      "sources": [
-        "https://learn.microsoft.com/en-us/windows/win32/procthread/multimedia-class-scheduler-service"
-      ]
-    },
-    {
-      "id": "mmcss.networkthrottling",
-      "category": "Network",
-      "group": {
-        "fr": "Planification et timers",
-        "en": "Scheduling & timers"
-      },
-      "name": {
-        "fr": "Désactiver la limitation réseau MMCSS",
-        "en": "Disable MMCSS network throttling"
-      },
-      "description": {
-        "fr": "NetworkThrottlingIndex = 0xFFFFFFFF : supprime la limitation du traitement réseau pendant la lecture multimédia.",
-        "en": "NetworkThrottlingIndex = 0xFFFFFFFF: removes network processing throttling during multimedia playback."
-      },
-      "impact": {
-        "fr": "Effet en jeu non démontré.",
-        "en": "In-game effect not demonstrated."
-      },
-      "regressions": {
-        "fr": "Légère hausse CPU réseau pendant la lecture audio.",
-        "en": "Slightly higher network CPU during audio playback."
-      },
-      "confidence": "Experimental",
-      "risk": "Low",
-      "kind": "Latency",
-      "restart": "Reboot",
-      "profiles": [],
-      "actions": [
-        {
-          "type": "registry",
-          "path": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-          "name": "NetworkThrottlingIndex",
-          "valueKind": "DWord",
-          "value": "0xFFFFFFFF"
-        }
-      ],
-      "sources": [
-        "https://learn.microsoft.com/en-us/windows/win32/procthread/multimedia-class-scheduler-service"
-      ]
-    },
-    {
-      "id": "mmcss.gamestask",
-      "category": "Cpu",
-      "group": {
-        "fr": "Planification et timers",
-        "en": "Scheduling & timers"
-      },
-      "name": {
-        "fr": "Priorités MMCSS de la tâche « Games »",
-        "en": "MMCSS \"Games\" task priorities"
-      },
-      "description": {
-        "fr": "Priorité 6, catégorie High, priorité E/S High pour les threads MMCSS « Games ».",
-        "en": "Priority 6, High category, High I/O priority for MMCSS \"Games\" threads."
-      },
-      "impact": {
-        "fr": "Ne concerne que les jeux qui appellent AvSetMmThreadCharacteristics(\"Games\"), ce qui est rare.",
-        "en": "Only affects games calling AvSetMmThreadCharacteristics(\"Games\"), which is rare."
-      },
-      "regressions": {
-        "fr": "Aucune connue.",
-        "en": "None known."
-      },
-      "confidence": "Experimental",
-      "risk": "Low",
-      "kind": "Latency",
-      "restart": "Reboot",
-      "profiles": [],
-      "actions": [
-        {
-          "type": "registry",
-          "path": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-          "name": "Priority",
-          "valueKind": "DWord",
-          "value": 6
-        },
-        {
-          "type": "registry",
-          "path": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-          "name": "Scheduling Category",
-          "valueKind": "String",
-          "value": "High"
-        },
-        {
-          "type": "registry",
-          "path": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-          "name": "SFIO Priority",
-          "valueKind": "String",
-          "value": "High"
-        }
-      ],
-      "sources": [
-        "https://learn.microsoft.com/en-us/windows/win32/procthread/multimedia-class-scheduler-service"
-      ]
-    },
-    {
-      "id": "timer.global",
-      "category": "Cpu",
-      "group": {
-        "fr": "Planification et timers",
-        "en": "Scheduling & timers"
-      },
-      "name": {
-        "fr": "Résolution de timer globale",
-        "en": "Global timer resolution"
-      },
-      "description": {
-        "fr": "Depuis Windows 10 2004, la résolution du timer demandée par un programme ne s'applique plus aux autres ; ce réglage restaure l'ancien comportement global.",
-        "en": "Since Windows 10 2004 a program's timer request no longer applies to others; this restores the old global behavior."
-      },
-      "impact": {
-        "fr": "Utile seulement pour des programmes qui comptent sur la requête d'un autre ; les jeux demandent leur propre résolution.",
-        "en": "Only useful for programs relying on another's request; games request their own resolution."
-      },
-      "regressions": {
-        "fr": "Consommation plus élevée (le CPU entre moins en veille).",
-        "en": "Higher power use (CPU idles less)."
-      },
-      "confidence": "Experimental",
-      "risk": "Low",
-      "kind": "Latency",
-      "restart": "Reboot",
-      "profiles": [],
-      "actions": [
-        {
-          "type": "registry",
-          "path": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel",
-          "name": "GlobalTimerResolutionRequests",
-          "valueKind": "DWord",
-          "value": 1
-        }
-      ],
-      "sources": [
-        "https://learn.microsoft.com/en-us/windows/win32/api/timeapi/nf-timeapi-timebeginperiod"
-      ]
-    },
-    {
-      "id": "bcd.platformclock.remove",
-      "category": "Cpu",
-      "group": {
-        "fr": "Planification et timers",
-        "en": "Scheduling & timers"
-      },
-      "name": {
-        "fr": "Retirer le forçage de HPET (useplatformclock)",
-        "en": "Remove forced HPET (useplatformclock)"
-      },
-      "description": {
-        "fr": "Réparation : si un outil a forcé l'horloge plateforme (HPET) comme source de QueryPerformanceCounter, Windows revient à son choix automatique (TSC).",
-        "en": "Repair: if a tool forced the platform clock (HPET) as the QueryPerformanceCounter source, Windows returns to its automatic choice (TSC)."
-      },
-      "impact": {
-        "fr": "Selon Microsoft, une horloge plateforme impose un appel système et ~0,8–1 µs par lecture de QPC : forcé, HPET peut réduire les performances.",
-        "en": "Per Microsoft, a platform clock requires a system call and ~0.8–1 µs per QPC read: forced HPET can reduce performance."
-      },
-      "regressions": {
-        "fr": "Aucune connue.",
-        "en": "None known."
-      },
-      "confidence": "Confirmed",
-      "risk": "Low",
-      "kind": "Repair",
-      "restart": "Reboot",
-      "profiles": [
-        "Light",
-        "Balanced",
-        "Maximum"
-      ],
-      "actions": [
-        {
-          "type": "bcdRemove",
-          "name": "useplatformclock"
-        }
-      ],
-      "sources": [
-        "https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps"
-      ]
-    },
-    {
-      "id": "bcd.dynamictick.remove",
-      "category": "Cpu",
-      "group": {
-        "fr": "Planification et timers",
-        "en": "Scheduling & timers"
-      },
-      "name": {
-        "fr": "Retirer le forçage disabledynamictick",
-        "en": "Remove forced disabledynamictick"
-      },
-      "description": {
-        "fr": "Rétablit le « dynamic tick » par défaut si un outil l'a désactivé.",
-        "en": "Restores the default dynamic tick if a tool disabled it."
-      },
-      "impact": {
-        "fr": "Le forçage n'a pas d'effet de latence démontré et augmente la consommation.",
-        "en": "The override has no demonstrated latency effect and increases power."
-      },
-      "regressions": {
-        "fr": "Aucune connue.",
-        "en": "None known."
-      },
-      "confidence": "Experimental",
-      "risk": "Low",
-      "kind": "Repair",
-      "restart": "Reboot",
-      "profiles": [],
-      "actions": [
-        {
-          "type": "bcdRemove",
-          "name": "disabledynamictick"
-        }
-      ]
+     "type": "registry",
+     "path": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\PriorityControl",
+     "name": "Win32PrioritySeparation",
+     "valueKind": "DWord",
+     "value": 38
     }
-  ]
+   ],
+   "impactAreas": [
+    "Responsiveness"
+   ],
+   "objective": {
+    "fr": "Modifier la priorité du premier plan (placebo démontré : valeur équivalente au défaut).",
+    "en": "Change foreground priority separation (shown to be a placebo)."
+   }
+  },
+  {
+   "id": "mmcss.responsiveness",
+   "category": "Cpu",
+   "group": {
+    "fr": "Planification et timers",
+    "en": "Scheduling & timers"
+   },
+   "name": {
+    "fr": "MMCSS SystemResponsiveness = 10",
+    "en": "MMCSS SystemResponsiveness = 10"
+   },
+   "description": {
+    "fr": "Part de CPU réservée aux tâches de faible priorité quand des threads MMCSS sont actifs. Selon Microsoft, 0 est ramené à 20 (défaut) : 10 est le minimum effectif.",
+    "en": "CPU share reserved for low-priority tasks while MMCSS threads run. Per Microsoft, 0 is clamped to 20 (default): 10 is the effective minimum."
+   },
+   "impact": {
+    "fr": "Ne concerne que les threads enregistrés auprès de MMCSS (audio, rares jeux).",
+    "en": "Only affects threads registered with MMCSS (audio, few games)."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "Experimental",
+   "risk": "Low",
+   "kind": "Latency",
+   "restart": "Reboot",
+   "profiles": [],
+   "actions": [
+    {
+     "type": "registry",
+     "path": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+     "name": "SystemResponsiveness",
+     "valueKind": "DWord",
+     "value": 10
+    }
+   ],
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/procthread/multimedia-class-scheduler-service"
+   ],
+   "impactAreas": [
+    "FrameTimes"
+   ],
+   "objective": {
+    "fr": "Réserver moins de temps CPU aux tâches de fond multimédia.",
+    "en": "Reserve less CPU time for background multimedia tasks."
+   }
+  },
+  {
+   "id": "mmcss.networkthrottling",
+   "category": "Network",
+   "group": {
+    "fr": "Planification et timers",
+    "en": "Scheduling & timers"
+   },
+   "name": {
+    "fr": "Désactiver la limitation réseau MMCSS",
+    "en": "Disable MMCSS network throttling"
+   },
+   "description": {
+    "fr": "NetworkThrottlingIndex = 0xFFFFFFFF : supprime la limitation du traitement réseau pendant la lecture multimédia.",
+    "en": "NetworkThrottlingIndex = 0xFFFFFFFF: removes network processing throttling during multimedia playback."
+   },
+   "impact": {
+    "fr": "Effet en jeu non démontré.",
+    "en": "In-game effect not demonstrated."
+   },
+   "regressions": {
+    "fr": "Légère hausse CPU réseau pendant la lecture audio.",
+    "en": "Slightly higher network CPU during audio playback."
+   },
+   "confidence": "Experimental",
+   "risk": "Low",
+   "kind": "Latency",
+   "restart": "Reboot",
+   "profiles": [],
+   "actions": [
+    {
+     "type": "registry",
+     "path": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+     "name": "NetworkThrottlingIndex",
+     "valueKind": "DWord",
+     "value": "0xFFFFFFFF"
+    }
+   ],
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/procthread/multimedia-class-scheduler-service"
+   ],
+   "impactAreas": [
+    "NetworkLatency"
+   ],
+   "objective": {
+    "fr": "Supprimer la limitation réseau appliquée pendant la lecture multimédia.",
+    "en": "Remove network throttling applied during media playback."
+   }
+  },
+  {
+   "id": "mmcss.gamestask",
+   "category": "Cpu",
+   "group": {
+    "fr": "Planification et timers",
+    "en": "Scheduling & timers"
+   },
+   "name": {
+    "fr": "Priorités MMCSS de la tâche « Games »",
+    "en": "MMCSS \"Games\" task priorities"
+   },
+   "description": {
+    "fr": "Priorité 6, catégorie High, priorité E/S High pour les threads MMCSS « Games ».",
+    "en": "Priority 6, High category, High I/O priority for MMCSS \"Games\" threads."
+   },
+   "impact": {
+    "fr": "Ne concerne que les jeux qui appellent AvSetMmThreadCharacteristics(\"Games\"), ce qui est rare.",
+    "en": "Only affects games calling AvSetMmThreadCharacteristics(\"Games\"), which is rare."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "Experimental",
+   "risk": "Low",
+   "kind": "Latency",
+   "restart": "Reboot",
+   "profiles": [],
+   "actions": [
+    {
+     "type": "registry",
+     "path": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+     "name": "Priority",
+     "valueKind": "DWord",
+     "value": 6
+    },
+    {
+     "type": "registry",
+     "path": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+     "name": "Scheduling Category",
+     "valueKind": "String",
+     "value": "High"
+    },
+    {
+     "type": "registry",
+     "path": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+     "name": "SFIO Priority",
+     "valueKind": "String",
+     "value": "High"
+    }
+   ],
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/procthread/multimedia-class-scheduler-service"
+   ],
+   "impactAreas": [
+    "FrameTimes"
+   ],
+   "objective": {
+    "fr": "Augmenter la priorité MMCSS de la tâche « Games ».",
+    "en": "Raise the MMCSS priority of the 'Games' task."
+   }
+  },
+  {
+   "id": "timer.global",
+   "category": "Cpu",
+   "group": {
+    "fr": "Planification et timers",
+    "en": "Scheduling & timers"
+   },
+   "name": {
+    "fr": "Résolution de timer globale",
+    "en": "Global timer resolution"
+   },
+   "description": {
+    "fr": "Depuis Windows 10 2004, la résolution du timer demandée par un programme ne s'applique plus aux autres ; ce réglage restaure l'ancien comportement global.",
+    "en": "Since Windows 10 2004 a program's timer request no longer applies to others; this restores the old global behavior."
+   },
+   "impact": {
+    "fr": "Utile seulement pour des programmes qui comptent sur la requête d'un autre ; les jeux demandent leur propre résolution.",
+    "en": "Only useful for programs relying on another's request; games request their own resolution."
+   },
+   "regressions": {
+    "fr": "Consommation plus élevée (le CPU entre moins en veille).",
+    "en": "Higher power use (CPU idles less)."
+   },
+   "confidence": "Experimental",
+   "risk": "Low",
+   "kind": "Latency",
+   "restart": "Reboot",
+   "profiles": [],
+   "actions": [
+    {
+     "type": "registry",
+     "path": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel",
+     "name": "GlobalTimerResolutionRequests",
+     "valueKind": "DWord",
+     "value": 1
+    }
+   ],
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/timeapi/nf-timeapi-timebeginperiod"
+   ],
+   "impactAreas": [
+    "InputLatency"
+   ],
+   "objective": {
+    "fr": "Rétablir la résolution de minuterie globale d'avant Windows 10 2004.",
+    "en": "Restore pre-2004 global timer resolution behaviour."
+   }
+  },
+  {
+   "id": "bcd.platformclock.remove",
+   "category": "Cpu",
+   "group": {
+    "fr": "Planification et timers",
+    "en": "Scheduling & timers"
+   },
+   "name": {
+    "fr": "Retirer le forçage de HPET (useplatformclock)",
+    "en": "Remove forced HPET (useplatformclock)"
+   },
+   "description": {
+    "fr": "Réparation : si un outil a forcé l'horloge plateforme (HPET) comme source de QueryPerformanceCounter, Windows revient à son choix automatique (TSC).",
+    "en": "Repair: if a tool forced the platform clock (HPET) as the QueryPerformanceCounter source, Windows returns to its automatic choice (TSC)."
+   },
+   "impact": {
+    "fr": "Selon Microsoft, une horloge plateforme impose un appel système et ~0,8–1 µs par lecture de QPC : forcé, HPET peut réduire les performances.",
+    "en": "Per Microsoft, a platform clock requires a system call and ~0.8–1 µs per QPC read: forced HPET can reduce performance."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "Confirmed",
+   "risk": "Low",
+   "kind": "Repair",
+   "restart": "Reboot",
+   "profiles": [
+    "Balanced",
+    "Performance",
+    "Maximum"
+   ],
+   "actions": [
+    {
+     "type": "bcdRemove",
+     "name": "useplatformclock"
+    }
+   ],
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps"
+   ],
+   "impactAreas": [
+    "FrameTimes",
+    "Stability"
+   ],
+   "objective": {
+    "fr": "Supprimer un forçage de l'horloge HPET qui augmente le coût des mesures de temps.",
+    "en": "Remove a forced HPET clock that increases timing overhead."
+   }
+  },
+  {
+   "id": "bcd.dynamictick.remove",
+   "category": "Cpu",
+   "group": {
+    "fr": "Planification et timers",
+    "en": "Scheduling & timers"
+   },
+   "name": {
+    "fr": "Retirer le forçage disabledynamictick",
+    "en": "Remove forced disabledynamictick"
+   },
+   "description": {
+    "fr": "Rétablit le « dynamic tick » par défaut si un outil l'a désactivé.",
+    "en": "Restores the default dynamic tick if a tool disabled it."
+   },
+   "impact": {
+    "fr": "Le forçage n'a pas d'effet de latence démontré et augmente la consommation.",
+    "en": "The override has no demonstrated latency effect and increases power."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "Experimental",
+   "risk": "Low",
+   "kind": "Repair",
+   "restart": "Reboot",
+   "profiles": [],
+   "actions": [
+    {
+     "type": "bcdRemove",
+     "name": "disabledynamictick"
+    }
+   ],
+   "impactAreas": [
+    "InputLatency"
+   ],
+   "objective": {
+    "fr": "Supprimer un réglage forcé du tick dynamique.",
+    "en": "Remove a forced dynamic tick setting."
+   }
+  }
+ ]
 }

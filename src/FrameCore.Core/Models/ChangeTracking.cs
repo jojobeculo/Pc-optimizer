@@ -14,7 +14,7 @@ public sealed class StateSnapshot
     public static StateSnapshot Absent() => new() { Existed = false };
     public static StateSnapshot Of(string? value, string? kind = null) => new() { Existed = true, Value = value, Kind = kind };
 
-    public string Describe() => Existed ? (Value ?? "") : "(absent)";
+    public string Describe() => Existed ? (Value ?? "") : Localization.Loc.T("state.absent");
 }
 
 /// <summary>Live state of one action compared to its target.</summary>

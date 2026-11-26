@@ -32,7 +32,22 @@ public enum TweakKind
     Security,
 }
 
-public enum ProfileLevel { Light = 1, Balanced = 2, Maximum = 3 }
+/// <summary>Simple-mode levels: Équilibré, Performances, Performance maximale.</summary>
+public enum ProfileLevel { Balanced = 1, Performance = 2, Maximum = 3 }
+
+/// <summary>How long a change lasts.</summary>
+public enum Persistence
+{
+    /// <summary>Stored setting, survives reboots until restored.</summary>
+    Persistent,
+    /// <summary>Lost at the next reboot (e.g. live driver values).</summary>
+    UntilReboot,
+    /// <summary>One-shot maintenance operation (cleanup, retrim): nothing to keep or restore.</summary>
+    OneShot,
+}
+
+/// <summary>What an optimisation can influence. Used to explain results honestly (a network tweak never claims FPS).</summary>
+public enum ImpactArea { Fps, FrameTimes, InputLatency, NetworkLatency, Responsiveness, Boot, Privacy, DiskSpace, Stability, Comfort, Battery }
 
 public enum TweakStatus { Unknown, NotApplied, Applied, Partial, Unsupported, Error }
 

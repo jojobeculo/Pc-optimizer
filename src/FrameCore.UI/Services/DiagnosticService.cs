@@ -44,12 +44,22 @@ public sealed class DiagnosticService
         r.Profile = _s.CreateScanner().Scan(progress);
         progress?.Report(Loc.T("scan.facts"));
         r.Facts = BuildFacts(r.Profile);
-        progress?.Report(Loc.T("scan.catalog"));
+        // Catalog evaluation, driver inventory and startup analysis are independent: run them side by side.
+        progress?.Report(Loc.T("scan.parallel"));
+        var drivers = Task.Run(() =>
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            try { r.Drivers = DriverInventory.Scan(r.Profile); } catch (Exception ex) { Log.Error("Diag", "drivers", ex); }
+            Log.Info("Diag", $"{sw.ElapsedMilliseconds,6} ms  drivers (parallel)");
+        });
+        var startup = Task.Run(() =>
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            try { r.Startup = _s.CreateStartupScanner().ScanAll(includeServices: true, includeShellExtensions: false); } catch (Exception ex) { Log.Error("Diag", "startup", ex); }
+            Log.Info("Diag", $"{sw.ElapsedMilliseconds,6} ms  startup (parallel)");
+        });
         r.Evaluations = EvaluateAll(r.Facts);
-        progress?.Report(Loc.T("scan.drivers"));
-        try { r.Drivers = DriverInventory.Scan(r.Profile); } catch (Exception ex) { Log.Error("Diag", "drivers", ex); }
-        progress?.Report(Loc.T("scan.startup"));
-        try { r.Startup = _s.CreateStartupScanner().ScanAll(includeServices: true, includeShellExtensions: false); } catch (Exception ex) { Log.Error("Diag", "startup", ex); }
+        Task.WaitAll(drivers, startup);
         progress?.Report(Loc.T("scan.findings"));
         r.CpuTuning = CpuTuningAdvisor.Analyze(r.Profile, _s.Registry);
         r.Findings = BuildFindings(r);

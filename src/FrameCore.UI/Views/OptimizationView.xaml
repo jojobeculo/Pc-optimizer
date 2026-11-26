@@ -11,13 +11,13 @@
                 <Border Style="{StaticResource Card}" Margin="7">
                     <DockPanel>
                         <Button DockPanel.Dock="Bottom" Content="{i:Loc opt.prepare}" Style="{StaticResource Button.Primary}" Margin="0,14,0,0"
-                                Command="{Binding PrepareCommand}" CommandParameter="Light"/>
+                                Command="{Binding PrepareCommand}" CommandParameter="Balanced"/>
                         <StackPanel>
                             <TextBlock Text="&#xE945;" Style="{StaticResource Text.Icon}" FontSize="22" Foreground="{DynamicResource Brush.Success}" HorizontalAlignment="Left"/>
-                            <TextBlock Text="{i:Loc profile.Light}" Style="{StaticResource Text.Section}" Margin="0,8,0,4"/>
+                            <TextBlock Text="{i:Loc profile.Balanced}" Style="{StaticResource Text.Section}" Margin="0,8,0,4"/>
                             <TextBlock Text="{i:Loc opt.light.desc}" Style="{StaticResource Text.Muted}"/>
                             <TextBlock Style="{StaticResource Text.Caption}" Margin="0,8,0,0">
-                                <Run Text="{Binding LightCount, Mode=OneWay}"/> <Run Text="{i:Loc opt.changesProposed}"/>
+                                <Run Text="{Binding BalancedCount, Mode=OneWay}"/> <Run Text="{i:Loc opt.changesProposed}"/>
                             </TextBlock>
                         </StackPanel>
                     </DockPanel>
@@ -25,13 +25,13 @@
                 <Border Style="{StaticResource Card}" Margin="7">
                     <DockPanel>
                         <Button DockPanel.Dock="Bottom" Content="{i:Loc opt.prepare}" Style="{StaticResource Button.Primary}" Margin="0,14,0,0"
-                                Command="{Binding PrepareCommand}" CommandParameter="Balanced"/>
+                                Command="{Binding PrepareCommand}" CommandParameter="Performance"/>
                         <StackPanel>
                             <TextBlock Text="&#xE9F5;" Style="{StaticResource Text.Icon}" FontSize="22" Foreground="{DynamicResource Brush.Accent2}" HorizontalAlignment="Left"/>
-                            <TextBlock Text="{i:Loc profile.Balanced}" Style="{StaticResource Text.Section}" Margin="0,8,0,4"/>
+                            <TextBlock Text="{i:Loc profile.Performance}" Style="{StaticResource Text.Section}" Margin="0,8,0,4"/>
                             <TextBlock Text="{i:Loc opt.balanced.desc}" Style="{StaticResource Text.Muted}"/>
                             <TextBlock Style="{StaticResource Text.Caption}" Margin="0,8,0,0">
-                                <Run Text="{Binding BalancedCount, Mode=OneWay}"/> <Run Text="{i:Loc opt.changesProposed}"/>
+                                <Run Text="{Binding PerformanceCount, Mode=OneWay}"/> <Run Text="{i:Loc opt.changesProposed}"/>
                             </TextBlock>
                         </StackPanel>
                     </DockPanel>

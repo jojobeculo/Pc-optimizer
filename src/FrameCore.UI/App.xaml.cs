@@ -43,12 +43,18 @@ public partial class App : Application
             Dialogs.Confirm(Loc.T("elevation.title"), Loc.T("elevation.explain"), Loc.T("elevation.continue")));
         _shell = new ShellViewModel(services);
         var window = new MainWindow { DataContext = _shell };
+        SyncWindowLanguage(window);
+        Loc.Instance.LanguageChanged += (_, _) => SyncWindowLanguage(window);
         if (tourDir != null) { window.Width = 1440; window.Height = 900; window.WindowStartupLocation = WindowStartupLocation.CenterScreen; }
         MainWindow = window;
         window.Show();
         if (tourDir != null) _ = UiTour.RunAsync(tourDir, _shell, window, startClock);
         else _ = _shell.StartupAsync();
     }
+
+    /// <summary>Bindings with StringFormat (dates, decimals) use the element language: follow the UI culture.</summary>
+    private static void SyncWindowLanguage(FrameworkElement root) =>
+        root.Language = System.Windows.Markup.XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag);
 
     public static void ApplyTheme(string theme)
     {

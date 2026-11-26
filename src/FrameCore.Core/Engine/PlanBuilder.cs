@@ -19,6 +19,8 @@ public sealed class OptimizationPlan
     public List<TweakEvaluation> AlreadyApplied { get; } = new();
     /// <summary>Profile items excluded because they are incompatible with this machine (with reasons).</summary>
     public List<TweakEvaluation> Excluded { get; } = new();
+    /// <summary>Items left out because a conflicting optimisation is already active or preferred (item, kept id).</summary>
+    public List<(TweakEvaluation Item, string KeptId)> Conflicting { get; } = new();
     public bool NeedsElevation => Items.Any(i => i.Evaluation.NeedsElevation);
     public bool NeedsReboot => Items.Any(i => i.Tweak.Restart == RestartRequirement.Reboot);
 }
@@ -48,6 +50,15 @@ public static class PlanBuilder
             });
         }
         plan.Items.Sort((a, b) => a.Section != b.Section ? a.Section.CompareTo(b.Section) : string.CompareOrdinal(a.Tweak.Category + a.Tweak.Id, b.Tweak.Category + b.Tweak.Id));
+
+        // Conflicts: what is already active wins, then standard before consent before experimental items.
+        var kept = plan.AlreadyApplied.Select(e => e.Tweak.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var item in plan.Items.ToList())
+        {
+            var clash = item.Tweak.Conflicts.FirstOrDefault(kept.Contains);
+            if (clash != null) { plan.Items.Remove(item); plan.Conflicting.Add((item.Evaluation, clash)); }
+            else kept.Add(item.Tweak.Id);
+        }
         return plan;
     }
 }

@@ -178,7 +178,7 @@ public class EngineTests
         Assert.Contains(max.Items, i => i.Section == PlanSection.Experimental && !i.SelectedByDefault);
         Assert.Contains(max.Items, i => i.Tweak.Id == "security.vmp" && i.Section == PlanSection.Consent && !i.SelectedByDefault);
         Assert.DoesNotContain(max.Items, i => i.Tweak.Confidence == Confidence.NotRecommended);
-        var light = PlanBuilder.Build(ProfileLevel.Light, evals);
+        var light = PlanBuilder.Build(ProfileLevel.Balanced, evals);
         Assert.All(light.Items, i => Assert.Equal(PlanSection.Standard, i.Section));
         Assert.True(light.Items.Count < max.Items.Count);
     }

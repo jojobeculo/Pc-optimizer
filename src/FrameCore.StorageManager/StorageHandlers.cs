@@ -145,6 +145,7 @@ public sealed class PagefileHandler : IActionHandler
         var (auto, settings) = State();
         if (auto == null) return ActionState.Unreadable(Loc.Unknown);
         var disabled = auto == false && settings.Count == 0;
+        if (auto == false && settings.Count > 0) return ActionState.Absent(Loc.T("pagefile.notDisabled"));
         return new ActionState
         {
             Matches = !disabled,
@@ -174,7 +175,12 @@ public sealed class PagefileHandler : IActionHandler
         }
     }
 
-    public void Apply(ActionDefinition a) => SetAuto(true);
+    public void Apply(ActionDefinition a)
+    {
+        var (auto, settings) = State();
+        if (auto == false && settings.Count > 0) throw new NotApplicableException(Loc.T("pagefile.notDisabled"));
+        SetAuto(true);
+    }
 
     public void Restore(ActionDefinition a, StateSnapshot s)
     {

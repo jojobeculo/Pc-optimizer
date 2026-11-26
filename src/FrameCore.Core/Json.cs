@@ -24,6 +24,7 @@ public static class Json
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
         };
+        o.Converters.Add(new ProfileLevelConverter());
         o.Converters.Add(new JsonStringEnumConverter());
         return o;
     }
@@ -47,4 +48,18 @@ public static class Json
         if (File.Exists(path)) File.Replace(tmp, path, null);
         else File.Move(tmp, path);
     }
+}
+
+/// <summary>Reads profile levels written by FrameCore 1.0 ("Light" became "Balanced").</summary>
+internal sealed class ProfileLevelConverter : JsonConverter<Models.ProfileLevel>
+{
+    public override Models.ProfileLevel Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Number) return (Models.ProfileLevel)reader.GetInt32();
+        var s = reader.GetString();
+        if (string.Equals(s, "Light", StringComparison.OrdinalIgnoreCase)) return Models.ProfileLevel.Balanced;
+        return Enum.TryParse<Models.ProfileLevel>(s, true, out var v) ? v : throw new JsonException($"Unknown profile level '{s}'");
+    }
+
+    public override void Write(Utf8JsonWriter writer, Models.ProfileLevel value, JsonSerializerOptions options) => writer.WriteStringValue(value.ToString());
 }

@@ -62,6 +62,8 @@ public static class MachineFactsBuilder
 
         f["net.hasEthernet"] = p.Network.Any(n => n.IsPhysical && !n.IsWireless && n.Type == "Ethernet");
         f["net.activeEthernet"] = p.Network.Any(n => n.IsPhysical && !n.IsWireless && n.Type == "Ethernet" && n.IsUp);
+        f["net.hasWifi"] = p.Network.Any(n => n.IsPhysical && n.IsWireless);
+        f["system.isVirtualMachine"] = p.Board.IsVirtualMachine;
 
         f["security.vbs"] = p.Security.VbsRunning == TriState.Yes;
         f["security.hvci"] = p.Security.HvciRunning == TriState.Yes;

@@ -182,7 +182,11 @@ public sealed class PowerSchemeExecutor : IActionExecutor
                 Log.Info("Power", $"Scheme {target} already exists (hidden); activating it");
             }
         }
-        _power.SetActiveScheme(target);
+        try { _power.SetActiveScheme(target); }
+        catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 50)
+        {
+            throw new NotApplicableException(Loc.T("power.schemeNotSupported"));
+        }
     }
 
     public void Restore(ActionDefinition a, StateSnapshot s)

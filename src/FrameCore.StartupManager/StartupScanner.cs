@@ -91,6 +91,12 @@ public sealed class StartupScanner
         if (_fileCache.TryGetValue(path, out var cached)) return cached;
         string? company = null, signer = null;
         try { if (File.Exists(path)) company = FileVersionInfo.GetVersionInfo(path).CompanyName?.Trim(); } catch { }
+        var windowsDir = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+        if (company?.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) == true && path.StartsWith(windowsDir, StringComparison.OrdinalIgnoreCase))
+        {
+            _fileCache[path] = (company, null);
+            return (company, null);
+        }
         try
         {
             if (File.Exists(path))

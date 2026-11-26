@@ -15,6 +15,15 @@ public sealed class TweakDefinition
     public LocalizedText Impact { get; set; } = new();
     public LocalizedText Regressions { get; set; } = new();
     public LocalizedText? Notes { get; set; }
+    /// <summary>What the change is meant to achieve, in one sentence.</summary>
+    public LocalizedText? Objective { get; set; }
+    public Persistence Persistence { get; set; } = Persistence.Persistent;
+    /// <summary>Mutually exclusive optimisations (e.g. two power plans). A plan never contains both.</summary>
+    public List<string> Conflicts { get; set; } = new();
+    /// <summary>Optimisations that must be active for this one to make sense.</summary>
+    public List<string> Requires { get; set; } = new();
+    /// <summary>Areas this change can influence (FPS, frame times, input latency, network latency, privacy…).</summary>
+    public List<ImpactArea> ImpactAreas { get; set; } = new();
     public Confidence Confidence { get; set; }
     public RiskLevel Risk { get; set; }
     public TweakKind Kind { get; set; }
@@ -32,6 +41,8 @@ public sealed class TweakDefinition
 
     [JsonIgnore] public bool IsExperimental => Confidence == Confidence.Experimental;
     [JsonIgnore] public bool IsProOnly => Profiles.Count == 0;
+    /// <summary>True when the change has a technical reason to influence frame rate or frame pacing.</summary>
+    [JsonIgnore] public bool CanAffectFrameRate => ImpactAreas.Contains(ImpactArea.Fps) || ImpactAreas.Contains(ImpactArea.FrameTimes);
 }
 
 /// <summary>

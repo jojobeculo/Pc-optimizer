@@ -101,7 +101,7 @@ public static class DriverInventory
                     Id = "drivers.gpu.basic", Category = "Drivers", Severity = Severity.Critical, Title = Loc.T("drivers.basic.title"),
                     Detail = Loc.T("drivers.basic.detail"), Recommendation = Loc.T("drivers.basic.reco"),
                 });
-            else if (gpu.AgeDays > 270)
+            else if (gpu.AgeDays > 270 && !BoardSupport.IsInboxDriver(gpu))
                 findings.Add(new Finding
                 {
                     Id = "drivers.gpu.old." + gpu.DeviceName, Category = "Drivers", Severity = Severity.Suggestion, Confidence = Confidence.Probable,
@@ -155,4 +155,8 @@ public static class BoardSupport
         if (maker.Contains("DELL") || maker.Contains("ALIENWARE")) return "Dell Command | Update / SupportAssist";
         return null;
     }
+
+    /// <summary>Drivers shipped with Windows are dated 21/06/2006 on purpose (lowest ranking); their age means nothing.</summary>
+    public static bool IsInboxDriver(DriverEntry d) =>
+        d.Provider?.Equals("Microsoft", StringComparison.OrdinalIgnoreCase) == true && d.Date is { Year: 2006, Month: 6, Day: 21 };
 }

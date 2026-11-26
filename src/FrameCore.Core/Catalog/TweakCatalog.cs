@@ -65,8 +65,15 @@ public sealed class TweakCatalog
     public static IEnumerable<string> Validate(IReadOnlyList<TweakDefinition> tweaks)
     {
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var ids = tweaks.Select(x => x.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (var t in tweaks)
         {
+            foreach (var other in t.Conflicts.Concat(t.Requires))
+                if (!ids.Contains(other)) yield return $"{t.Id}: unknown related id {other}";
+            foreach (var other in t.Conflicts)
+                if (tweaks.FirstOrDefault(x => x.Id == other) is { } o && !o.Conflicts.Contains(t.Id)) yield return $"{t.Id}: conflict with {other} must be declared on both sides";
+            if (t.ImpactAreas.Count == 0) yield return $"{t.Id}: impactAreas missing";
+            if (!t.Reversible && t.Persistence != Persistence.OneShot) yield return $"{t.Id}: non-reversible operations must be one-shot";
             if (string.IsNullOrWhiteSpace(t.Id)) { yield return "(no id): missing id"; continue; }
             if (!seen.Add(t.Id)) yield return $"{t.Id}: duplicate id";
             if (t.Name.IsEmpty) yield return $"{t.Id}: missing name";

@@ -44,7 +44,7 @@ public class CatalogTests
             if (t.Confidence == Confidence.NotRecommended) Assert.Empty(t.Profiles);
             if (t.Confidence == Confidence.Experimental) Assert.All(t.Profiles, p => Assert.Equal(ProfileLevel.Maximum, p));
             // Light profile only contains low-risk, non-experimental changes.
-            if (t.Profiles.Contains(ProfileLevel.Light))
+            if (t.Profiles.Contains(ProfileLevel.Balanced))
             {
                 Assert.True(t.Risk <= RiskLevel.Low, t.Id);
                 Assert.True(t.Confidence is Confidence.Confirmed or Confidence.Probable, t.Id);
@@ -125,7 +125,7 @@ public class CatalogTests
     {
         var bad = new TweakDefinition
         {
-            Id = "bad", Category = "Windows", Name = new("x", "x"), Description = new("x", "x"), Confidence = Confidence.NotRecommended, Profiles = { ProfileLevel.Light },
+            Id = "bad", Category = "Windows", Name = new("x", "x"), Description = new("x", "x"), Confidence = Confidence.NotRecommended, Profiles = { ProfileLevel.Balanced },
             Actions = { new ActionDefinition { Type = "service", Name = "WinDefend", StartType = "Disabled" }, new ActionDefinition { Type = "bcdRemove", Name = "nx" } },
         };
         var errors = TweakCatalog.Validate(new[] { bad }).ToList();
