@@ -1,0 +1,42 @@
+name: windows-ci
+# Builds and tests FrameCore on a disposable GitHub-hosted Windows runner, launches the UI and
+# captures screenshots. Nothing here runs on a user's PC.
+on:
+  push:
+    branches: [ "claude/**", "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-test:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Unit tests
+        run: dotnet test tests/FrameCore.Tests/FrameCore.Tests.csproj -c Release --nologo
+      - name: Publish
+        run: dotnet publish src/FrameCore.UI/FrameCore.UI.csproj -c Release -r win-x64 --self-contained true -o publish/FrameCore --nologo
+      - name: Launch UI and capture screenshot
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force shots | Out-Null
+          $p = Start-Process -FilePath publish\FrameCore\FrameCore.exe -PassThru
+          Start-Sleep -Seconds 30
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+          $g = [System.Drawing.Graphics]::FromImage($bmp)
+          $g.CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+          $bmp.Save("shots\desktop.png", [System.Drawing.Imaging.ImageFormat]::Png)
+          "Screen: $($b.Width)x$($b.Height)"
+          "Process alive: $(-not $p.HasExited)"
+          if ($p.HasExited) { "Exit code: $($p.ExitCode)" } else { Stop-Process -Id $p.Id -Force }
+          Get-ChildItem "$env:LOCALAPPDATA\FrameCore\Logs" -ErrorAction SilentlyContinue | ForEach-Object { "--- $($_.Name)"; Get-Content $_.FullName -Tail 80 }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: shots
