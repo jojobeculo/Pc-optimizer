@@ -18,5 +18,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FrameCore.Tests/FrameCore.Tests.csproj" />
+    <Project Path="tests/FrameCore.WindowsIntegrationTests/FrameCore.WindowsIntegrationTests.csproj" />
   </Folder>
 </Solution>

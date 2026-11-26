@@ -25,6 +25,9 @@ public partial class App : Application
         }
 
         base.OnStartup(e);
+        var startClock = System.Diagnostics.Stopwatch.StartNew();
+        var tourDir = e.Args.Length >= 2 && e.Args[0] == "--ui-tour" ? e.Args[1] : null;
+        if (tourDir != null) { Dialogs.Headless = true; UiTour.AttachBindingListener(); }
         DispatcherUnhandledException += OnUnhandled;
         AppDomain.CurrentDomain.UnhandledException += (_, ex) => Log.Error("App", "Unhandled", ex.ExceptionObject as Exception);
         TaskScheduler.UnobservedTaskException += (_, ex) => { Log.Error("App", "Unobserved task", ex.Exception); ex.SetObserved(); };
@@ -40,9 +43,11 @@ public partial class App : Application
             Dialogs.Confirm(Loc.T("elevation.title"), Loc.T("elevation.explain"), Loc.T("elevation.continue")));
         _shell = new ShellViewModel(services);
         var window = new MainWindow { DataContext = _shell };
+        if (tourDir != null) { window.Width = 1440; window.Height = 900; window.WindowStartupLocation = WindowStartupLocation.CenterScreen; }
         MainWindow = window;
         window.Show();
-        _ = _shell.StartupAsync();
+        if (tourDir != null) _ = UiTour.RunAsync(tourDir, _shell, window, startClock);
+        else _ = _shell.StartupAsync();
     }
 
     public static void ApplyTheme(string theme)

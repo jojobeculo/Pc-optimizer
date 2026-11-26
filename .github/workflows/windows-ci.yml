@@ -1,42 +1,95 @@
 name: windows-ci
-# Builds and tests FrameCore on a disposable GitHub-hosted Windows runner, launches the UI and
-# captures screenshots. Nothing here runs on a user's PC.
+# Builds and tests FrameCore on a disposable GitHub-hosted Windows runner:
+# unit tests, real-Windows integration tests (apply/restore round trip), automated UI tour with
+# screenshots, installer build, silent install / launch / uninstall. Nothing here runs on a user's PC.
 on:
   push:
     branches: [ "claude/**", "main" ]
   workflow_dispatch:
 
 jobs:
-  build-test:
+  windows:
     runs-on: windows-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
+      - name: Screen resolution 1920x1080
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          try { Set-DisplayResolution -Width 1920 -Height 1080 -Force -ErrorAction Stop } catch { "Set-DisplayResolution unavailable: $_" }
+          Add-Type -AssemblyName System.Windows.Forms
+          "Screen: " + [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+
       - name: Unit tests
-        run: dotnet test tests/FrameCore.Tests/FrameCore.Tests.csproj -c Release --nologo
+        run: dotnet test tests/FrameCore.Tests/FrameCore.Tests.csproj -c Release --nologo --logger "console;verbosity=normal"
+
+      - name: Integration tests (real Windows, disposable VM only)
+        shell: pwsh
+        env:
+          FRAMECORE_DISPOSABLE_VM: '1'
+        run: |
+          $env:FRAMECORE_TEST_OUTPUT = "$pwd\out\integration"
+          dotnet test tests/FrameCore.WindowsIntegrationTests/FrameCore.WindowsIntegrationTests.csproj -c Release --nologo --logger "console;verbosity=detailed"
+
       - name: Publish
         run: dotnet publish src/FrameCore.UI/FrameCore.UI.csproj -c Release -r win-x64 --self-contained true -o publish/FrameCore --nologo
-      - name: Launch UI and capture screenshot
+
+      - name: Automated UI tour
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force shots | Out-Null
-          $p = Start-Process -FilePath publish\FrameCore\FrameCore.exe -PassThru
-          Start-Sleep -Seconds 30
-          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
-          $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-          $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
-          $g = [System.Drawing.Graphics]::FromImage($bmp)
-          $g.CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
-          $bmp.Save("shots\desktop.png", [System.Drawing.Imaging.ImageFormat]::Png)
-          "Screen: $($b.Width)x$($b.Height)"
-          "Process alive: $(-not $p.HasExited)"
-          if ($p.HasExited) { "Exit code: $($p.ExitCode)" } else { Stop-Process -Id $p.Id -Force }
-          Get-ChildItem "$env:LOCALAPPDATA\FrameCore\Logs" -ErrorAction SilentlyContinue | ForEach-Object { "--- $($_.Name)"; Get-Content $_.FullName -Tail 80 }
+          $dir = "$pwd\out\tour"
+          $p = Start-Process -FilePath publish\FrameCore\FrameCore.exe -ArgumentList '--ui-tour', $dir -PassThru
+          if (-not $p.WaitForExit(420000)) { "Tour timed out"; Stop-Process -Id $p.Id -Force }
+          "Exit code: $($p.ExitCode)"
+          Get-Content "$dir\report.json" -ErrorAction SilentlyContinue | Select-Object -First 400
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $makensis = (Get-Command makensis -ErrorAction SilentlyContinue).Source
+          if (-not $makensis) { $makensis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe" }
+          if (-not (Test-Path $makensis)) { choco install nsis -y --no-progress; $makensis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe" }
+          New-Item -ItemType Directory -Force out\installer | Out-Null
+          Copy-Item README.md, LICENSE publish\FrameCore\
+          New-Item -ItemType Directory -Force publish\FrameCore\docs | Out-Null
+          Copy-Item docs\*.md publish\FrameCore\docs\
+          & $makensis -V2 "-DVERSION=1.0.0" "-DSOURCE_DIR=$pwd\publish\FrameCore" "-DOUT_FILE=$pwd\out\installer\FrameCore-Setup.exe" installer\FrameCore.nsi
+          if ($LASTEXITCODE -ne 0) { throw "makensis failed" }
+
+      - name: Silent install, launch, uninstall
+        shell: pwsh
+        run: |
+          $setup = "$pwd\out\installer\FrameCore-Setup.exe"
+          $log = "$pwd\out\installer\install-test.txt"
+          $p = Start-Process $setup -ArgumentList '/S' -PassThru -Wait
+          "install exit: $($p.ExitCode)" | Tee-Object $log
+          $dir = "$env:ProgramFiles\FrameCore"
+          "exe present: $(Test-Path "$dir\FrameCore.exe")" | Tee-Object $log -Append
+          "catalog present: $(Test-Path "$dir\catalog\tweaks")" | Tee-Object $log -Append
+          "start menu shortcut: $(Test-Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\FrameCore.lnk")" | Tee-Object $log -Append
+          $u = Get-ItemProperty 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\FrameCore' -ErrorAction SilentlyContinue
+          "uninstall entry: $($u.DisplayName) $($u.DisplayVersion) size=$($u.EstimatedSize)KB" | Tee-Object $log -Append
+          $a = Start-Process "$dir\FrameCore.exe" -ArgumentList '--ui-tour', "$pwd\out\installed-tour" -PassThru
+          if (-not $a.WaitForExit(420000)) { Stop-Process -Id $a.Id -Force; "installed app tour timed out" | Tee-Object $log -Append }
+          "installed app tour exit: $($a.ExitCode), report: $(Test-Path "$pwd\out\installed-tour\report.json")" | Tee-Object $log -Append
+          $un = Start-Process "$dir\Uninstall.exe" -ArgumentList '/S' -PassThru -Wait
+          Start-Sleep -Seconds 5
+          "uninstall exit: $($un.ExitCode)" | Tee-Object $log -Append
+          "folder removed: $(-not (Test-Path $dir))" | Tee-Object $log -Append
+          "uninstall entry removed: $(-not (Test-Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\FrameCore'))" | Tee-Object $log -Append
+          "user data kept: $(Test-Path "$env:LOCALAPPDATA\FrameCore")" | Tee-Object $log -Append
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: screenshots
-          path: shots
+          name: ci-output
+          path: out
+          retention-days: 7

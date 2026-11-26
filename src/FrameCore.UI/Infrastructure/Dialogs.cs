@@ -13,6 +13,9 @@ public static class Dialogs
 {
     private static Window Owner => Application.Current.MainWindow;
 
+    /// <summary>Automated UI tour (CI): dialogs are logged instead of shown; confirmations are declined.</summary>
+    public static bool Headless { get; set; }
+
     private static (Window win, StackPanel body, StackPanel buttons) Create(string title, double width = 480)
     {
         var win = new Window
@@ -42,6 +45,7 @@ public static class Dialogs
 
     public static bool Confirm(string title, string message, string? okText = null, bool danger = false, IEnumerable<string>? bullets = null)
     {
+        if (Headless) { Log.Info("Dialog", $"[headless confirm declined] {title}: {message}"); return false; }
         var (win, body, buttons) = Create(title);
         body.Children.Add(new TextBlock { Text = message, Style = (Style)Application.Current.FindResource("Text.Body") });
         if (bullets != null)
@@ -56,6 +60,7 @@ public static class Dialogs
 
     public static void Info(string title, string message, IEnumerable<string>? lines = null)
     {
+        if (Headless) { Log.Info("Dialog", $"[headless info] {title}: {message}"); return; }
         var (win, body, buttons) = Create(title);
         body.Children.Add(new TextBlock { Text = message, Style = (Style)Application.Current.FindResource("Text.Body") });
         if (lines != null)
@@ -71,6 +76,7 @@ public static class Dialogs
     /// <summary>"Keep these display settings?" with automatic revert after <paramref name="seconds"/>.</summary>
     public static bool KeepChanges(string title, string message, int seconds = 15)
     {
+        if (Headless) return false;
         var (win, body, buttons) = Create(title);
         var text = new TextBlock { Style = (Style)Application.Current.FindResource("Text.Body") };
         body.Children.Add(text);
@@ -90,6 +96,7 @@ public static class Dialogs
 
     public static void OpenUri(string uri)
     {
+        if (Headless) { Log.Info("Dialog", "[headless open] " + uri); return; }
         try { Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true }); }
         catch (Exception ex) { Log.Warn("Shell", $"Cannot open {uri}: {ex.Message}"); }
     }

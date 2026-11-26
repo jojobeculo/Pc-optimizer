@@ -39,6 +39,7 @@ public sealed class DiagnosticService
 
     public Task<DiagnosticResult> RunAsync(IProgress<string>? progress = null) => Task.Run(() =>
     {
+        progress = TimedProgress(progress);
         var r = new DiagnosticResult();
         r.Profile = _s.CreateScanner().Scan(progress);
         progress?.Report(Loc.T("scan.facts"));
@@ -54,10 +55,30 @@ public sealed class DiagnosticService
         r.Findings = BuildFindings(r);
         r.CompletedAt = DateTime.Now;
         Last = r;
+        progress.Report("done");
         Log.Info("Diag", $"Diagnostic completed: {r.Findings.Count} findings, {r.Evaluations.Count} catalog entries evaluated");
         Completed?.Invoke(this, r);
         return r;
     });
+
+    /// <summary>Logs how long each diagnostic phase took (performance tracking).</summary>
+    private static IProgress<string> TimedProgress(IProgress<string>? inner)
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        string? phase = null;
+        return new SyncProgress(m =>
+        {
+            if (phase != null) Log.Info("Diag", $"{sw.ElapsedMilliseconds,6} ms  {phase}");
+            phase = m;
+            sw.Restart();
+            if (m != "done") inner?.Report(m);
+        });
+    }
+
+    private sealed class SyncProgress(Action<string> report) : IProgress<string>
+    {
+        public void Report(string value) => report(value);
+    }
 
     public MachineFacts BuildFacts(MachineProfile p)
     {
