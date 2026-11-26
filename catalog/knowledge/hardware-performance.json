@@ -1,0 +1,1047 @@
+{
+ "version": 1,
+ "note": {
+  "fr": "Indices relatifs approximatifs (moyennes multi-jeux de tests publics, arrondis). Incertitude typique ±10 %. Servent uniquement de point de départ ; une mesure locale les remplace.",
+  "en": "Approximate relative indices (multi-game averages from public tests, rounded). Typical uncertainty ±10 %. Starting point only; a local measurement replaces them."
+ },
+ "gpus": [
+  {
+   "name": "RTX 5090",
+   "vendor": "nvidia",
+   "index": 133,
+   "vramGb": 32
+  },
+  {
+   "name": "RTX 4090",
+   "vendor": "nvidia",
+   "index": 100,
+   "vramGb": 24
+  },
+  {
+   "name": "RTX 5080",
+   "vendor": "nvidia",
+   "index": 84,
+   "vramGb": 16
+  },
+  {
+   "name": "RTX 4080 SUPER",
+   "vendor": "nvidia",
+   "index": 79,
+   "vramGb": 16
+  },
+  {
+   "name": "RTX 4080",
+   "vendor": "nvidia",
+   "index": 77,
+   "vramGb": 16
+  },
+  {
+   "name": "RTX 5070 Ti",
+   "vendor": "nvidia",
+   "index": 74,
+   "vramGb": 16
+  },
+  {
+   "name": "RTX 4070 Ti SUPER",
+   "vendor": "nvidia",
+   "index": 67,
+   "vramGb": 16
+  },
+  {
+   "name": "RTX 3090 Ti",
+   "vendor": "nvidia",
+   "index": 64,
+   "vramGb": 24
+  },
+  {
+   "name": "RTX 4070 Ti",
+   "vendor": "nvidia",
+   "index": 62,
+   "vramGb": 12
+  },
+  {
+   "name": "RTX 5070",
+   "vendor": "nvidia",
+   "index": 60,
+   "vramGb": 12
+  },
+  {
+   "name": "RTX 3090",
+   "vendor": "nvidia",
+   "index": 58,
+   "vramGb": 24
+  },
+  {
+   "name": "RTX 4070 SUPER",
+   "vendor": "nvidia",
+   "index": 57,
+   "vramGb": 12
+  },
+  {
+   "name": "RTX 3080 Ti",
+   "vendor": "nvidia",
+   "index": 56,
+   "vramGb": 12
+  },
+  {
+   "name": "RTX 3080",
+   "vendor": "nvidia",
+   "index": 51,
+   "vramGb": 10
+  },
+  {
+   "name": "RTX 4070",
+   "vendor": "nvidia",
+   "index": 50,
+   "vramGb": 12
+  },
+  {
+   "name": "RTX 5060 Ti",
+   "vendor": "nvidia",
+   "index": 44,
+   "vramGb": 16
+  },
+  {
+   "name": "RTX 3070 Ti",
+   "vendor": "nvidia",
+   "index": 42,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 2080 Ti",
+   "vendor": "nvidia",
+   "index": 40,
+   "vramGb": 11
+  },
+  {
+   "name": "RTX 4060 Ti",
+   "vendor": "nvidia",
+   "index": 39,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 3070",
+   "vendor": "nvidia",
+   "index": 39,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 5060",
+   "vendor": "nvidia",
+   "index": 37,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 3060 Ti",
+   "vendor": "nvidia",
+   "index": 35,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 2080 SUPER",
+   "vendor": "nvidia",
+   "index": 33,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 2080",
+   "vendor": "nvidia",
+   "index": 31,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 4060",
+   "vendor": "nvidia",
+   "index": 31,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 2070 SUPER",
+   "vendor": "nvidia",
+   "index": 30,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 3060",
+   "vendor": "nvidia",
+   "index": 27,
+   "vramGb": 12
+  },
+  {
+   "name": "RTX 2070",
+   "vendor": "nvidia",
+   "index": 27,
+   "vramGb": 8
+  },
+  {
+   "name": "GTX 1080 Ti",
+   "vendor": "nvidia",
+   "index": 26,
+   "vramGb": 11
+  },
+  {
+   "name": "RTX 2060 SUPER",
+   "vendor": "nvidia",
+   "index": 24,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 2060",
+   "vendor": "nvidia",
+   "index": 21,
+   "vramGb": 6
+  },
+  {
+   "name": "GTX 1080",
+   "vendor": "nvidia",
+   "index": 20,
+   "vramGb": 8
+  },
+  {
+   "name": "GTX 1070 Ti",
+   "vendor": "nvidia",
+   "index": 18,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 3050",
+   "vendor": "nvidia",
+   "index": 17,
+   "vramGb": 8
+  },
+  {
+   "name": "GTX 1660 Ti",
+   "vendor": "nvidia",
+   "index": 17,
+   "vramGb": 6
+  },
+  {
+   "name": "GTX 1660 SUPER",
+   "vendor": "nvidia",
+   "index": 17,
+   "vramGb": 6
+  },
+  {
+   "name": "GTX 1070",
+   "vendor": "nvidia",
+   "index": 16.5,
+   "vramGb": 8
+  },
+  {
+   "name": "GTX 1660",
+   "vendor": "nvidia",
+   "index": 15,
+   "vramGb": 6
+  },
+  {
+   "name": "GTX 1650 SUPER",
+   "vendor": "nvidia",
+   "index": 12.5,
+   "vramGb": 4
+  },
+  {
+   "name": "GTX 1060 6GB",
+   "vendor": "nvidia",
+   "index": 12,
+   "vramGb": 6
+  },
+  {
+   "name": "GTX 1060",
+   "vendor": "nvidia",
+   "index": 11,
+   "vramGb": 3
+  },
+  {
+   "name": "GTX 1650",
+   "vendor": "nvidia",
+   "index": 9.5,
+   "vramGb": 4
+  },
+  {
+   "name": "GTX 1050 Ti",
+   "vendor": "nvidia",
+   "index": 7,
+   "vramGb": 4
+  },
+  {
+   "name": "GTX 1050",
+   "vendor": "nvidia",
+   "index": 5.5,
+   "vramGb": 2
+  },
+  {
+   "name": "GTX 970",
+   "vendor": "nvidia",
+   "index": 10,
+   "vramGb": 4
+  },
+  {
+   "name": "RX 7900 XTX",
+   "vendor": "amd",
+   "index": 80,
+   "vramGb": 24
+  },
+  {
+   "name": "RX 9070 XT",
+   "vendor": "amd",
+   "index": 74,
+   "vramGb": 16
+  },
+  {
+   "name": "RX 7900 XT",
+   "vendor": "amd",
+   "index": 69,
+   "vramGb": 20
+  },
+  {
+   "name": "RX 9070",
+   "vendor": "amd",
+   "index": 66,
+   "vramGb": 16
+  },
+  {
+   "name": "RX 7900 GRE",
+   "vendor": "amd",
+   "index": 58,
+   "vramGb": 16
+  },
+  {
+   "name": "RX 6950 XT",
+   "vendor": "amd",
+   "index": 58,
+   "vramGb": 16
+  },
+  {
+   "name": "RX 6900 XT",
+   "vendor": "amd",
+   "index": 54,
+   "vramGb": 16
+  },
+  {
+   "name": "RX 7800 XT",
+   "vendor": "amd",
+   "index": 54,
+   "vramGb": 16
+  },
+  {
+   "name": "RX 6800 XT",
+   "vendor": "amd",
+   "index": 51,
+   "vramGb": 16
+  },
+  {
+   "name": "RX 7700 XT",
+   "vendor": "amd",
+   "index": 45,
+   "vramGb": 12
+  },
+  {
+   "name": "RX 9060 XT",
+   "vendor": "amd",
+   "index": 44,
+   "vramGb": 16
+  },
+  {
+   "name": "RX 6800",
+   "vendor": "amd",
+   "index": 44,
+   "vramGb": 16
+  },
+  {
+   "name": "RX 6750 XT",
+   "vendor": "amd",
+   "index": 38,
+   "vramGb": 12
+  },
+  {
+   "name": "RX 6700 XT",
+   "vendor": "amd",
+   "index": 36,
+   "vramGb": 12
+  },
+  {
+   "name": "RX 7600 XT",
+   "vendor": "amd",
+   "index": 32,
+   "vramGb": 16
+  },
+  {
+   "name": "RX 6700",
+   "vendor": "amd",
+   "index": 32,
+   "vramGb": 10
+  },
+  {
+   "name": "RX 7600",
+   "vendor": "amd",
+   "index": 30,
+   "vramGb": 8
+  },
+  {
+   "name": "RX 6650 XT",
+   "vendor": "amd",
+   "index": 29,
+   "vramGb": 8
+  },
+  {
+   "name": "RX 6600 XT",
+   "vendor": "amd",
+   "index": 27,
+   "vramGb": 8
+  },
+  {
+   "name": "RX 5700 XT",
+   "vendor": "amd",
+   "index": 27,
+   "vramGb": 8
+  },
+  {
+   "name": "RX 6600",
+   "vendor": "amd",
+   "index": 24,
+   "vramGb": 8
+  },
+  {
+   "name": "RX 5700",
+   "vendor": "amd",
+   "index": 24,
+   "vramGb": 8
+  },
+  {
+   "name": "RX 5600 XT",
+   "vendor": "amd",
+   "index": 21,
+   "vramGb": 6
+  },
+  {
+   "name": "RX 590",
+   "vendor": "amd",
+   "index": 13.5,
+   "vramGb": 8
+  },
+  {
+   "name": "RX 580",
+   "vendor": "amd",
+   "index": 12.5,
+   "vramGb": 8
+  },
+  {
+   "name": "RX 6500 XT",
+   "vendor": "amd",
+   "index": 11.5,
+   "vramGb": 4
+  },
+  {
+   "name": "RX 570",
+   "vendor": "amd",
+   "index": 11,
+   "vramGb": 4
+  },
+  {
+   "name": "RX 5500 XT",
+   "vendor": "amd",
+   "index": 14,
+   "vramGb": 8
+  },
+  {
+   "name": "Arc B580",
+   "vendor": "intel",
+   "index": 33,
+   "vramGb": 12
+  },
+  {
+   "name": "Arc B570",
+   "vendor": "intel",
+   "index": 29,
+   "vramGb": 10
+  },
+  {
+   "name": "Arc A770",
+   "vendor": "intel",
+   "index": 29,
+   "vramGb": 16
+  },
+  {
+   "name": "Arc A750",
+   "vendor": "intel",
+   "index": 27,
+   "vramGb": 8
+  },
+  {
+   "name": "Arc A580",
+   "vendor": "intel",
+   "index": 23,
+   "vramGb": 8
+  },
+  {
+   "name": "Arc A380",
+   "vendor": "intel",
+   "index": 8.5,
+   "vramGb": 6
+  },
+  {
+   "name": "RTX 5090 Laptop",
+   "vendor": "nvidia",
+   "index": 60,
+   "vramGb": 24
+  },
+  {
+   "name": "RTX 4090 Laptop",
+   "vendor": "nvidia",
+   "index": 55,
+   "vramGb": 16
+  },
+  {
+   "name": "RTX 5080 Laptop",
+   "vendor": "nvidia",
+   "index": 50,
+   "vramGb": 16
+  },
+  {
+   "name": "RTX 4080 Laptop",
+   "vendor": "nvidia",
+   "index": 47,
+   "vramGb": 12
+  },
+  {
+   "name": "RTX 5070 Ti Laptop",
+   "vendor": "nvidia",
+   "index": 40,
+   "vramGb": 12
+  },
+  {
+   "name": "RTX 3080 Ti Laptop",
+   "vendor": "nvidia",
+   "index": 38,
+   "vramGb": 16
+  },
+  {
+   "name": "RTX 5070 Laptop",
+   "vendor": "nvidia",
+   "index": 33,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 4070 Laptop",
+   "vendor": "nvidia",
+   "index": 32,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 3070 Ti Laptop",
+   "vendor": "nvidia",
+   "index": 32,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 5060 Laptop",
+   "vendor": "nvidia",
+   "index": 31,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 4060 Laptop",
+   "vendor": "nvidia",
+   "index": 29,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 3070 Laptop",
+   "vendor": "nvidia",
+   "index": 29,
+   "vramGb": 8
+  },
+  {
+   "name": "RTX 4050 Laptop",
+   "vendor": "nvidia",
+   "index": 24,
+   "vramGb": 6
+  },
+  {
+   "name": "RTX 3060 Laptop",
+   "vendor": "nvidia",
+   "index": 24,
+   "vramGb": 6
+  },
+  {
+   "name": "RTX 3050 Ti Laptop",
+   "vendor": "nvidia",
+   "index": 13,
+   "vramGb": 4
+  },
+  {
+   "name": "RTX 3050 Laptop",
+   "vendor": "nvidia",
+   "index": 12,
+   "vramGb": 4
+  },
+  {
+   "name": "GTX 1650 Laptop",
+   "vendor": "nvidia",
+   "index": 8.5,
+   "vramGb": 4
+  },
+  {
+   "name": "RX 6800M",
+   "vendor": "amd",
+   "index": 33,
+   "vramGb": 12
+  },
+  {
+   "name": "RX 6700M",
+   "vendor": "amd",
+   "index": 28,
+   "vramGb": 10
+  },
+  {
+   "name": "RX 7600S",
+   "vendor": "amd",
+   "index": 22,
+   "vramGb": 8
+  },
+  {
+   "name": "Radeon 890M",
+   "vendor": "amd",
+   "index": 11,
+   "vramGb": 0
+  },
+  {
+   "name": "Radeon 880M",
+   "vendor": "amd",
+   "index": 9.5,
+   "vramGb": 0
+  },
+  {
+   "name": "Radeon 780M",
+   "vendor": "amd",
+   "index": 9.5,
+   "vramGb": 0
+  },
+  {
+   "name": "Radeon 760M",
+   "vendor": "amd",
+   "index": 7.5,
+   "vramGb": 0
+  },
+  {
+   "name": "Radeon 680M",
+   "vendor": "amd",
+   "index": 8,
+   "vramGb": 0
+  },
+  {
+   "name": "Radeon 660M",
+   "vendor": "amd",
+   "index": 5.5,
+   "vramGb": 0
+  },
+  {
+   "name": "Radeon Vega 8",
+   "vendor": "amd",
+   "index": 3.5,
+   "vramGb": 0
+  },
+  {
+   "name": "Radeon Graphics 610M",
+   "vendor": "amd",
+   "index": 1.5,
+   "vramGb": 0
+  },
+  {
+   "name": "Arc 140V",
+   "vendor": "intel",
+   "index": 10,
+   "vramGb": 0
+  },
+  {
+   "name": "Arc 130V",
+   "vendor": "intel",
+   "index": 8,
+   "vramGb": 0
+  },
+  {
+   "name": "Intel Arc Graphics",
+   "vendor": "intel",
+   "index": 8.5,
+   "vramGb": 0
+  },
+  {
+   "name": "Iris Xe",
+   "vendor": "intel",
+   "index": 4.5,
+   "vramGb": 0
+  },
+  {
+   "name": "UHD Graphics 770",
+   "vendor": "intel",
+   "index": 2,
+   "vramGb": 0
+  },
+  {
+   "name": "UHD Graphics 630",
+   "vendor": "intel",
+   "index": 1.3,
+   "vramGb": 0
+  },
+  {
+   "name": "UHD Graphics",
+   "vendor": "intel",
+   "index": 1.5,
+   "vramGb": 0
+  }
+ ],
+ "cpus": [
+  {
+   "name": "Ryzen 7 9800X3D",
+   "index": 100
+  },
+  {
+   "name": "Ryzen 9 9950X3D",
+   "index": 99
+  },
+  {
+   "name": "Ryzen 9 9900X3D",
+   "index": 92
+  },
+  {
+   "name": "Ryzen 7 7800X3D",
+   "index": 89
+  },
+  {
+   "name": "Ryzen 9 7950X3D",
+   "index": 88
+  },
+  {
+   "name": "Ryzen 9 7900X3D",
+   "index": 82
+  },
+  {
+   "name": "Ryzen 9 9950X",
+   "index": 80
+  },
+  {
+   "name": "Ryzen 9 9900X",
+   "index": 78
+  },
+  {
+   "name": "Ryzen 7 9700X",
+   "index": 78
+  },
+  {
+   "name": "Ryzen 5 9600X",
+   "index": 75
+  },
+  {
+   "name": "Ryzen 5 9600",
+   "index": 73
+  },
+  {
+   "name": "Ryzen 9 7950X",
+   "index": 76
+  },
+  {
+   "name": "Ryzen 9 7900X",
+   "index": 74
+  },
+  {
+   "name": "Ryzen 9 7900",
+   "index": 72
+  },
+  {
+   "name": "Ryzen 7 7700X",
+   "index": 73
+  },
+  {
+   "name": "Ryzen 7 7700",
+   "index": 72
+  },
+  {
+   "name": "Ryzen 5 7600X",
+   "index": 70
+  },
+  {
+   "name": "Ryzen 5 7600",
+   "index": 67
+  },
+  {
+   "name": "Ryzen 7 5800X3D",
+   "index": 72
+  },
+  {
+   "name": "Ryzen 7 5700X3D",
+   "index": 68
+  },
+  {
+   "name": "Ryzen 9 5950X",
+   "index": 62
+  },
+  {
+   "name": "Ryzen 9 5900X",
+   "index": 61
+  },
+  {
+   "name": "Ryzen 7 5800X",
+   "index": 60
+  },
+  {
+   "name": "Ryzen 7 5700X",
+   "index": 58
+  },
+  {
+   "name": "Ryzen 5 5600X",
+   "index": 57
+  },
+  {
+   "name": "Ryzen 5 5600",
+   "index": 55
+  },
+  {
+   "name": "Ryzen 7 5700G",
+   "index": 52
+  },
+  {
+   "name": "Ryzen 5 5600G",
+   "index": 50
+  },
+  {
+   "name": "Ryzen 5 5500",
+   "index": 48
+  },
+  {
+   "name": "Ryzen 7 8700G",
+   "index": 62
+  },
+  {
+   "name": "Ryzen 5 8600G",
+   "index": 58
+  },
+  {
+   "name": "Ryzen 9 3900X",
+   "index": 47
+  },
+  {
+   "name": "Ryzen 7 3700X",
+   "index": 45
+  },
+  {
+   "name": "Ryzen 5 3600",
+   "index": 43
+  },
+  {
+   "name": "Ryzen 7 2700X",
+   "index": 38
+  },
+  {
+   "name": "Ryzen 5 2600",
+   "index": 36
+  },
+  {
+   "name": "Ryzen 5 1600",
+   "index": 31
+  },
+  {
+   "name": "Core Ultra 9 285K",
+   "index": 80
+  },
+  {
+   "name": "Core Ultra 7 265K",
+   "index": 78
+  },
+  {
+   "name": "Core Ultra 5 245K",
+   "index": 72
+  },
+  {
+   "name": "Core i9-14900K",
+   "index": 84
+  },
+  {
+   "name": "Core i7-14700K",
+   "index": 81
+  },
+  {
+   "name": "Core i5-14600K",
+   "index": 76
+  },
+  {
+   "name": "Core i5-14400",
+   "index": 64
+  },
+  {
+   "name": "Core i9-13900K",
+   "index": 83
+  },
+  {
+   "name": "Core i7-13700K",
+   "index": 79
+  },
+  {
+   "name": "Core i5-13600K",
+   "index": 75
+  },
+  {
+   "name": "Core i5-13400",
+   "index": 62
+  },
+  {
+   "name": "Core i9-12900K",
+   "index": 75
+  },
+  {
+   "name": "Core i7-12700K",
+   "index": 72
+  },
+  {
+   "name": "Core i5-12600K",
+   "index": 68
+  },
+  {
+   "name": "Core i5-12400",
+   "index": 60
+  },
+  {
+   "name": "Core i3-12100",
+   "index": 54
+  },
+  {
+   "name": "Core i9-11900K",
+   "index": 58
+  },
+  {
+   "name": "Core i7-11700K",
+   "index": 56
+  },
+  {
+   "name": "Core i5-11600K",
+   "index": 54
+  },
+  {
+   "name": "Core i5-11400",
+   "index": 50
+  },
+  {
+   "name": "Core i9-10900K",
+   "index": 54
+  },
+  {
+   "name": "Core i7-10700K",
+   "index": 52
+  },
+  {
+   "name": "Core i5-10600K",
+   "index": 50
+  },
+  {
+   "name": "Core i5-10400",
+   "index": 45
+  },
+  {
+   "name": "Core i9-9900K",
+   "index": 49
+  },
+  {
+   "name": "Core i7-9700K",
+   "index": 46
+  },
+  {
+   "name": "Core i5-9600K",
+   "index": 42
+  },
+  {
+   "name": "Core i7-8700K",
+   "index": 44
+  },
+  {
+   "name": "Core i5-8400",
+   "index": 38
+  },
+  {
+   "name": "Core i7-7700K",
+   "index": 37
+  },
+  {
+   "name": "Core i9-14900HX",
+   "index": 75
+  },
+  {
+   "name": "Core i9-13980HX",
+   "index": 74
+  },
+  {
+   "name": "Core i7-14700HX",
+   "index": 70
+  },
+  {
+   "name": "Core i7-13700HX",
+   "index": 68
+  },
+  {
+   "name": "Core i7-13700H",
+   "index": 62
+  },
+  {
+   "name": "Core i7-12700H",
+   "index": 60
+  },
+  {
+   "name": "Core i5-12500H",
+   "index": 55
+  },
+  {
+   "name": "Core i7-11800H",
+   "index": 48
+  },
+  {
+   "name": "Core i7-10750H",
+   "index": 40
+  },
+  {
+   "name": "Core Ultra 9 185H",
+   "index": 58
+  },
+  {
+   "name": "Core Ultra 7 155H",
+   "index": 55
+  },
+  {
+   "name": "Core Ultra 7 258V",
+   "index": 54
+  },
+  {
+   "name": "Ryzen 9 7945HX",
+   "index": 72
+  },
+  {
+   "name": "Ryzen 9 8945HS",
+   "index": 64
+  },
+  {
+   "name": "Ryzen 7 8845HS",
+   "index": 63
+  },
+  {
+   "name": "Ryzen 7 7840HS",
+   "index": 62
+  },
+  {
+   "name": "Ryzen 9 6900HX",
+   "index": 56
+  },
+  {
+   "name": "Ryzen 7 6800H",
+   "index": 55
+  },
+  {
+   "name": "Ryzen 7 5800H",
+   "index": 50
+  },
+  {
+   "name": "Ryzen AI 9 HX 370",
+   "index": 63
+  },
+  {
+   "name": "Ryzen 5 7640HS",
+   "index": 58
+  }
+ ]
+}
