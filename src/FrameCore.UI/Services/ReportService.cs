@@ -73,7 +73,7 @@ public static class ReportService
           .Append("h1{font-size:24px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 10px}.muted{color:var(--muted)}.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}")
           .Append("table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:top}th{color:var(--muted);font-weight:600;width:34%}")
           .Append(".sev{display:inline-block;padding:1px 8px;border-radius:6px;font-size:12px;font-weight:600}.Critical{color:var(--bad)}.Warning{color:var(--warn)}.Suggestion{color:var(--accent)}.Info{color:var(--info)}")
-          .Append(".up{color:var(--ok)}.down{color:var(--bad)}.num{text-align:right;font-variant-numeric:tabular-nums}")
+          .Append(".up{color:var(--ok)}.down{color:var(--bad)}.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.cmp th{width:auto}.cmp td:last-child{min-width:260px}")
           .Append("@media (max-width:600px){th{width:45%}}</style></head><body><main>");
     }
 
@@ -163,7 +163,7 @@ public static class ReportService
         if (cmp.Before.OsBuild != cmp.After.OsBuild && cmp.Before.OsBuild != null && cmp.After.OsBuild != null)
             sb.Append("<tr><th>").Append(E(Loc.T("quick.share.changes"))).Append("</th><td>").Append(E(Loc.T("quick.osChanged"))).Append("</td></tr>");
         sb.Append("</table></div>");
-        sb.Append("<h2>").Append(E(Loc.T("quick.share.metrics"))).Append("</h2><div class=\"card\"><table><tr><th>").Append(E(Loc.T("quick.col.metric")))
+        sb.Append("<h2>").Append(E(Loc.T("quick.share.metrics"))).Append("</h2><div class=\"card\"><table class=\"cmp\"><tr><th>").Append(E(Loc.T("quick.col.metric")))
           .Append("</th><th class=\"num\">").Append(E(Loc.T("quick.share.before"))).Append("</th><th class=\"num\">").Append(E(Loc.T("quick.share.after")))
           .Append("</th><th class=\"num\">%</th><th>").Append(E(Loc.T("quick.share.verdict"))).Append("</th></tr>");
         foreach (var m in cmp.Metrics)

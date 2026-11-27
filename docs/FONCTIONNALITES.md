@@ -25,6 +25,7 @@ AMD EPYC, 16 Go, pilote d'affichage de base Microsoft (pas de GPU), droits admin
 | Benchmark rapide (CPU, mémoire, stockage, réactivité, bridage) | Testée | exécuté réellement (express) sur la VM ; statistiques et progression couvertes par des tests |
 | Benchmark rapide — partie GPU | Non testable ici | pas de GPU matériel sur la VM (mesure marquée « non mesuré ») |
 | Températures, fréquences GPU, puissance | Non testable ici | aucun capteur exposé par la VM ; affichés « indéterminés » (jamais 0) |
+| Comparaison avant/après partageable (HTML sans données personnelles) | Testée | export réel sur Windows pendant la visite |
 | Comparaison avant/après, indice relatif, détection de changement de pilote/Windows | Testée | tests unitaires + comparaison réelle avant/après optimisation (indice 102,3, aucune dégradation confirmée) |
 | Laboratoire : réactivité, calcul de type IA | Testée | exécutés sur la VM |
 | Laboratoire : stockage, mémoire, CPU, réseau local | Testée (logique) / Partielle | mêmes moteurs que le benchmark rapide ; réseau selon la passerelle de la VM |
@@ -39,6 +40,8 @@ AMD EPYC, 16 Go, pilote d'affichage de base Microsoft (pas de GPU), droits admin
 | Programmes au démarrage : inventaire, classification, désactivation réversible | Testée | inventaire réel (analyse en arrière-plan) ; désactivation puis réactivation d'une entrée réelle sur Windows ; mises à jour de sécurité jamais proposées d'office |
 | Rapport de diagnostic HTML/JSON | Testée (logique) | génération couverte ; non ouvert par la visite |
 | Mise à jour de l'application (manifeste, empreinte, consentement) | Non testable ici | désactivée par défaut ; aucun serveur de mise à jour configuré |
+| Carte graphique par application (réglage officiel de Windows, restaurable) | Testée | tests unitaires (lecture, validation, aller-retour exact) + réglage puis retour au choix de Windows sur Windows ; effet réel seulement sur un PC à deux cartes graphiques |
+| Mise à l'échelle DPI et redimensionnement | Testée | pages principales rendues à 1366×768 / 125 % et 1920×1080 / 150 % : aucun contenu coupé (contrôle automatique) |
 | Accessibilité : focus visible, noms accessibles, tailles, clavier | Testée | audit automatique pendant la visite + contrastes calculés (WCAG AA) |
 
 ## Réglages expérimentaux
@@ -58,5 +61,6 @@ interruptions réseau, Power Throttling, plan Performances ultimes, SysMain, Win
 | Réglage GPU Intel Arc | pas d'API publique de réglage |
 | Contrôle des ventilateurs | laissé au pilote et aux logiciels des fabricants |
 | Inférence IA réelle (ONNX Runtime, llama.cpp) | dépendances et modèles volumineux non embarqués ; indicateur de calcul FP32 à la place |
+| Débit Internet (téléchargement) | aucun serveur de test officiel et libre de droits embarqué ; latence, gigue et pertes mesurées avec consentement |
 | GTA VI dans la bibliothèque | aucune version PC confirmée |
 | Signature numérique de l'installateur | aucun certificat fourni |

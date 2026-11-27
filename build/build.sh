@@ -47,9 +47,20 @@ if command -v pandoc >/dev/null 2>&1; then
   cp build/doc.css "$PUB/docs/doc.css"; cp build/doc.css "$PUB/doc.css"
 fi
 
-# Sanity checks: the package must never contain per-machine data.
-if find "$PUB" -iname 'settings.json' -o -iname '*.journal.json' -o -path '*Backups*' | grep -q .; then
-  echo "ERROR: per-machine data found in the publish folder" >&2; exit 1
+# Sanity checks: the package must never contain per-machine data (what lives in %LOCALAPPDATA%\FrameCore on a PC:
+# settings, journal and backups, benchmarks, reports, logs, profiles, hardware profile, captures).
+if find "$PUB" \( -iname 'settings.json' -o -iname '*.journal.json' -o -iname '*.log' -o -iname 'profile.json' \
+     -o -iname 'gpu-profiles.json' -o -iname '*.etl' -o -ipath '*/Backups/*' -o -ipath '*/Benchmarks/*' -o -ipath '*/Reports/*' \
+     -o -ipath '*/Logs/*' -o -ipath '*/Profiles/*' -o -ipath '*/QuickBench/*' -o -ipath '*/Verification/*' \) | grep -q .; then
+  echo "ERROR: per-machine data found in the publish folder:" >&2
+  find "$PUB" \( -iname 'settings.json' -o -iname '*.journal.json' -o -iname '*.log' -o -iname 'profile.json' -o -ipath '*/Backups/*' \) >&2
+  exit 1
+fi
+# No user profile path of the build machine may leak into shipped text files (catalog, languages, docs).
+if grep -rIl -E '[A-Za-z]:\\\\Users\\\\[A-Za-z0-9._-]+|/home/[a-z0-9._-]+/' "$PUB/catalog" "$PUB/lang" "$PUB/docs" 2>/dev/null | grep -q .; then
+  echo "ERROR: a user profile path was found in shipped text files:" >&2
+  grep -rIl -E '[A-Za-z]:\\\\Users\\\\[A-Za-z0-9._-]+|/home/[a-z0-9._-]+/' "$PUB/catalog" "$PUB/lang" "$PUB/docs" >&2
+  exit 1
 fi
 test -f "$PUB/FrameCore.exe"
 test -d "$PUB/catalog/tweaks"

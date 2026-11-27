@@ -52,7 +52,8 @@ Page **Optimisation** — trois niveaux :
 - **Benchmark rapide** (standard ≈ 4–5 min, express ≈ 1 min 30) : processeur 1 cœur / multicœur / charge prolongée,
   mémoire, stockage, carte graphique, réactivité, températures et bridage. Chaque mesure est répétée (médiane,
   variation, intervalle de confiance). **Comparaison avant / après** avec interprétation : amélioration ou dégradation
-  confirmée, dans le bruit, à confirmer.
+  confirmée, dans le bruit, à confirmer. **Partager (HTML)** enregistre la comparaison affichée dans une page à
+  envoyer à un ami ou sur un forum (sans nom de machine, nom d'utilisateur ni numéro de série).
 - **Laboratoire** : tests séparés (y compris réseau local, latence Internet avec votre accord, calcul de type IA et
   stress combiné CPU + GPU avec arrêt automatique en cas de surchauffe).
 - **Capture en jeu** : frametimes réels (ETW intégré, Intel PresentMon vérifié par signature, ou import CSV),
@@ -79,7 +80,8 @@ interrompue ; rapports de vérification. Voir [GUIDE-RESTAURATION.md](GUIDE-REST
 Chaque réglage individuellement par catégorie : description, **objectif**, mécanisme, valeur actuelle et proposée, impact,
 ce qu'il peut influencer (et s'il n'a aucune raison de modifier les FPS), confiance, risque, compatibilité, persistance,
 conflits, méthode de vérification et de restauration, sources ; Appliquer / Restaurer. Également : programmes au
-démarrage et services tiers, profils personnalisés exportables, surveillance temps réel et **Réglages écartés** (astuces
+démarrage et services tiers, **carte graphique par application** (catégorie Carte graphique : choisir « hautes
+performances » pour un jeu sur un portable à deux cartes graphiques, restaurable), profils personnalisés exportables, surveillance temps réel et **Réglages écartés** (astuces
 répandues que FrameCore refuse, avec la raison).
 
 ## 8. Paramètres

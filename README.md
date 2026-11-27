@@ -22,12 +22,12 @@ modification est enregistrée avec la valeur exacte d'origine et peut être annu
 | Tableau de bord | Diagnostic hiérarchisé, jauge factuelle des réglages actifs, actions rapides, alerte d'opération interrompue |
 | Optimisation | 3 niveaux (Équilibré, Performances, Performance maximale), plan propre au PC avant application, mesure avant/après, progression réelle par étapes, vérification et réparation automatiques |
 | Jeux & FPS | 91 jeux : FPS estimés avant/après avec plage, limitation, confiance et origine du chiffre ; 3 jeux mis en avant ; explorateur ; calibration par vos mesures réelles |
-| Benchmark | Benchmark rapide (≈ 5 min ou 1 min 30), comparaison statistique, laboratoire (CPU, RAM, GPU/VRAM, stockage, réactivité, calcul IA, réseau, stress combiné), capture en jeu (ETW, PresentMon, CSV) |
+| Benchmark | Benchmark rapide (≈ 5 min ou 1 min 30), comparaison statistique partageable (HTML), laboratoire (CPU, RAM, GPU/VRAM, stockage, réactivité, calcul type IA, latence réseau, stress combiné), capture en jeu (ETW, PresentMon, CSV) |
 | Matériel | Détection complète avec **fiabilité de chaque donnée**, mesures en direct, procédure guidée XMP/EXPO |
 | Pilotes & BIOS | Inventaire, signataires, Windows Update, sources officielles, historique des versions ; BIOS : informations et liens officiels, jamais de flash |
 | Overclocking | GPU NVIDIA (NVML) et AMD (ADLX) : manuel, automatique progressif, test de stabilité, réglages d'usine ; CPU : test et conseils |
 | Restauration | Valeur exacte d'origine pour chaque modification, restauration élément/catégorie/profil/tout, rapports, reprise, vérification après redémarrage |
-| Mode Pro | Chaque réglage avec sa fiche complète, démarrage et services, profils exportables, surveillance, réglages écartés |
+| Mode Pro | Chaque réglage avec sa fiche complète, carte graphique par application, démarrage et services, profils exportables, surveillance, réglages écartés |
 | Catalogue | 73 optimisations documentées ([docs/CATALOGUE.md](docs/CATALOGUE.md)) + 19 « astuces » écartées avec la raison |
 
 ## Ce que FrameCore ne fera jamais
@@ -67,7 +67,7 @@ Tests seuls : `dotnet test tests/FrameCore.Tests/FrameCore.Tests.csproj`.
 - [Guide d'utilisation](docs/GUIDE-UTILISATION.md) · [Guide de restauration](docs/GUIDE-RESTAURATION.md) · [Installation](docs/INSTALLATION.md)
 - [Catalogue des optimisations](docs/CATALOGUE.md) · [Benchmarks et estimation des FPS](docs/BENCHMARKS.md) · [Overclocking](docs/OVERCLOCKING.md)
 - [Architecture](docs/ARCHITECTURE.md) · [Système de design](docs/DESIGN.md)
-- [Rapport d'audit](docs/AUDIT.md) · [Rapport de tests](docs/RAPPORT-TESTS.md) · [État des fonctionnalités](docs/FONCTIONNALITES.md) · [Idées étudiées](docs/IDEES.md)
+- [Vérification des exigences](docs/VERIFICATION-EXIGENCES.md) · [Rapport d'audit](docs/AUDIT.md) · [Rapport de tests](docs/RAPPORT-TESTS.md) · [État des fonctionnalités](docs/FONCTIONNALITES.md) · [Idées étudiées](docs/IDEES.md)
 - [Dépendances et licences](docs/DEPENDANCES-ET-LICENCES.md) · [Notices tierces](docs/THIRD_PARTY_NOTICES.md)
 - Recherches : [logiciels existants](docs/research/01-ETUDE-LOGICIELS-EXISTANTS.md),
   [technologies et API](docs/research/02-ETUDE-TECHNOLOGIES-ET-API.md),

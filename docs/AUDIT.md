@@ -47,10 +47,12 @@ puis correction. Gravité : **critique** (perte de données ou système modifié
 | 35 | Mineure | Plans | Valeurs affichées sans nom (« 1 / 1 / 1 → 0 / 0 / 0 ») ; nettoyage proposé avec « 0 Mo récupérables ». | Nom de la valeur, du service ou de la tâche devant chaque valeur ; opérations sans rien à faire retirées des plans (« Rien à faire »). |
 | 36 | Mineure | Confidentialité | Le rapport JSON « anonymisé » contenait passerelle, DNS, identifiants d'interface réseau et adresse MAC forcée éventuelle. | Retirés en mode anonyme. |
 | 37 | Mineure | Machines virtuelles | Conseils « pilote chipset AMD » et « Ryzen de bureau » affichés dans une machine virtuelle. | Conseils adaptés (le processeur est géré par l'hyperviseur). |
+| 38 | Modérée | Portabilité | Le contrôle « aucune donnée personnelle dans l'installateur » ne couvrait que les réglages, le journal et les sauvegardes. | Étendu aux benchmarks, rapports, profils, journaux d'exécution, captures et à tout chemin de profil utilisateur dans les fichiers livrés ; le build échoue sinon. |
+| 39 | Mineure | Rapport | Comparaison partageable : colonne « verdict » écrasée par le style du rapport de diagnostic. | Mise en page dédiée (vérifiée par rendu). |
 
 ## 2. Vérifications sans défaut
 
-- **Aucun bouton décoratif** : contrôle automatique de toutes les liaisons `Command` des vues vers des commandes existantes (72 utilisées, toutes définies) et 0 erreur de liaison WPF sur ~90 écrans visités sur Windows réel.
+- **Aucun bouton décoratif** : contrôle automatique de toutes les liaisons `Command` des vues vers des commandes existantes (75 utilisées, toutes définies), 0 erreur de liaison WPF et 0 exception d'interface sur ~110 écrans visités sur Windows réel (administrateur, utilisateur standard, application installée).
 - **Sécurité** : aucune action du catalogue ne vise Defender, le pare-feu, Windows Update, VBS/HVCI, Secure Boot, BitLocker ou les mitigations CPU (test automatique) ; le processus élevé n'accepte que des actions identiques au catalogue.
 - **Restauration exacte** : sur Windows réel, chaque optimisation compatible est appliquée, vérifiée puis restaurée, et l'état est comparé à l'état d'origine (test d'intégration), directement **et** via le processus élevé utilisé par les comptes non administrateurs.
 - **Refus de l'UAC** : chaque chemin qui demande des droits gère le refus (message clair, réglages sans droits appliqués quand même, aucun plantage).
