@@ -99,6 +99,7 @@ public sealed class QuickRunRow
 {
     public QuickBenchResult Result { get; init; } = null!;
     public string Title => $"{Result.StartedUtc.ToLocalTime():g} · {Result.Label}";
+    public override string ToString() => Title;
     public string Detail => Loc.T("quick.mode.short." + Result.Mode) + " · "
         + Loc.T("quick.history.detail", Result.Metrics.Count(m => m.Measured), Math.Round(Result.Duration.TotalMinutes, 1), Result.ActiveTweakIds.Count)
         + (Result.Stress is { } st ? " · " + Loc.T(st.Passed ? "quick.history.stressOk" : "quick.history.stressKo") : "");

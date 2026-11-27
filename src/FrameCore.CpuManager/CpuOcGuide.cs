@@ -17,6 +17,7 @@ public sealed class BiosBrand
     public List<string> Tabs { get; set; } = new();
     public string Accent { get; set; } = "#2F80ED";
     public string Bar { get; set; } = "#111111";
+    public override string ToString() => Name;
 }
 
 public sealed class BiosPath { public string Tab { get; set; } = ""; public List<string> Path { get; set; } = new(); }

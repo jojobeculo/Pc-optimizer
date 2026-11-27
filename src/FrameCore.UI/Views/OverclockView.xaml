@@ -124,6 +124,7 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Button x:Name="Row" Cursor="Hand" Margin="0,0,0,6" HorizontalContentAlignment="Stretch" AutomationProperties.Name="{Binding Label}"
+                                                    Foreground="{DynamicResource Brush.Text}" FocusVisualStyle="{StaticResource FocusRing}"
                                                     Command="{Binding DataContext.SelectStepCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
                                                 <Button.Template>
                                                     <ControlTemplate TargetType="Button">
@@ -137,8 +138,7 @@
                                                     </ControlTemplate>
                                                 </Button.Template>
                                                 <DockPanel>
-                                                    <TextBlock DockPanel.Dock="Left" Width="22" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Accent}"
-                                                               Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={StaticResource OneBased}}"/>
+                                                    <TextBlock DockPanel.Dock="Left" Width="22" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Accent}" Text="{Binding Number}"/>
                                                     <StackPanel>
                                                         <DockPanel>
                                                             <Border DockPanel.Dock="Right" Background="{DynamicResource Brush.AccentSoft}" CornerRadius="5" Padding="7,2" Margin="8,0,0,0" VerticalAlignment="Top">

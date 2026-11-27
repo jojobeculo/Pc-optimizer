@@ -34,6 +34,8 @@ public sealed class WindowsScreen
 
 public sealed partial class CpuGuideStep : ObservableObject
 {
+    /// <summary>"1.", "2."… (order to follow in the BIOS).</summary>
+    public string Number { get; init; } = "";
     public string SettingId { get; init; } = "";
     public string Label { get; init; } = "";
     public string Value { get; init; } = "";
@@ -118,7 +120,7 @@ public sealed partial class CpuGuideViewModel : ObservableObject
         {
             if (!_guide.Settings.TryGetValue(ls.Setting, out var s)) continue;
             var path = s.Paths.TryGetValue(Brand.Id, out var bp) ? string.Join("  ›  ", new[] { bp.Tab }.Concat(bp.Path)) : "";
-            Steps.Add(new CpuGuideStep { SettingId = ls.Setting, Label = s.Label.ToString(), Value = ls.Value.ToString(), Why = s.Why.ToString(), Path = path });
+            Steps.Add(new CpuGuideStep { Number = (Steps.Count + 1) + ".", SettingId = ls.Setting, Label = s.Label.ToString(), Value = ls.Value.ToString(), Why = s.Why.ToString(), Path = path });
         }
         SelectedStep = Steps.FirstOrDefault(x => x.SettingId == keep) ?? Steps.FirstOrDefault();
     }
