@@ -58,7 +58,7 @@ puis correction. Gravité : **critique** (perte de données ou système modifié
 ## 2. Vérifications sans défaut
 
 - **Aucun bouton décoratif** : contrôle automatique de toutes les liaisons `Command` des vues vers des commandes existantes (75 utilisées, toutes définies), 0 erreur de liaison WPF et 0 exception d'interface sur ~110 écrans visités sur Windows réel (administrateur, utilisateur standard, application installée).
-- **Sécurité** : aucune action du catalogue ne vise Defender, le pare-feu, Windows Update, VBS/HVCI, Secure Boot, BitLocker ou les mitigations CPU (test automatique) ; le processus élevé n'accepte que des actions identiques au catalogue.
+- **Sécurité** : aucune action du catalogue ne vise Defender, le pare-feu, Windows Update, VBS/HVCI, Secure Boot, BitLocker ou les mitigations CPU (test automatique), hormis les 3 contreparties du niveau Extrême (intégrité de la mémoire, plafond des analyses planifiées, exclusion des dossiers de jeux), réservées à ce niveau, avec consentement et restaurables (test automatique) ; le processus élevé n'accepte que des actions identiques au catalogue.
 - **Restauration exacte** : sur Windows réel, chaque optimisation compatible est appliquée, vérifiée puis restaurée, et l'état est comparé à l'état d'origine (test d'intégration), directement **et** via le processus élevé utilisé par les comptes non administrateurs.
 - **Refus de l'UAC** : chaque chemin qui demande des droits gère le refus (message clair, réglages sans droits appliqués quand même, aucun plantage).
 

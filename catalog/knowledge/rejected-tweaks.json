@@ -273,16 +273,16 @@
   {
    "id": "vbs.disable",
    "name": {
-    "fr": "Désactiver VBS / l'intégrité de la mémoire (HVCI)",
-    "en": "Disable VBS / Memory integrity (HVCI)"
+    "fr": "Désactiver VBS / l'intégrité de la mémoire (HVCI) sur un PC ordinaire",
+    "en": "Disable VBS / Memory integrity (HVCI) on an everyday PC"
    },
    "claim": {
     "fr": "Augmenterait les FPS.",
     "en": "Supposedly increases FPS."
    },
    "verdict": {
-    "fr": "Un gain de quelques pourcents est réel dans certains jeux limités par le processeur, mais cela retire une protection importante contre les pilotes malveillants. FrameCore ne le fait jamais ; vous pouvez le décider vous-même dans Sécurité Windows en connaissance de cause.",
-    "en": "A gain of a few percent is real in some CPU-bound games, but it removes an important protection against malicious drivers. FrameCore never does it; you can decide yourself in Windows Security."
+    "fr": "Un gain de quelques pourcents est réel dans certains jeux limités par le processeur, mais cela retire une protection importante contre les pilotes malveillants. Jamais proposé dans les niveaux Équilibré, Performances et Performance maximale ; seulement au niveau Extrême (PC qui sert uniquement à jouer), après avertissement, avec consentement et restauration possible à tout moment. VBS lui-même n'est jamais désactivé.",
+    "en": "A gain of a few percent is real in some CPU-bound games, but it removes an important protection against malicious drivers. Never offered in the Balanced, Performance and Maximum levels; only at the Extreme level (gaming-only PC), after a warning, with consent and restorable at any time. VBS itself is never turned off."
    },
    "kind": "SecurityTradeoff",
    "sources": [
@@ -317,8 +317,8 @@
     "en": "The antivirus supposedly slows games."
    },
    "verdict": {
-    "fr": "L'impact en jeu est négligeable une fois les fichiers analysés. Le Mode Jeu réduit déjà l'activité de fond. Interdit par FrameCore.",
-    "en": "In-game impact is negligible once files are scanned. Game Mode already reduces background activity. Forbidden by FrameCore."
+    "fr": "L'impact en jeu est négligeable une fois les fichiers analysés. Le Mode Jeu réduit déjà l'activité de fond. Interdit par FrameCore, à tous les niveaux : le niveau Extrême se limite à exclure les dossiers des jeux de l'analyse et à plafonner le processeur des analyses planifiées, la protection en temps réel restant active.",
+    "en": "In-game impact is negligible once files are scanned. Game Mode already reduces background activity. Forbidden by FrameCore at every level: the Extreme level only excludes game folders from scanning and caps the CPU used by scheduled scans, real-time protection stays on."
    },
    "kind": "SecurityTradeoff",
    "sources": []

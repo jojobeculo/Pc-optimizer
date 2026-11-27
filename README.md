@@ -32,8 +32,9 @@ modification est enregistrée avec la valeur exacte d'origine et peut être annu
 
 ## Ce que FrameCore ne fera jamais
 
-Désactiver Microsoft Defender, le pare-feu, Windows Update, Secure Boot, le TPM, VBS/HVCI ou les mitigations
-processeur ; supprimer des composants Windows ; « nettoyer » la RAM en vidant la liste d'attente ; tuer des processus
+Désactiver la protection en temps réel de Microsoft Defender, le pare-feu, Windows Update, Secure Boot, le TPM, VBS ou
+les mitigations processeur (seul le niveau Extrême, après avertissement, coupe l'intégrité de la mémoire et exclut les
+dossiers de jeux de l'analyse Defender — restaurable à tout moment) ; supprimer des composants Windows ; « nettoyer » la RAM en vidant la liste d'attente ; tuer des processus
 au hasard ; supprimer le fichier d'échange ; défragmenter un SSD ; forcer HPET ; installer un pilote non signé ;
 flasher un BIOS ; télécharger depuis un site tiers ; envoyer vos données sans consentement explicite.
 

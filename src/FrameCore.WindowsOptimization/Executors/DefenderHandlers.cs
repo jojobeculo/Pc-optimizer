@@ -70,7 +70,8 @@ public sealed class WmiDefenderPreferences : IDefenderPreferences
 
     public void AddExclusionPaths(IReadOnlyList<string> paths) { if (paths.Count > 0) Invoke("Add", "ExclusionPath", paths.ToArray()); }
     public void RemoveExclusionPaths(IReadOnlyList<string> paths) { if (paths.Count > 0) Invoke("Remove", "ExclusionPath", paths.ToArray()); }
-    public void SetScanCpuLimit(int percent) => Invoke("Set", "ScanAvgCPULoadFactor", (byte)Math.Clamp(percent, 5, 100));
+    // 0 = no limit (Windows value restored as is); otherwise Defender accepts 5–100 %.
+    public void SetScanCpuLimit(int percent) => Invoke("Set", "ScanAvgCPULoadFactor", (byte)(percent <= 0 ? 0 : Math.Clamp(percent, 5, 100)));
 }
 
 /// <summary>
@@ -90,7 +91,13 @@ public sealed class DefenderScanCpuHandler : IActionHandler
         if (!_d.Available) return ActionState.Absent(Loc.T("defender.unavailable"));
         var cur = _d.ScanCpuLimit();
         if (cur == null) return ActionState.Unreadable(Loc.T("engine.needsElevationToRead"));
-        return new ActionState { Matches = cur <= Target(a), Current = Loc.T("defender.scanCpu", cur), Target = Loc.T("defender.scanCpu", Target(a)) };
+        // 0 means "no limit" for Microsoft Defender (CPU throttling disabled), not 0 %.
+        return new ActionState
+        {
+            Matches = cur is > 0 && cur <= Target(a),
+            Current = cur == 0 ? Loc.T("defender.scanCpu.none") : Loc.T("defender.scanCpu", cur),
+            Target = Loc.T("defender.scanCpu", Target(a)),
+        };
     }
 
     public StateSnapshot Capture(ActionDefinition a) =>

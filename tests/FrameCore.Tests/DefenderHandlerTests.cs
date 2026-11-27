@@ -51,6 +51,20 @@ public class DefenderHandlerTests
     }
 
     [Fact]
+    public void Zero_means_unlimited_and_is_not_already_in_place()
+    {
+        var d = new FakeDefender { CpuLimit = 0 };
+        var h = new DefenderScanCpuHandler(d);
+        var a = Handler("defender.scanCpuLimit", "20");
+        Assert.False(h.Read(a).Matches);
+        var snap = h.Capture(a);
+        h.Apply(a);
+        Assert.True(h.Read(a).Matches);
+        h.Restore(a, snap);
+        Assert.Equal(0, d.CpuLimit);
+    }
+
+    [Fact]
     public void Nothing_is_done_when_defender_is_not_the_active_antivirus()
     {
         var d = new FakeDefender { Available = false };

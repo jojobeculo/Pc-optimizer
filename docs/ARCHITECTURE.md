@@ -12,7 +12,7 @@ installer sur la machine cible.
 | Tout est réversible ou explicitement signalé comme non réversible | Chaque action a un `Capture` / `Restore` ; les opérations de maintenance (nettoyage, retrim) sont marquées `reversible: false`. |
 | Catalogue déclaratif et fermé | Les optimisations sont des fichiers JSON (`catalog/tweaks/*.json`) composés d'un **ensemble fermé de types d'actions** ; aucun script, aucune commande libre. |
 | Moindre privilège | L'interface tourne en `asInvoker`. Les opérations qui l'exigent passent par un processus *worker* élevé (UAC), lancé à la demande et piloté par un canal nommé protégé. |
-| Liste blanche de sécurité | `SafetyPolicy` refuse toute action visant Defender, le pare-feu, Windows Update, BitLocker, VBS/HVCI, Secure Boot, les mitigations CPU, les services critiques, etc. Vérifié à la compilation du catalogue **et** dans le worker. |
+| Liste blanche de sécurité | `SafetyPolicy` refuse toute action visant Defender, le pare-feu, Windows Update, BitLocker, VBS/HVCI, Secure Boot, les mitigations CPU, les services critiques, etc. Seules exceptions, listées une à une (`SecurityTradeOffRegistry`, `SecurityTradeOffHandlers`) et imposées par la validation du catalogue au niveau Extrême uniquement, avec consentement et réversibilité : la valeur HVCI `Enabled`, le plafond processeur des analyses planifiées et l'exclusion des dossiers de jeux (interface officielle de Defender). Vérifié à la compilation du catalogue **et** dans le worker. |
 | Aucune valeur inventée | Une donnée non lisible est affichée « indéterminée » avec la raison (droits, capteur absent, API indisponible). |
 | Local et sans télémétrie | Aucune requête réseau sans action explicite de l'utilisateur. |
 
