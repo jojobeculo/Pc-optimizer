@@ -16,7 +16,7 @@ Statut : **fait** (dans cette version), **partiel**, **proposé** (non fait), **
 | Détection des régressions après mise à jour | fait | comparaison benchmark signalant un changement de pilote ou de build Windows ; vérification après redémarrage |
 | Assistant de réparation réversible | partiel | réparations du catalogue (boost, état max CPU, TRIM, fichier d'échange, autotuning) ; pas de SFC/DISM automatisé |
 | Analyse des processus | partiel | processus les plus gourmands en mémoire (page Matériel) |
-| Analyse du temps de démarrage | proposé | journal Diagnostics-Performance (ID 100) : faisable sans droits élevés spéciaux |
+| Analyse du temps de démarrage | fait | journal Diagnostics-Performance de Windows (ID 100 : durée de chaque démarrage ; ID 101 à 110 : applications, pilotes, services et périphériques qui l'ont ralenti) ; mode Pro › Démarrage ; constat « démarrage lent » ; lecture avec droits administrateur seulement sur demande quand Windows réserve ce journal |
 | Centre de restauration | fait | historique, rapports, reprise, restauration par élément / catégorie / profil / tout |
 | Conseiller matériel | partiel | limitation principale par jeu ; constats RAM (canal, XMP), stockage, écran |
 

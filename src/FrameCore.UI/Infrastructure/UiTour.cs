@@ -106,6 +106,24 @@ public static class UiTour
             report["gamesEstimated"] = shell.Games.Rows.Count(r => r.Estimate.Fps != null);
             report["gamesShowcase"] = shell.Games.Showcase.Select(r => $"{r.Name}: {r.FpsText} ({r.RangeText}) {r.LimiterText} / {r.ConfidenceText} / {r.BasisText}").ToList();
 
+            // Windows start-up time (read only): what Windows recorded, with or without administrator rights.
+            await WaitUntil(() => shell.Diagnostic?.StartupTask.IsCompleted ?? true, TimeSpan.FromSeconds(60));
+            await Settle();
+            shell.CurrentKey = "home"; shell.Navigate("pro:startup");
+            await Settle();
+            await WaitUntil(() => !shell.Pro.BootLoading, TimeSpan.FromSeconds(30));
+            pages.Add(await Visit(shell, window, dir, "pro-startup-boot", () => { }, scrollShots: 2));
+            var boot = shell.Diagnostic?.Boot;
+            report["bootHistory"] = new Dictionary<string, object?>
+            {
+                ["selectedCategory"] = shell.Pro.SelectedCategory,
+                ["boots"] = boot?.Boots.Count, ["culprits"] = boot?.Culprits.Count, ["accessDenied"] = boot?.AccessDenied,
+                ["unavailable"] = boot?.Unavailable, ["error"] = boot?.Error,
+                ["recentMedianSeconds"] = boot?.RecentMedianMainPath(),
+                ["shownRows"] = shell.Pro.BootRuns.Count, ["needsRightsButton"] = shell.Pro.BootNeedsRights,
+                ["summary"] = shell.Pro.BootSummary, ["status"] = shell.Pro.BootStatus,
+            };
+
             // User-like flows. They change system settings, so they only run on a disposable CI machine.
             if (Environment.GetEnvironmentVariable("FRAMECORE_DISPOSABLE_VM") == "1")
             {

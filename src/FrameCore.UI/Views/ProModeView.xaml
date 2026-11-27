@@ -108,6 +108,84 @@
 
                 <!-- Startup -->
                 <StackPanel Visibility="{Binding SelectedCategory, Converter={StaticResource EqVis}, ConverterParameter=Startup}">
+                    <!-- Windows start-up time, as recorded by Windows itself -->
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top">
+                                    <Button Style="{StaticResource Button.SmallPrimary}" Content="{i:Loc boot.readWithRights}" Command="{Binding ReadBootWithRightsCommand}" Margin="0,0,6,0"
+                                            Visibility="{Binding BootNeedsRights, Converter={StaticResource BoolToVis}}" ToolTip="{i:Loc boot.readWithRights.tip}"/>
+                                    <Button Style="{StaticResource Button.Small}" Content="{i:Loc boot.refresh}" Command="{Binding RefreshBootCommand}"
+                                            IsEnabled="{Binding BootLoading, Converter={StaticResource Not}}"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="{i:Loc boot.title}" Style="{StaticResource Text.CardTitle}"/>
+                                    <TextBlock Text="{i:Loc boot.desc}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,2,12,0"/>
+                                </StackPanel>
+                            </DockPanel>
+                            <ProgressBar IsIndeterminate="True" Height="3" Margin="0,10,0,0" Visibility="{Binding BootLoading, Converter={StaticResource BoolToVis}}"/>
+                            <StackPanel Visibility="{Binding BootHasData, Converter={StaticResource BoolToVis}}" Margin="0,12,0,0">
+                                <WrapPanel>
+                                    <TextBlock Text="{Binding BootSummary}" Style="{StaticResource Text.Section}" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <Border Style="{StaticResource Badge}" VerticalAlignment="Center" Background="{Binding BootRatingKey, Converter={StaticResource LevelBrush}, ConverterParameter=soft}">
+                                        <TextBlock Style="{StaticResource Text.Badge}" Text="{Binding BootRating}" Foreground="{Binding BootRatingKey, Converter={StaticResource LevelBrush}}"/>
+                                    </Border>
+                                </WrapPanel>
+                                <TextBlock Text="{Binding BootDetail}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,4,0,10"/>
+                                <!-- History: one line per start, bar = time until the desktop -->
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140"/><ColumnDefinition Width="*"/><ColumnDefinition Width="90"/><ColumnDefinition Width="90"/><ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{i:Loc boot.col.when}" Style="{StaticResource Text.Caption}"/>
+                                    <TextBlock Grid.Column="1" Text="{i:Loc boot.col.desktop}" Style="{StaticResource Text.Caption}"/>
+                                    <TextBlock Grid.Column="2" Text="{i:Loc boot.col.mainPath}" Style="{StaticResource Text.Caption}" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Column="3" Text="{i:Loc boot.col.postBoot}" Style="{StaticResource Text.Caption}" HorizontalAlignment="Right"/>
+                                </Grid>
+                                <ItemsControl ItemsSource="{Binding BootRuns}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="140"/><ColumnDefinition Width="*"/><ColumnDefinition Width="90"/><ColumnDefinition Width="90"/><ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding When}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center"/>
+                                                <Border Grid.Column="1" Height="6" CornerRadius="3" Margin="0,0,12,0" Background="{DynamicResource Brush.Inset}" VerticalAlignment="Center">
+                                                    <Border HorizontalAlignment="Stretch" CornerRadius="3" Background="{DynamicResource Brush.Accent}" i:Motion.Fraction="{Binding MainFraction}"/>
+                                                </Border>
+                                                <TextBlock Grid.Column="2" Text="{Binding MainPath}" FontFamily="{StaticResource Font.Mono}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="3" Text="{Binding PostBoot}" FontFamily="{StaticResource Font.Mono}" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}"/>
+                                                <TextBlock Grid.Column="4" Text="{Binding Flags}" Style="{StaticResource Text.Caption}" Margin="12,0,0,0" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <!-- What Windows says slowed the starts down -->
+                                <TextBlock Text="{i:Loc boot.culprits}" Style="{StaticResource Text.CardTitle}" Margin="0,14,0,6"
+                                           Visibility="{Binding BootCulprits.Count, Converter={StaticResource BoolToVis}}"/>
+                                <ItemsControl ItemsSource="{Binding BootCulprits}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
+                                                <StackPanel>
+                                                    <WrapPanel>
+                                                        <TextBlock Text="{Binding Name}" FontWeight="Medium" Margin="0,0,8,0"/>
+                                                        <Border Style="{StaticResource Badge}"><TextBlock Style="{StaticResource Text.Badge}" Text="{Binding KindText}"/></Border>
+                                                    </WrapPanel>
+                                                    <TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Caption}"/>
+                                                    <TextBlock Text="{Binding Advice}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.AccentText}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            <TextBlock Text="{Binding BootStatus}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                       Visibility="{Binding BootStatus, Converter={StaticResource BoolToVis}}"/>
+                            <TextBlock Text="{i:Loc boot.note}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </Border>
+
                     <TextBlock Text="{i:Loc pro.startup.title}" Style="{StaticResource Text.Section}"/>
                     <TextBlock Text="{i:Loc pro.startup.desc}" Style="{StaticResource Text.Muted}" Margin="0,0,0,8"/>
                     <WrapPanel Margin="0,0,0,8">

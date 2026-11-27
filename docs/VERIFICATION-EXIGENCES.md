@@ -7,7 +7,7 @@ Statuts : **Fait** (implémenté, câblé dans l'interface et vérifié) · **Pa
 qu'en partie, détail donné) · **Non testable ici** (implémenté, mais le matériel nécessaire est absent de
 l'environnement de test : jamais simulé ni annoncé comme testé) · **Non fait** (absent, raison donnée).
 
-Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 121 tests) ; « IT » = test d'intégration sur Windows réel
+Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 131 tests) ; « IT » = test d'intégration sur Windows réel
 (`tests/FrameCore.WindowsIntegrationTests`) ; « Visite » = visite automatique de l'interface sur Windows avec captures
 (`--ui-tour`) ; « Parcours » = action utilisateur réellement exécutée pendant la visite sur la machine jetable.
 
@@ -59,6 +59,7 @@ Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 121 tests) ; « IT 
 |---|---|---|
 | Inventaire du démarrage (Run, dossier, tâches, services, extensions), classification, désactivation réversible sans suppression | Fait | Parcours : entrée réelle désactivée puis réactivée ; UT (StartupApproved, anti-cheats protégés) |
 | Mises à jour de sécurité conservées, jamais proposées d'office | Fait | navigateurs, Acrobat, Java « à conserver » (UT) |
+| Analyse du temps de démarrage de Windows (durées mesurées par Windows, tendance, applications / pilotes / services qui ralentissent) | Fait | journal Diagnostics-Performance ; UT (format des événements, médiane, tendance, classement) ; lecture réelle sur Windows pendant la visite (avec et sans droits) |
 | Services tiers : passage Manuel/Automatique réversible | Fait | mode Pro › Services |
 | Module RAM sans faux « nettoyeur » | Fait | analyse (canaux, XMP, barrettes mixtes, quantité), processus gourmands, diagnostic mémoire Windows ; aucune purge de la liste d'attente |
 
@@ -132,8 +133,8 @@ Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 121 tests) ; « IT 
 | Exigence | Statut | Où / comment c'est vérifié |
 |---|---|---|
 | Au moins 10 idées analysées (intérêt, faisabilité, risques, priorité) | Fait | `docs/IDEES.md` : 12 idées demandées + 12 supplémentaires |
-| Idées implémentées | Fait | mesure avant/après intégrée, fiabilité des données, réglages écartés, reprise, calibration, vérification après redémarrage, comparaison partageable, carte graphique par application, rapport de santé, détection de bridage, détection de régression après mise à jour, centre de restauration |
-| Idées restantes | Non fait (proposé) | mode « session de jeu », historique continu des capteurs, analyse du temps de démarrage, vérification d'écran par jeu |
+| Idées implémentées | Fait | mesure avant/après intégrée, fiabilité des données, réglages écartés, reprise, calibration, vérification après redémarrage, comparaison partageable, carte graphique par application, analyse du temps de démarrage, rapport de santé, détection de bridage, détection de régression après mise à jour, centre de restauration |
+| Idées restantes | Non fait (proposé) | mode « session de jeu », historique continu des capteurs, vérification d'écran par jeu |
 
 ## 13. Design, accessibilité, performance de l'application
 

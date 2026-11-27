@@ -37,6 +37,7 @@ AMD EPYC, 16 Go, pilote d'affichage de base Microsoft (pas de GPU), droits admin
 | Test de stabilité CPU (calculs vérifiés + WHEA) | Testée (logique) | unité de calcul déterministe testée ; exécutions courtes sur la VM |
 | Conseils CPU, procédure guidée XMP/EXPO | Testée (affichage) | règles testées ; aucune action automatique par conception |
 | Pilotes : inventaire, Windows Update, historique des versions | Partielle | inventaire réel sur la VM ; installation via Windows Update non déclenchée |
+| Analyse du temps de démarrage de Windows | Partielle | lecture des données que Windows enregistre (tests unitaires sur le format réel des événements) ; sur la VM de test, l'historique dépend de ce que Windows Server a enregistré |
 | Programmes au démarrage : inventaire, classification, désactivation réversible | Testée | inventaire réel (analyse en arrière-plan) ; désactivation puis réactivation d'une entrée réelle sur Windows ; mises à jour de sécurité jamais proposées d'office |
 | Rapport de diagnostic HTML/JSON | Testée (logique) | génération couverte ; non ouvert par la visite |
 | Mise à jour de l'application (manifeste, empreinte, consentement) | Non testable ici | désactivée par défaut ; aucun serveur de mise à jour configuré |

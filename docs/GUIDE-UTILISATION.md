@@ -80,7 +80,7 @@ interrompue ; rapports de vérification. Voir [GUIDE-RESTAURATION.md](GUIDE-REST
 Chaque réglage individuellement par catégorie : description, **objectif**, mécanisme, valeur actuelle et proposée, impact,
 ce qu'il peut influencer (et s'il n'a aucune raison de modifier les FPS), confiance, risque, compatibilité, persistance,
 conflits, méthode de vérification et de restauration, sources ; Appliquer / Restaurer. Également : programmes au
-démarrage et services tiers, **carte graphique par application** (catégorie Carte graphique : choisir « hautes
+démarrage et services tiers (avec le **temps de démarrage de Windows** mesuré par Windows lui-même : durée jusqu'au bureau, tendance, et ce qui ralentit le démarrage), **carte graphique par application** (catégorie Carte graphique : choisir « hautes
 performances » pour un jeu sur un portable à deux cartes graphiques, restaurable), profils personnalisés exportables, surveillance temps réel et **Réglages écartés** (astuces
 répandues que FrameCore refuse, avec la raison).
 

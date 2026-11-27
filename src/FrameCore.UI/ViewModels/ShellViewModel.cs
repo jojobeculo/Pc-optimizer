@@ -164,9 +164,16 @@ public sealed partial class ShellViewModel : ObservableObject
     [RelayCommand] private void OpenUri(string? uri) { if (!string.IsNullOrWhiteSpace(uri)) Dialogs.OpenUri(uri); }
 
     [RelayCommand]
-    private void Navigate(string key)
+    public void Navigate(string key)
     {
-        if (key.StartsWith("pro:", StringComparison.Ordinal)) { Pro.SelectedCategory = key[4..]; CurrentKey = "pro"; return; }
+        if (key.StartsWith("pro:", StringComparison.Ordinal))
+        {
+            // Category keys are matched without case ("pro:startup" → "Startup") so the list shows the selection.
+            var wanted = key[4..];
+            Pro.SelectedCategory = Pro.Categories.FirstOrDefault(c => string.Equals(c.Key, wanted, StringComparison.OrdinalIgnoreCase))?.Key ?? wanted;
+            CurrentKey = "pro";
+            return;
+        }
         if (key == "bios") { Hardware.Section = "board"; CurrentKey = "hardware"; return; }
         CurrentKey = key;
     }

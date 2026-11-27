@@ -50,6 +50,7 @@ public static class WorkerProgram
         host.Register<CaptureRequest>("bench.etw", r => EtwPresentCapture.Capture(r));
         host.Register<PresentMonRequest>("bench.presentmon", r => PresentMonRunner.Capture(r.Path, r.Request)); // signature verified inside
         host.Register<object>("storage.scan", _ => new StorageScanner(services.Registry).Scan());
+        host.Register<object>("boot.history", _ => StartupManager.BootPerformance.Read()); // read-only
 
         try { return host.Run(pipeName, parentPid); }
         finally { gpu?.Dispose(); }

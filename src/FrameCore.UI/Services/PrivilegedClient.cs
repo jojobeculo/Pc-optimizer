@@ -52,6 +52,10 @@ public sealed class PrivilegedClient
     public List<StorageDevice> StorageWithReliability() =>
         Call("storage.scan", new { }, () => new StorageScanner(_services.Registry).Scan());
 
+    /// <summary>Windows start-up history; on some PCs the log can only be read with administrator rights.</summary>
+    public StartupManager.BootHistory BootHistory() =>
+        Call("boot.history", new { }, () => StartupManager.BootPerformance.Read(), TimeSpan.FromMinutes(1));
+
     private GpuTuningService Gpu() => _localGpu ??= new GpuTuningService();
 }
 

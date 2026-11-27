@@ -54,6 +54,35 @@ public sealed partial class StartupRowViewModel : ObservableObject
     [RelayCommand] private Task Enable() => _toggle(this, true);
 }
 
+/// <summary>One Windows start in the history table.</summary>
+public sealed class BootRow
+{
+    public BootRecord Boot { get; init; } = null!;
+    public double MaxSeconds { get; init; } = 1;
+    public string When => Boot.StartUtc.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);
+    public string MainPath => Boot.MainPathSeconds.ToString("0.0", CultureInfo.CurrentCulture) + " s";
+    public string PostBoot => Boot.PostBootSeconds.ToString("0.0", CultureInfo.CurrentCulture) + " s";
+    public string Total => Boot.TotalSeconds.ToString("0.0", CultureInfo.CurrentCulture) + " s";
+    public double MainFraction => Math.Clamp(Boot.MainPathSeconds / MaxSeconds, 0, 1);
+    public string Flags => string.Join(" · ", new[]
+    {
+        Boot.AfterUpdate ? Loc.T("boot.flag.update") : null,
+        Boot.FlaggedSlow ? Loc.T("boot.flag.slow") : null,
+        Boot.SignInWaitSeconds is { } w && w >= 1 ? Loc.T("boot.flag.signin", w.ToString("0", CultureInfo.CurrentCulture)) : null,
+    }.Where(x => x != null));
+}
+
+/// <summary>A component Windows blamed for slower starts, with what to do about it.</summary>
+public sealed class BootCulpritRow
+{
+    public BootCulpritSummary Summary { get; init; } = null!;
+    public string Name => Summary.Name;
+    public string KindText => Loc.T("boot.kind." + Summary.Kind);
+    public string Detail => Loc.T("boot.culprit.detail", Summary.AverageDelaySeconds.ToString("0.#", CultureInfo.CurrentCulture),
+        Summary.Occurrences, Summary.LastSeenUtc.ToLocalTime().ToString("d", CultureInfo.CurrentCulture));
+    public string Advice => Loc.T("boot.advice." + Summary.Kind);
+}
+
 /// <summary>An applied profile/batch with what is still restorable in it.</summary>
 public sealed class BatchRow
 {
@@ -156,6 +185,17 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
     public ObservableCollection<ChangeSetRow> ChangeSets { get; } = new();
     public ObservableCollection<BatchRow> Batches { get; } = new();
     public ObservableCollection<GpuManager.AppGpuPreference> GpuPrefs { get; } = new();
+    public ObservableCollection<BootRow> BootRuns { get; } = new();
+    public ObservableCollection<BootCulpritRow> BootCulprits { get; } = new();
+    [ObservableProperty] private string _bootSummary = "";
+    [ObservableProperty] private string _bootRating = "";
+    [ObservableProperty] private string _bootRatingKey = "Neutral";
+    [ObservableProperty] private string _bootDetail = "";
+    [ObservableProperty] private string _bootStatus = "";
+    [ObservableProperty] private bool _bootHasData;
+    [ObservableProperty] private bool _bootNeedsRights;
+    [ObservableProperty] private bool _bootLoading;
+    private bool _bootLoaded;
     [ObservableProperty] private string _gpuPrefNote = "";
     public ObservableCollection<CategoryChip> RestorableCategories { get; } = new();
     public ObservableCollection<CustomProfile> CustomProfiles { get; } = new();
@@ -189,6 +229,7 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
         FilterRows();
         if (value == "Backups") LoadBackups();
         if (value == "Gpu") LoadGpuPrefs();
+        if (value == "Startup" && !_bootLoaded) _ = LoadBootAsync(withRights: false);
         if (value == "Drivers") _shell.CurrentKey = "drivers";
         if (value == "Benchmark") _shell.CurrentKey = "benchmark";
     }
@@ -206,8 +247,11 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
 
     public void OnStartupScanned(DiagnosticResult r)
     {
-        lock (r) _startup = r.Startup.ToList();
+        BootHistory? boot;
+        lock (r) { _startup = r.Startup.ToList(); boot = r.Boot; }
         FillStartup();
+        // The diagnostic already read the start-up history (without rights): show it without reading again.
+        if (boot != null && !_bootLoaded && !BootLoading) { ShowBoot(boot); _bootLoaded = !boot.AccessDenied; }
     }
 
     private void BuildRows(DiagnosticResult r)
@@ -286,6 +330,54 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
     }
 
     [RelayCommand] private void OpenAppsSettings() => Dialogs.OpenUri("ms-settings:appsfeatures");
+
+    // ---------------------------------------------------------------- Windows start-up time
+    /// <summary>Reads the start-up history Windows keeps; with rights only when the user asks for it (UAC).</summary>
+    public async Task LoadBootAsync(bool withRights)
+    {
+        if (BootLoading) return;
+        BootLoading = true;
+        BootStatus = Loc.T("boot.reading");
+        try
+        {
+            var h = withRights ? await Task.Run(() => _shell.Privileged.BootHistory()) : await Task.Run(() => BootPerformance.Read());
+            ShowBoot(h);
+            _bootLoaded = true;
+        }
+        catch (Core.Elevation.ElevationDeclinedException) { BootStatus = Loc.T("boot.declined"); }
+        catch (Exception ex) { Log.Error("Boot", "history", ex); BootStatus = Loc.T("boot.error", ex.Message); }
+        finally { BootLoading = false; }
+    }
+
+    [RelayCommand] private Task ReadBootWithRights() => LoadBootAsync(withRights: true);
+    [RelayCommand] private Task RefreshBoot() => LoadBootAsync(withRights: _shell.Privileged.IsConnected);
+
+    private void ShowBoot(BootHistory h)
+    {
+        BootRuns.Clear(); BootCulprits.Clear();
+        BootNeedsRights = h.AccessDenied && !_shell.Privileged.IsConnected;
+        BootHasData = h.Boots.Count > 0;
+        if (h.AccessDenied) { BootStatus = Loc.T("boot.needsRights"); BootSummary = ""; BootDetail = ""; BootRating = ""; return; }
+        if (h.Unavailable || h.Error != null) { BootStatus = h.Error != null ? Loc.T("boot.error", h.Error) : Loc.T("boot.unavailable"); return; }
+        if (h.Boots.Count == 0) { BootStatus = Loc.T("boot.none"); BootSummary = ""; BootDetail = ""; BootRating = ""; return; }
+
+        var max = h.Boots.Max(b => b.MainPathSeconds);
+        foreach (var b in h.Boots.OrderByDescending(b => b.StartUtc).Take(12)) BootRuns.Add(new BootRow { Boot = b, MaxSeconds = Math.Max(1, max) });
+        foreach (var c in h.TopCulprits(6)) BootCulprits.Add(new BootCulpritRow { Summary = c });
+
+        var median = h.RecentMedianMainPath() ?? h.Last!.MainPathSeconds;
+        BootSummary = Loc.T("boot.summary", median.ToString("0", CultureInfo.CurrentCulture), Math.Min(5, h.Boots.Count));
+        (BootRating, BootRatingKey) = median < 20 ? (Loc.T("boot.rating.fast"), "Success")
+                                    : median < DiagnosticService.SlowBootSeconds ? (Loc.T("boot.rating.ok"), "Info")
+                                    : (Loc.T("boot.rating.slow"), "Warning");
+        var last = h.Last!;
+        var parts = new List<string> { Loc.T("boot.last", last.MainPathSeconds.ToString("0.0", CultureInfo.CurrentCulture), last.PostBootSeconds.ToString("0", CultureInfo.CurrentCulture)) };
+        if (h.TrendSeconds() is { } trend && Math.Abs(trend) >= 3)
+            parts.Add(Loc.T(trend > 0 ? "boot.trend.slower" : "boot.trend.faster", Math.Abs(trend).ToString("0", CultureInfo.CurrentCulture)));
+        if (last.PostBootSeconds >= 60) parts.Add(Loc.T("boot.postBootLong", last.StartupApps?.ToString(CultureInfo.CurrentCulture) ?? "?"));
+        BootDetail = string.Join(" ", parts);
+        BootStatus = h.Culprits.Count == 0 ? Loc.T("boot.noCulprit") : "";
+    }
 
     // ---------------------------------------------------------------- Graphics adapter per application
     public void LoadGpuPrefs()

@@ -25,6 +25,8 @@ public sealed class DiagnosticResult
     public List<StartupEntry> Startup { get; set; } = new();
     /// <summary>The startup analysis is slow on some PCs: it completes after the diagnostic is shown.</summary>
     [System.Text.Json.Serialization.JsonIgnore] public Task StartupTask { get; set; } = Task.CompletedTask;
+    /// <summary>Windows start-up history read without rights (null until the background analysis ends).</summary>
+    public BootHistory? Boot { get; set; }
     public CpuTuningReport? CpuTuning { get; set; }
     public DateTime CompletedAt { get; set; } = DateTime.Now;
     public int Count(Severity s) => Findings.Count(f => f.Severity == s);
@@ -61,7 +63,9 @@ public sealed class DiagnosticService
             List<StartupEntry> list = new();
             try { list = _s.CreateStartupScanner().ScanAll(includeServices: true, includeShellExtensions: false); } catch (Exception ex) { Log.Error("Diag", "startup", ex); }
             Log.Info("Diag", $"{sw.ElapsedMilliseconds,6} ms  startup (background)");
-            lock (r) r.Startup = list; // findings are added on the UI thread (see AddStartupFindings)
+            BootHistory? boot = null;
+            try { boot = BootPerformance.Read(); } catch (Exception ex) { Log.Warn("Diag", "boot history: " + ex.Message); }
+            lock (r) { r.Startup = list; r.Boot = boot; } // findings are added on the UI thread (see AddStartupFindings)
         });
         r.Evaluations = EvaluateAll(r.Facts);
         drivers.Wait();
@@ -113,6 +117,9 @@ public sealed class DiagnosticService
     public void RebuildFindings(DiagnosticResult r) => r.Findings = BuildFindings(r);
 
     /// <summary>Called on the UI thread once the background startup scan has completed.</summary>
+    /// <summary>Median time to the desktop above which a start is reported as slow (SSD PCs usually need 10–25 s).</summary>
+    public const double SlowBootSeconds = 40;
+
     public static void AddStartupFindings(DiagnosticResult r)
     {
         foreach (var f in StartupFindings(r)) if (r.Findings.All(e => e.Id != f.Id)) r.Findings.Add(f);
@@ -122,9 +129,21 @@ public sealed class DiagnosticService
     {
         var optionalOn = r.Startup.Count(e => e.Enabled && e.Kind is StartupKind.RunKey or StartupKind.StartupFolder or StartupKind.ScheduledTask && e.Classification is StartupClassification.Optional or StartupClassification.Risky);
         if (optionalOn >= 4)
-            yield return new Finding { Id = "startup.many", Category = "Startup", Severity = Severity.Suggestion, Title = Loc.T("find.startup.title"), Detail = Loc.T("find.startup.detail", optionalOn), ActionId = "nav:pro:startup", ActionLabel = Loc.T("action.review") };
+            yield return new Finding { Id = "startup.many", Category = "Startup", Severity = Severity.Suggestion, Title = Loc.T("find.startup.title"), Detail = Loc.T("find.startup.detail", optionalOn), ActionId = "nav:pro:Startup", ActionLabel = Loc.T("action.review") };
+        // Slow Windows start, from the times Windows itself recorded (median of the last starts, never a single one).
+        if (r.Boot?.RecentMedianMainPath() is { } median && median >= SlowBootSeconds)
+        {
+            var top = r.Boot!.TopCulprits(1).FirstOrDefault();
+            yield return new Finding
+            {
+                Id = "boot.slow", Category = "Startup", Severity = Severity.Suggestion, Confidence = Confidence.Confirmed,
+                Title = Loc.T("find.boot.slow.title", median.ToString("0", CultureInfo.CurrentCulture)),
+                Detail = Loc.T("find.boot.slow.detail") + (top != null ? " " + Loc.T("find.boot.slow.top", top.Name, top.AverageDelaySeconds.ToString("0.#", CultureInfo.CurrentCulture)) : ""),
+                ActionId = "nav:pro:Startup", ActionLabel = Loc.T("action.review"),
+            };
+        }
         foreach (var e in r.Startup.Where(e => e.Classification == StartupClassification.Risky && e.Enabled))
-            yield return new Finding { Id = "startup.risky." + e.Id, Category = "Startup", Severity = Severity.Warning, Confidence = Confidence.Probable, Title = Loc.T("find.startup.risky.title", e.Name), Detail = e.Reason ?? "", ActionId = "nav:pro:startup" };
+            yield return new Finding { Id = "startup.risky." + e.Id, Category = "Startup", Severity = Severity.Warning, Confidence = Confidence.Probable, Title = Loc.T("find.startup.risky.title", e.Name), Detail = e.Reason ?? "", ActionId = "nav:pro:Startup" };
     }
 
     private List<Finding> BuildFindings(DiagnosticResult r)
