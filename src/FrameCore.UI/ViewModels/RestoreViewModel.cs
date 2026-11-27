@@ -39,6 +39,8 @@ public sealed partial class RestoreViewModel : ObservableObject, IDiagnosticCons
     [ObservableProperty] private int _activeCount;
     [ObservableProperty] private int _verifiedCount;
     [ObservableProperty] private int _notEffectiveCount;
+    /// <summary>"Back to before FrameCore": how many changes are still active and since when.</summary>
+    [ObservableProperty] private string _originalStateText = "";
     private bool _checkedAfterBoot;
 
     public RestoreViewModel(ShellViewModel shell)
@@ -80,6 +82,32 @@ public sealed partial class RestoreViewModel : ObservableObject, IDiagnosticCons
         ActiveCount = active.Count;
         VerifiedCount = active.Count(c => c.Entries.All(e => e.ApplyVerified == true));
         NotEffectiveCount = active.Count(c => c.Entries.Any(e => e.ApplyVerified == false));
+        var oldest = active.Select(c => c.CreatedUtc).DefaultIfEmpty().Min();
+        OriginalStateText = active.Count == 0 ? Loc.T("restore.original.none")
+            : Loc.T("restore.original.active", active.Count, oldest.ToLocalTime().ToString("D"), Age(oldest));
+    }
+
+    private static string Age(DateTime utc)
+    {
+        var days = (int)(DateTime.UtcNow - utc).TotalDays;
+        return days < 1 ? Loc.T("age.today") : days < 60 ? Loc.T("age.days", days) : Loc.T("age.months", days / 30);
+    }
+
+    /// <summary>
+    /// Lending or giving the PC away: every change undone (original values written back, however old),
+    /// then the light Balanced plan is prepared — nothing is applied without the usual confirmation.
+    /// </summary>
+    [RelayCommand]
+    private async Task HandOver()
+    {
+        if (!Dialogs.Confirm(Loc.T("restore.handover.title"), Loc.T("restore.handover.confirm"), Loc.T("restore.handover.ok"))) return;
+        Dialogs.SuppressNextConfirm = true;
+        try { await Pro.RestoreAllCommand.ExecuteAsync(null); }
+        finally { Dialogs.SuppressNextConfirm = false; }
+        RefreshCounts();
+        _shell.Navigate("optimization");
+        _shell.Optimization.PrepareCommand.Execute("Balanced");
+        Dialogs.Info(Loc.T("restore.handover.title"), ActiveCount == 0 ? Loc.T("restore.handover.done") : Loc.T("restore.handover.partial", ActiveCount));
     }
 
     private void LoadReports()

@@ -87,6 +87,15 @@ aucune action ne touche un composant protégé ; seuls certains éléments BCD p
 | `netAdapterProperty` | Propriété avancée d'une carte réseau physique | Valeur d'origine |
 | `handler` | Opération codée en C# et nommée (nettoyage, retrim, fichier d'échange automatique…) | Selon l'opération |
 
+### Compatibilité des restaurations entre versions
+
+Une modification doit rester restaurable aussi longtemps que FrameCore est installé, même par une version plus récente.
+Règle pour faire évoluer le catalogue : **ne jamais supprimer ni modifier une action publiée** — l'ancienne action passe
+dans `retiredActions` de la fiche (ou la fiche entière dans `catalog/retired.json` si l'optimisation disparaît). Le
+processus élevé accepte ces actions pour lire, restaurer et vérifier, jamais pour appliquer ; l'opération contrôlée est
+celle de la route appelée, pas celle écrite dans la requête. `tests/FrameCore.Tests/fixtures/restorable-actions-*.json`
+fige les actions de chaque version publiée (test `LongTermRestoreTests`).
+
 ## 4. Moteur transactionnel
 
 ```

@@ -14,13 +14,31 @@ Dans la page **Restauration** :
 | **Restaurer** sur une ligne de l'historique | Annule une seule modification |
 | **Restaurer une catégorie** | Annule toutes les modifications actives d'une catégorie (ex. Services). Seules les catégories qui ont encore des modifications actives sont proposées, avec leur nombre |
 | **Profils appliqués → Restaurer** | Annule tout un profil appliqué en une fois, du plus récent au plus ancien. Chaque profil indique ce qui est encore actif ; un profil déjà annulé affiche « entièrement restauré » |
-| **Tout restaurer** | Annule toutes les modifications actives faites par FrameCore |
+| **Tout remettre comme avant** (carte « Revenir à l'état d'avant FrameCore », en haut de la page) | Annule toutes les modifications actives faites par FrameCore ; la carte indique combien sont encore actives et la date de la plus ancienne |
+| **Prêter ou donner ce PC…** | Tout restaurer, puis ouvrir l'Optimisation avec le niveau **Équilibré** préparé (rien n'est appliqué sans votre confirmation) |
 | **Détails** | Affiche chaque action et la valeur d'origine enregistrée |
 
 Les modifications sont restaurées dans l'ordre inverse de leur application. Une restauration partielle (une action
 impossible à rétablir) est signalée avec la cause ; les autres actions sont tout de même restaurées.
 
 Un réglage peut aussi être restauré depuis sa fiche (Mode Pro ou Optimisation) : bouton **Restaurer**.
+
+### Restaurer des mois (ou des années) plus tard
+
+Scénario type : le PC a été optimisé en Extrême il y a six mois, il est prêté à un petit frère → **Restauration → Prêter
+ou donner ce PC…** remet chaque réglage à sa valeur d'origine, puis prépare l'optimisation légère **Équilibré**.
+
+Ce qui le garantit :
+
+- le journal n'est **jamais** purgé automatiquement (pas de durée de conservation) ; il survit aux mises à jour et à la
+  désinstallation de FrameCore (seule l'option explicite de suppression des données l'efface, avec un avertissement) ;
+- la restauration réécrit la valeur **enregistrée au moment de l'application** : elle ne dépend pas du catalogue actuel ;
+- le module administrateur, qui n'accepte que des actions connues, accepte aussi pour la **restauration** les actions des
+  versions précédentes de FrameCore (champ `retiredActions` et fichier `catalog/retired.json`) ; un test bloquant fige
+  toutes les actions de chaque version publiée : une future version qui les rendrait irrestaurables ne passe pas les tests.
+
+À savoir : le journal est enregistré dans le profil du compte Windows qui a appliqué les optimisations — restaurez depuis
+ce compte. Si un réglage a été modifié à la main entre-temps, la restauration remet quand même la valeur d'origine.
 
 ### Opérations non réversibles
 

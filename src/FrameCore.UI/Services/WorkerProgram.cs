@@ -20,6 +20,7 @@ public static class WorkerProgram
     public static int Run(string pipeName, int parentPid)
     {
         var services = new AppServices(AppSettings.Load(), forWorker: true);
+        // The operation checked is the one of the route called, never the one written in the request.
         var validator = new PrivilegedRequestValidator(services.Catalog);
         var dispatcher = new LocalDispatcher(services.Executors);
         var host = new WorkerHost();
@@ -28,16 +29,16 @@ public static class WorkerProgram
         GpuTuningService Gpu() => gpu ??= new GpuTuningService();
 
         host.Register<object>("ping", _ => true);
-        host.Register<PrivilegedActionRequest>("action.read", r => { validator.Validate(r); return dispatcher.Read(r.Action, r.Context); });
-        host.Register<PrivilegedActionRequest>("action.capture", r => { validator.Validate(r); return dispatcher.Capture(r.Action, r.Context); });
-        host.Register<PrivilegedActionRequest>("action.apply", r => { validator.Validate(r); dispatcher.Apply(r.Action, r.Context); return true; });
+        host.Register<PrivilegedActionRequest>("action.read", r => { validator.Validate(r with { Op = "read" }); return dispatcher.Read(r.Action, r.Context); });
+        host.Register<PrivilegedActionRequest>("action.capture", r => { validator.Validate(r with { Op = "capture" }); return dispatcher.Capture(r.Action, r.Context); });
+        host.Register<PrivilegedActionRequest>("action.apply", r => { validator.Validate(r with { Op = "apply" }); dispatcher.Apply(r.Action, r.Context); return true; });
         host.Register<PrivilegedActionRequest>("action.restore", r =>
         {
-            validator.Validate(r);
+            validator.Validate(r with { Op = "restore" });
             dispatcher.Restore(r.Action, r.Snapshot ?? throw new ArgumentException("snapshot"), r.Context);
             return true;
         });
-        host.Register<PrivilegedActionRequest>("action.verify", r => { validator.Validate(r); return dispatcher.Verify(r.Action, r.Snapshot ?? StateSnapshot.Absent(), r.Context); });
+        host.Register<PrivilegedActionRequest>("action.verify", r => { validator.Validate(r with { Op = "verify" }); return dispatcher.Verify(r.Action, r.Snapshot ?? StateSnapshot.Absent(), r.Context); });
 
         host.Register<object>("sensors.read", _ => sensors.Read());
         host.Register<string>("restorepoint.create", d => RestorePointService.Create(d.Length > 60 ? d[..60] : d));

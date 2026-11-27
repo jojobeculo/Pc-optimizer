@@ -17,6 +17,8 @@ public static class Dialogs
     public static bool Headless { get; set; }
     /// <summary>CI only (disposable VM): headless confirmations are accepted so the real flows can be exercised.</summary>
     public static bool AutoConfirm { get; set; }
+    /// <summary>The next confirmation is already answered (a flow that asked once for several steps). Reset after use.</summary>
+    public static bool SuppressNextConfirm { get; set; }
 
     private static (Window win, StackPanel body, StackPanel buttons) Create(string title, double width = 480)
     {
@@ -47,6 +49,7 @@ public static class Dialogs
 
     public static bool Confirm(string title, string message, string? okText = null, bool danger = false, IEnumerable<string>? bullets = null)
     {
+        if (SuppressNextConfirm) { SuppressNextConfirm = false; return true; }
         if (Headless) { Log.Info("Dialog", $"[headless confirm {(AutoConfirm ? "accepted" : "declined")}] {title}: {message}"); return AutoConfirm; }
         var (win, body, buttons) = Create(title);
         body.Children.Add(new TextBlock { Text = message, Style = (Style)Application.Current.FindResource("Text.Body") });

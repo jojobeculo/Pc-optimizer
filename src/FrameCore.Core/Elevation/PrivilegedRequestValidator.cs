@@ -38,9 +38,15 @@ public sealed class PrivilegedRequestValidator
         var origin = request.Context?.Origin ?? "";
         if (origin == "catalog")
         {
-            var tweak = _catalog.Find(request.Context!.TweakId ?? "") ?? throw new UnauthorizedAccessException("Unknown tweak");
+            var id = request.Context!.TweakId ?? "";
             var canonical = a.Canonical();
-            if (!tweak.Actions.Any(x => x.Canonical() == canonical))
+            // Applying: only the current catalog. Reading back, restoring and verifying: also what earlier versions
+            // wrote, so an optimisation applied months ago with an older FrameCore can always be undone.
+            var allowed = request.Op is "apply" or "capture"
+                ? (_catalog.Find(id) ?? throw new UnauthorizedAccessException("Unknown tweak")).Actions
+                : _catalog.RestorableActions(id).ToList();
+            if (allowed.Count == 0) throw new UnauthorizedAccessException("Unknown tweak");
+            if (!allowed.Any(x => x.Canonical() == canonical))
                 throw new UnauthorizedAccessException("Action does not belong to the catalog entry");
             return;
         }

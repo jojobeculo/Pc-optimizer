@@ -38,6 +38,11 @@ public sealed class TweakDefinition
     public List<Condition> Conditions { get; set; } = new();
     public List<string> Sources { get; set; } = new();
     public List<ActionDefinition> Actions { get; set; } = new();
+    /// <summary>
+    /// Actions of earlier versions of this optimisation. Never applied: they are kept so that a change made by an older
+    /// FrameCore version can still be restored (read, restored, verified) by the elevated worker, however long ago.
+    /// </summary>
+    public List<ActionDefinition> RetiredActions { get; set; } = new();
 
     [JsonIgnore] public bool IsExperimental => Confidence == Confidence.Experimental;
     [JsonIgnore] public bool IsProOnly => Profiles.Count == 0;

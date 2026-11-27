@@ -7,6 +7,33 @@
             <TextBlock Text="{i:Loc restore.title}" Style="{StaticResource Text.PageTitle}"/>
             <TextBlock Text="{i:Loc restore.subtitle}" Style="{StaticResource Text.Subtitle}" MaxWidth="820" HorizontalAlignment="Left" Margin="0,4,0,18"/>
 
+            <!-- Back to before FrameCore: always possible while FrameCore is installed, however old the changes -->
+            <Border Style="{StaticResource Card.Hero}" Margin="0,0,0,14" i:Motion.Enter="0">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,16,0">
+                        <StackPanel Orientation="Horizontal">
+                            <i:Icon Glyph="{StaticResource Icon.Undo}" Width="20" Height="20" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0"/>
+                            <TextBlock Text="{i:Loc restore.original.title}" Style="{StaticResource Text.Section}" Margin="0"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding OriginalStateText}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,6,0,0" FontWeight="Medium"/>
+                        <TextBlock Text="{i:Loc restore.original.desc}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,4,0,0" MaxWidth="760" HorizontalAlignment="Left"/>
+                        <TextBlock Text="{i:Loc restore.handover.steps}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,8,0,0" MaxWidth="760" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <Button Style="{StaticResource Button.Danger}" Command="{Binding Pro.RestoreAllCommand}" MinWidth="230" Margin="0,0,0,8">
+                            <StackPanel Orientation="Horizontal">
+                                <i:Icon Glyph="{StaticResource Icon.Undo}" Width="15" Height="15" Foreground="{DynamicResource Brush.Danger}" Margin="0,0,8,0"/>
+                                <TextBlock Text="{i:Loc restore.original.button}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource Button.Secondary}" Command="{Binding HandOverCommand}" MinWidth="230" ToolTip="{i:Loc restore.handover.tip}">
+                            <TextBlock Text="{i:Loc restore.handover.button}"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
             <!-- Summary tiles -->
             <UniformGrid Columns="3" Margin="0,0,0,4">
                 <Border Style="{StaticResource Card}" Margin="0,0,12,12" i:Motion.Enter="0">
@@ -50,12 +77,6 @@
                     <StackPanel Orientation="Horizontal">
                         <i:Icon Glyph="{StaticResource Icon.Shield}" Width="15" Height="15" Foreground="{DynamicResource Brush.OnAccent}" Margin="0,0,8,0"/>
                         <TextBlock Text="{i:Loc restore.verifyNow}"/>
-                    </StackPanel>
-                </Button>
-                <Button Style="{StaticResource Button.Danger}" Command="{Binding Pro.RestoreAllCommand}" Margin="0,0,8,8">
-                    <StackPanel Orientation="Horizontal">
-                        <i:Icon Glyph="{StaticResource Icon.Undo}" Width="15" Height="15" Foreground="{DynamicResource Brush.Danger}" Margin="0,0,8,0"/>
-                        <TextBlock Text="{i:Loc backup.restoreAll}"/>
                     </StackPanel>
                 </Button>
                 <Button Content="{i:Loc backup.export}" Style="{StaticResource Button.Secondary}" Command="{Binding Pro.ExportBackupsCommand}" Margin="0,0,8,8"/>

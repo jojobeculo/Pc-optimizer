@@ -1,0 +1,1 @@
+{ "schemaVersion": 1, "note": "Optimisations removed from the catalog. Never applied; kept so that changes made by older FrameCore versions stay restorable. Move an entry here (with its actions) instead of deleting it.", "tweaks": [] }

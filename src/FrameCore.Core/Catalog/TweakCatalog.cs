@@ -30,6 +30,31 @@ public sealed class TweakCatalog
 
     public TweakDefinition? Find(string id) => _byId.TryGetValue(id, out var t) ? t : null;
 
+    /// <summary>Optimisations removed from the catalog: kept (catalog/retired.json) only so older changes stay restorable.</summary>
+    private readonly Dictionary<string, List<ActionDefinition>> _retired = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Every action a change of this optimisation may have written, in this version or an earlier one:
+    /// what the elevated worker accepts for reading, restoring and verifying (never for applying).
+    /// </summary>
+    public IEnumerable<ActionDefinition> RestorableActions(string id)
+    {
+        if (Find(id) is { } t) foreach (var a in t.Actions.Concat(t.RetiredActions)) yield return a;
+        if (_retired.TryGetValue(id, out var old)) foreach (var a in old) yield return a;
+    }
+
+    private void LoadRetired(string directory)
+    {
+        var file = Path.Combine(directory, "retired.json");
+        if (!File.Exists(file)) return;
+        try
+        {
+            var parsed = JsonSerializer.Deserialize<TweakCatalogFile>(File.ReadAllText(file), Json.Options);
+            foreach (var t in parsed?.Tweaks ?? new()) _retired[t.Id] = t.Actions.Concat(t.RetiredActions).ToList();
+        }
+        catch (Exception ex) { Log.Error("Catalog", "retired.json unreadable", ex); }
+    }
+
     public static TweakCatalog LoadFromDirectory(string directory)
     {
         var tweaks = new List<TweakDefinition>();
@@ -52,7 +77,9 @@ public sealed class TweakCatalog
         errors.AddRange(Validate(tweaks));
         // Invalid entries are dropped rather than half-applied.
         var invalidIds = new HashSet<string>(errors.Select(e => e.Split(':')[0]), StringComparer.OrdinalIgnoreCase);
-        return new TweakCatalog(tweaks.Where(t => !invalidIds.Contains(t.Id)).ToList(), errors);
+        var catalog = new TweakCatalog(tweaks.Where(t => !invalidIds.Contains(t.Id)).ToList(), errors);
+        catalog.LoadRetired(directory);
+        return catalog;
     }
 
     public static TweakCatalog FromTweaks(IEnumerable<TweakDefinition> tweaks)
