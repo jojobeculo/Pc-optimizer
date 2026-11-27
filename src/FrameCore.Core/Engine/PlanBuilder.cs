@@ -34,7 +34,8 @@ public static class PlanBuilder
         foreach (var ev in evaluations)
         {
             var t = ev.Tweak;
-            if (!t.Profiles.Contains(level)) continue;
+            // Extreme contains everything of Maximum plus its own settings.
+            if (!t.Profiles.Contains(level) && !(level == ProfileLevel.Extreme && t.Profiles.Contains(ProfileLevel.Maximum))) continue;
             if (t.Confidence == Confidence.NotRecommended) continue; // never, whatever the catalog says
             if (!ev.Compatible) { plan.Excluded.Add(ev); continue; }
             if (ev.Status == TweakStatus.Applied) { plan.AlreadyApplied.Add(ev); continue; }
@@ -45,8 +46,9 @@ public static class PlanBuilder
             plan.Items.Add(new PlanItem
             {
                 Tweak = t, Evaluation = ev, Section = section,
-                // Experimental and consent-gated items are listed but never pre-selected.
-                SelectedByDefault = section == PlanSection.Standard,
+                // Experimental and consent-gated items are listed but never pre-selected — except in Extreme, which the
+                // user chooses explicitly for a gaming-only PC (and confirms through a specific warning).
+                SelectedByDefault = section == PlanSection.Standard || level == ProfileLevel.Extreme,
             });
         }
         plan.Items.Sort((a, b) => a.Section != b.Section ? a.Section.CompareTo(b.Section) : string.CompareOrdinal(a.Tweak.Category + a.Tweak.Id, b.Tweak.Category + b.Tweak.Id));

@@ -22,6 +22,7 @@
             <i:UnknownConverter x:Key="Unknown"/>
             <i:SeverityIconConverter x:Key="SeverityIcon"/>
             <i:OneBasedConverter x:Key="OneBased"/>
+            <i:WidthToColumnsConverter x:Key="WidthToColumns"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

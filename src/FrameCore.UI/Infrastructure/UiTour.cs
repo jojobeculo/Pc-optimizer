@@ -92,7 +92,7 @@ public static class UiTour
             foreach (var section in new[] { "cpu", "gpu", "ram", "board", "storage", "display", "network", "windows", "quality" })
                 pages.Add(await Visit(shell, window, dir, "hardware-" + section, () => { shell.CurrentKey = "hardware"; shell.Hardware.Section = section; }, scrollShots: 2));
 
-            foreach (var level in new[] { "Balanced", "Performance", "Maximum" })
+            foreach (var level in new[] { "Balanced", "Performance", "Maximum", "Extreme" })
                 pages.Add(await Visit(shell, window, dir, "plan-" + level, () => { shell.CurrentKey = "optimization"; shell.Optimization.PrepareCommand.Execute(level); }, scrollShots: 3));
 
             foreach (var section in new[] { "quick", "lab", "ingame" })
@@ -273,7 +273,7 @@ public static class UiTour
                 window.Width = w; window.Height = h;
                 foreach (var key in new[] { "home", "optimization", "games", "benchmark", "hardware", "drivers", "overclock", "restore", "pro", "settings" })
                 {
-                    if (key == "optimization") { shell.CurrentKey = "optimization"; shell.Optimization.PrepareCommand.Execute("Performance"); }
+                    if (key == "optimization") { shell.CurrentKey = "optimization"; shell.Optimization.PrepareCommand.Execute("Extreme"); }
                     else shell.CurrentKey = key;
                     await Settle(); await Task.Delay(500); await Settle();
                     Save(window, Path.Combine(dir, $"{label}-{key}.png"), scale);

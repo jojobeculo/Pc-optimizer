@@ -33,7 +33,8 @@ public enum TweakKind
 }
 
 /// <summary>Simple-mode levels: Équilibré, Performances, Performance maximale.</summary>
-public enum ProfileLevel { Balanced = 1, Performance = 2, Maximum = 3 }
+/// <summary>Extreme = Maximum plus settings that trade security or comfort for performance, for a PC used only for games.</summary>
+public enum ProfileLevel { Balanced = 1, Performance = 2, Maximum = 3, Extreme = 4 }
 
 /// <summary>How long a change lasts.</summary>
 public enum Persistence

@@ -1,0 +1,277 @@
+{
+ "schemaVersion": 1,
+ "tweaks": [
+  {
+   "id": "security.hvci.off",
+   "category": "Security",
+   "group": {
+    "fr": "Extrême : sécurité contre performance",
+    "en": "Extreme: security vs performance"
+   },
+   "name": {
+    "fr": "Désactiver l'intégrité de la mémoire (HVCI)",
+    "en": "Turn off Memory integrity (HVCI)"
+   },
+   "description": {
+    "fr": "Désactive l'isolation du noyau « Intégrité de la mémoire » (sécurité basée sur la virtualisation des pilotes). Microsoft indique que les joueurs qui privilégient les performances peuvent la désactiver.",
+    "en": "Turns off the 'Memory integrity' core isolation (virtualization-based driver security). Microsoft states that gamers who prioritise performance can turn it off."
+   },
+   "objective": {
+    "fr": "Supprimer le coût de la virtualisation du contrôle des pilotes, mesurable dans les jeux limités par le processeur.",
+    "en": "Remove the cost of virtualised driver checks, measurable in CPU-limited games."
+   },
+   "impact": {
+    "fr": "Gain variable selon la machine, surtout dans les jeux limités par le processeur (à mesurer avec le Benchmark et une capture en jeu).",
+    "en": "Machine-dependent gain, mostly in CPU-limited games (measure with Benchmark and an in-game capture)."
+   },
+   "regressions": {
+    "fr": "Protection réduite contre les pilotes malveillants ; Windows Sécurité affiche un avertissement ; certains anti-triche ou logiciels d'entreprise peuvent exiger cette protection (restaurez-la alors depuis Restauration).",
+    "en": "Less protection against malicious drivers; Windows Security shows a warning; some anti-cheats or company software may require this protection (restore it from Restore then)."
+   },
+   "confidence": "Probable",
+   "risk": "High",
+   "kind": "Security",
+   "restart": "Reboot",
+   "profiles": [
+    "Extreme"
+   ],
+   "requiresConsent": true,
+   "actions": [
+    {
+     "type": "registry",
+     "path": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity",
+     "name": "Enabled",
+     "valueKind": "DWord",
+     "value": 0
+    }
+   ],
+   "conditions": [
+    {
+     "fact": "security.hvci",
+     "op": "isTrue",
+     "reason": {
+      "fr": "L'intégrité de la mémoire est déjà désactivée.",
+      "en": "Memory integrity is already off."
+     }
+    }
+   ],
+   "impactAreas": [
+    "Fps",
+    "FrameTimes"
+   ],
+   "sources": [
+    "https://support.microsoft.com/en-us/windows/options-to-optimize-gaming-performance-in-windows-11-a255f612-2949-4373-a566-ff6f3f474613"
+   ]
+  },
+  {
+   "id": "defender.scan.cpulimit",
+   "category": "Security",
+   "group": {
+    "fr": "Extrême : sécurité contre performance",
+    "en": "Extreme: security vs performance"
+   },
+   "name": {
+    "fr": "Limiter les analyses planifiées de Defender à 20 % du processeur",
+    "en": "Cap Defender scheduled scans at 20 % CPU"
+   },
+   "description": {
+    "fr": "Une analyse planifiée de Microsoft Defender peut démarrer pendant une partie si le PC n'a pas été inactif à l'heure prévue. Son utilisation du processeur est plafonnée à 20 % au lieu de 50 %. La protection en temps réel n'est pas modifiée.",
+    "en": "A Microsoft Defender scheduled scan can start during a game if the PC was not idle at the planned time. Its CPU use is capped at 20 % instead of 50 %. Real-time protection is not changed."
+   },
+   "objective": {
+    "fr": "Éviter qu'une analyse en arrière-plan prenne la moitié du processeur pendant une partie.",
+    "en": "Keep a background scan from taking half of the CPU during a game."
+   },
+   "impact": {
+    "fr": "Moins de chutes de FPS si une analyse démarre pendant le jeu ; aucun effet le reste du temps.",
+    "en": "Fewer FPS drops if a scan starts while playing; no effect otherwise."
+   },
+   "regressions": {
+    "fr": "Les analyses planifiées durent plus longtemps.",
+    "en": "Scheduled scans take longer."
+   },
+   "confidence": "Probable",
+   "risk": "Low",
+   "kind": "Background",
+   "restart": "None",
+   "profiles": [
+    "Extreme"
+   ],
+   "requiresConsent": true,
+   "actions": [
+    {
+     "type": "handler",
+     "name": "defender.scanCpuLimit",
+     "value": 20
+    }
+   ],
+   "conditions": [],
+   "impactAreas": [
+    "FrameTimes",
+    "Responsiveness"
+   ],
+   "sources": [
+    "https://learn.microsoft.com/en-us/defender-endpoint/configure-advanced-scan-types-microsoft-defender-antivirus"
+   ]
+  },
+  {
+   "id": "defender.gamefolders.exclude",
+   "category": "Security",
+   "group": {
+    "fr": "Extrême : sécurité contre performance",
+    "en": "Extreme: security vs performance"
+   },
+   "name": {
+    "fr": "Exclure les dossiers de jeux de l'analyse en temps réel de Defender",
+    "en": "Exclude game folders from Defender real-time scanning"
+   },
+   "description": {
+    "fr": "Ajoute à Microsoft Defender une exclusion pour les dossiers de bibliothèque des lanceurs installés (Steam, Epic Games, Riot, Xbox, EA, Ubisoft). Le reste du PC reste analysé en temps réel.",
+    "en": "Adds a Microsoft Defender exclusion for the library folders of the installed launchers (Steam, Epic Games, Riot, Xbox, EA, Ubisoft). The rest of the PC stays scanned in real time."
+   },
+   "objective": {
+    "fr": "Moins d'analyse des fichiers quand un jeu charge ou diffuse ses ressources.",
+    "en": "Less file scanning while a game loads or streams its assets."
+   },
+   "impact": {
+    "fr": "Chargements et micro-saccades de chargement réduits dans certains jeux ; effet faible sur les FPS moyens.",
+    "en": "Shorter loads and fewer loading hitches in some games; little effect on average FPS."
+   },
+   "regressions": {
+    "fr": "Un fichier malveillant placé dans ces dossiers (mod, triche, programme téléchargé) ne serait plus analysé à l'ouverture : installez uniquement des jeux et mods de sources officielles. La restauration retire exactement les dossiers ajoutés.",
+    "en": "A malicious file placed in these folders (mod, cheat, downloaded program) would no longer be scanned when opened: install only games and mods from official sources. Restoring removes exactly the folders added."
+   },
+   "confidence": "Probable",
+   "risk": "Medium",
+   "kind": "Performance",
+   "restart": "None",
+   "profiles": [
+    "Extreme"
+   ],
+   "requiresConsent": true,
+   "actions": [
+    {
+     "type": "handler",
+     "name": "defender.gameFolderExclusions"
+    }
+   ],
+   "conditions": [],
+   "impactAreas": [
+    "FrameTimes"
+   ],
+   "sources": [
+    "https://learn.microsoft.com/en-us/defender-endpoint/configure-exclusions-microsoft-defender-antivirus"
+   ]
+  },
+  {
+   "id": "network.deliveryoptimization.nopeering",
+   "category": "Network",
+   "group": {
+    "fr": "Arrière-plan et confidentialité",
+    "en": "Background & privacy"
+   },
+   "name": {
+    "fr": "Ne plus partager les mises à jour avec d'autres PC",
+    "en": "Stop sharing updates with other PCs"
+   },
+   "description": {
+    "fr": "Stratégie officielle de l'Optimisation de la distribution : Windows télécharge ses mises à jour uniquement depuis les serveurs Microsoft et n'en envoie plus à d'autres PC. Windows Update n'est pas désactivé.",
+    "en": "Official Delivery Optimization policy: Windows downloads its updates only from Microsoft servers and no longer sends them to other PCs. Windows Update is not disabled."
+   },
+   "objective": {
+    "fr": "Supprimer l'envoi de données de mise à jour en arrière-plan (bande passante montante et disque).",
+    "en": "Remove background upload of update data (upstream bandwidth and disk)."
+   },
+   "impact": {
+    "fr": "Moins de trafic montant et d'activité disque en arrière-plan ; utile en jeu en ligne sur une connexion modeste.",
+    "en": "Less background upload and disk activity; helpful for online play on a modest connection."
+   },
+   "regressions": {
+    "fr": "Les mises à jour ne profitent plus des autres PC du réseau local (téléchargement un peu plus long sur plusieurs PC).",
+    "en": "Updates no longer come from other PCs on the local network (slightly longer downloads across several PCs)."
+   },
+   "confidence": "Confirmed",
+   "risk": "Low",
+   "kind": "Background",
+   "restart": "None",
+   "profiles": [
+    "Maximum"
+   ],
+   "actions": [
+    {
+     "type": "registry",
+     "path": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
+     "name": "DODownloadMode",
+     "valueKind": "DWord",
+     "value": 0
+    }
+   ],
+   "conditions": [],
+   "impactAreas": [
+    "NetworkLatency",
+    "Responsiveness"
+   ],
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows/deployment/do/waas-delivery-optimization-reference"
+   ]
+  },
+  {
+   "id": "edge.background.off",
+   "category": "Windows",
+   "group": {
+    "fr": "Extrême : PC dédié au jeu",
+    "en": "Extreme: gaming-only PC"
+   },
+   "name": {
+    "fr": "Empêcher Microsoft Edge de tourner en arrière-plan",
+    "en": "Keep Microsoft Edge from running in the background"
+   },
+   "description": {
+    "fr": "Stratégies officielles d'Edge : pas de « démarrage rapide » à l'ouverture de session et pas d'exécution en arrière-plan une fois Edge fermé.",
+    "en": "Official Edge policies: no 'startup boost' at sign-in and no background running once Edge is closed."
+   },
+   "objective": {
+    "fr": "Libérer la mémoire et le processeur occupés par Edge quand vous ne l'utilisez pas.",
+    "en": "Free the memory and CPU used by Edge when you do not use it."
+   },
+   "impact": {
+    "fr": "Quelques processus et quelques centaines de Mo de mémoire en moins en arrière-plan.",
+    "en": "A few processes and a few hundred MB of memory less in the background."
+   },
+   "regressions": {
+    "fr": "Edge s'ouvre un peu plus lentement ; ses pages de paramètres indiquent « géré par votre organisation » (effet normal d'une stratégie).",
+    "en": "Edge opens slightly slower; its settings pages show 'managed by your organization' (normal effect of a policy)."
+   },
+   "confidence": "Confirmed",
+   "risk": "Low",
+   "kind": "Background",
+   "restart": "None",
+   "profiles": [
+    "Extreme"
+   ],
+   "actions": [
+    {
+     "type": "registry",
+     "path": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Edge",
+     "name": "StartupBoostEnabled",
+     "valueKind": "DWord",
+     "value": 0
+    },
+    {
+     "type": "registry",
+     "path": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Edge",
+     "name": "BackgroundModeEnabled",
+     "valueKind": "DWord",
+     "value": 0
+    }
+   ],
+   "conditions": [],
+   "impactAreas": [
+    "Responsiveness"
+   ],
+   "sources": [
+    "https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies"
+   ]
+  }
+ ]
+}

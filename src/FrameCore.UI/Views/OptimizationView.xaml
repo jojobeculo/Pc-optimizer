@@ -48,8 +48,8 @@
             <TextBlock Text="{i:Loc opt.title}" Style="{StaticResource Text.PageTitle}"/>
             <TextBlock Text="{i:Loc opt.subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,4,0,18" MaxWidth="820" HorizontalAlignment="Left"/>
 
-            <!-- Three levels -->
-            <UniformGrid Columns="3">
+            <!-- Four levels (2 × 2 on small windows) -->
+            <UniformGrid Columns="{Binding ActualWidth, RelativeSource={RelativeSource Self}, Converter={StaticResource WidthToColumns}, ConverterParameter=900}">
                 <RadioButton Style="{StaticResource LevelCard}" GroupName="level" Command="{Binding PrepareCommand}" CommandParameter="Balanced"
                              IsChecked="{Binding SelectedProfile, Mode=OneWay, Converter={StaticResource Eq}, ConverterParameter=Balanced}" i:Motion.Enter="0">
                     <StackPanel>
@@ -72,7 +72,7 @@
                         </TextBlock>
                     </StackPanel>
                 </RadioButton>
-                <RadioButton Style="{StaticResource LevelCard}" GroupName="level" Command="{Binding PrepareCommand}" CommandParameter="Maximum" Margin="0,0,0,12"
+                <RadioButton Style="{StaticResource LevelCard}" GroupName="level" Command="{Binding PrepareCommand}" CommandParameter="Maximum"
                              IsChecked="{Binding SelectedProfile, Mode=OneWay, Converter={StaticResource Eq}, ConverterParameter=Maximum}" i:Motion.Enter="2">
                     <StackPanel>
                         <i:Icon Glyph="{StaticResource Icon.Rocket}" Width="22" Height="22" Foreground="{DynamicResource Brush.Warning}" HorizontalAlignment="Left"/>
@@ -80,6 +80,23 @@
                         <TextBlock Text="{i:Loc profile.Maximum.desc}" Style="{StaticResource Text.Muted}" MinHeight="54"/>
                         <TextBlock Style="{StaticResource Text.Caption}" Margin="0,10,0,0">
                             <Run Text="{Binding MaximumCount, Mode=OneWay}" FontWeight="SemiBold"/> <Run Text="{i:Loc opt.changesProposedMax}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </RadioButton>
+                <RadioButton Style="{StaticResource LevelCard}" GroupName="level" Command="{Binding PrepareCommand}" CommandParameter="Extreme" Margin="0,0,0,12"
+                             AutomationProperties.Name="{i:Loc profile.Extreme}"
+                             IsChecked="{Binding SelectedProfile, Mode=OneWay, Converter={StaticResource Eq}, ConverterParameter=Extreme}" i:Motion.Enter="3">
+                    <StackPanel>
+                        <DockPanel>
+                            <Border DockPanel.Dock="Right" Background="{DynamicResource Brush.DangerSoft}" CornerRadius="9" Padding="8,2" VerticalAlignment="Center">
+                                <TextBlock Text="{i:Loc opt.extreme.badge}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}" FontWeight="SemiBold"/>
+                            </Border>
+                            <i:Icon Glyph="{StaticResource Icon.Power}" Width="22" Height="22" Foreground="{DynamicResource Brush.Danger}" HorizontalAlignment="Left"/>
+                        </DockPanel>
+                        <TextBlock Text="{i:Loc profile.Extreme}" Style="{StaticResource Text.CardTitle}" FontSize="17" Margin="0,10,0,4"/>
+                        <TextBlock Text="{i:Loc profile.Extreme.card}" Style="{StaticResource Text.Muted}" MinHeight="54"/>
+                        <TextBlock Style="{StaticResource Text.Caption}" Margin="0,10,0,0">
+                            <Run Text="{Binding ExtremeCount, Mode=OneWay}" FontWeight="SemiBold"/> <Run Text="{i:Loc opt.changesProposedExtreme}"/>
                         </TextBlock>
                     </StackPanel>
                 </RadioButton>
@@ -106,6 +123,13 @@
                         <Run Text="{i:Loc opt.planFor}"/> <Run Text="{Binding SelectedProfile, Mode=OneWay, Converter={StaticResource LocKey}, ConverterParameter=profile.}"/>
                     </TextBlock>
                 </DockPanel>
+                <Border Style="{StaticResource Banner}" Background="{DynamicResource Brush.DangerSoft}" BorderBrush="{DynamicResource Brush.Danger}" Margin="0,0,0,12"
+                        Visibility="{Binding IsExtreme, Converter={StaticResource BoolToVis}}">
+                    <DockPanel>
+                        <i:Icon DockPanel.Dock="Left" Glyph="{StaticResource Icon.Warning}" Width="16" Height="16" Foreground="{DynamicResource Brush.Danger}" Margin="0,0,10,0" VerticalAlignment="Top"/>
+                        <TextBlock Text="{i:Loc opt.extreme.banner}" Style="{StaticResource Text.Body}" TextWrapping="Wrap"/>
+                    </DockPanel>
+                </Border>
                 <TextBlock Style="{StaticResource Text.Muted}" Margin="0,0,0,10">
                     <Run Text="{Binding AlreadyApplied, Mode=OneWay}"/> <Run Text="{i:Loc opt.alreadyApplied}"/>
                 </TextBlock>

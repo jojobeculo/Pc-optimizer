@@ -246,6 +246,24 @@
                             <TextBlock Text="{Binding GainRangeText}" Style="{StaticResource Text.Caption}"/>
                             <TextBlock Text="{Binding GainReason}" Style="{StaticResource Text.Muted}" Margin="0,4,0,0"/>
                             <TextBlock Text="{Binding Notes}" Style="{StaticResource Text.Muted}" Margin="0,10,0,0"/>
+                            <StackPanel Visibility="{Binding HasTips, Converter={StaticResource BoolToVis}}">
+                                <Border Style="{StaticResource Divider}"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <i:Icon Glyph="{StaticResource Icon.Sparkles}" Width="14" Height="14" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,6,0"/>
+                                    <TextBlock Text="{i:Loc games.tips.title}" Style="{StaticResource Text.Overline}"/>
+                                </StackPanel>
+                                <TextBlock Text="{i:Loc games.tips.intro}" Style="{StaticResource Text.Caption}" Margin="0,2,0,4"/>
+                                <ItemsControl ItemsSource="{Binding Tips}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel Margin="0,4,0,0">
+                                                <TextBlock DockPanel.Dock="Left" Text="•" Style="{StaticResource Text.Body}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,8,0"/>
+                                                <TextBlock Text="{Binding}" Style="{StaticResource Text.Body}" TextWrapping="Wrap"/>
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
                         </StackPanel>
                     </Grid>
                 </Border>

@@ -20,7 +20,7 @@ modification est enregistrée avec la valeur exacte d'origine et peut être annu
 | Domaine | Ce que fait FrameCore |
 |---|---|
 | Tableau de bord | Diagnostic hiérarchisé, jauge factuelle des réglages actifs, actions rapides, alerte d'opération interrompue |
-| Optimisation | 3 niveaux (Équilibré, Performances, Performance maximale), plan propre au PC avant application, mesure avant/après, progression réelle par étapes, vérification et réparation automatiques |
+| Optimisation | 4 niveaux (Équilibré, Performances, Performance maximale, Extrême pour un PC dédié au jeu, avec avertissement), plan propre au PC avant application, mesure avant/après, progression réelle par étapes, vérification et réparation automatiques |
 | Jeux & FPS | 91 jeux : FPS estimés avant/après avec plage, limitation, confiance et origine du chiffre ; 3 jeux mis en avant ; explorateur ; calibration par vos mesures réelles |
 | Benchmark | Benchmark rapide (≈ 5 min ou 1 min 30), comparaison statistique partageable (HTML), laboratoire (CPU, RAM, GPU/VRAM, stockage, réactivité, calcul type IA, latence réseau, stress combiné), capture en jeu (ETW, PresentMon, CSV) |
 | Matériel | Détection complète avec **fiabilité de chaque donnée**, mesures en direct, procédure guidée XMP/EXPO |

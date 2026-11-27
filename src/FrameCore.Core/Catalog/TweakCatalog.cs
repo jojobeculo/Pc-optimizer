@@ -82,8 +82,11 @@ public sealed class TweakCatalog
             if (t.Actions.Count == 0) yield return $"{t.Id}: no action";
             if (t.Confidence == Confidence.NotRecommended && t.Profiles.Count > 0)
                 yield return $"{t.Id}: a not-recommended tweak cannot belong to a profile";
-            if (t.Confidence == Confidence.Experimental && t.Profiles.Any(p => p != ProfileLevel.Maximum))
-                yield return $"{t.Id}: experimental tweaks may only appear (unselected) in the Maximum profile";
+            if (t.Confidence == Confidence.Experimental && t.Profiles.Any(p => p is not (ProfileLevel.Maximum or ProfileLevel.Extreme)))
+                yield return $"{t.Id}: experimental tweaks may only appear in the Maximum or Extreme profiles";
+            // Security trade-offs (narrow exceptions of the safety policy) exist only in Extreme, with explicit consent, reversibly.
+            if (t.Actions.Any(SafetyPolicy.IsSecurityTradeOff) && (t.Profiles.Any(p => p != ProfileLevel.Extreme) || !t.RequiresConsent || !t.Reversible))
+                yield return $"{t.Id}: a security trade-off must be Extreme-only, consent-gated and reversible";
             foreach (var c in t.Conditions)
             {
                 if (c.Any == null && !ConditionEvaluator.Operators.Contains(c.Op)) yield return $"{t.Id}: unknown operator {c.Op}";

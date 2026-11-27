@@ -13,13 +13,31 @@
 
 ## 2. Optimiser (mode simple)
 
-Page **Optimisation** — trois niveaux :
+Page **Optimisation** — quatre niveaux :
 
 | Niveau | Contenu |
 |---|---|
 | **Équilibré** | Réglages confirmés sans compromis : réactivité, suppression du superflu, réparations |
 | **Performances** | Ajoute les réglages probables à faible risque (alimentation, services de télémétrie, confidentialité, périphériques) |
 | **Performance maximale** | Ajoute les réglages les plus poussés ; les réglages expérimentaux et ceux qui ont une contrepartie sont listés à part, **jamais cochés d'office** |
+| **Extrême** | Pour un PC qui sert **uniquement à jouer** : tout « Performance maximale » (cette fois **tout coché**, expérimentaux compris), plus des réglages qui échangent un peu de sécurité ou de confort contre des performances. Un bandeau rouge et un **avertissement listant chaque contrepartie** précèdent l'application |
+
+### Ce que le niveau Extrême ajoute
+
+| Réglage | Contrepartie |
+|---|---|
+| Intégrité de la mémoire (HVCI) désactivée — recommandé par Microsoft pour les PC de jeu qui veulent le maximum | protection en moins contre les pilotes malveillants ; certains anti-triches (Valorant/Vanguard, FACEIT) peuvent l'exiger : à réactiver alors depuis Restauration |
+| Analyses planifiées de Microsoft Defender limitées à 20 % du processeur (50 % par défaut) | une analyse complète dure plus longtemps |
+| Dossiers des jeux (Steam, Epic, Riot, Xbox, EA, Ubisoft) exclus de l'analyse en temps réel | un fichier piégé placé dans ces dossiers ne serait pas détecté à l'ouverture ; FrameCore ne retire à la restauration **que** les dossiers qu'il a ajoutés |
+| Microsoft Edge : démarrage anticipé et exécution en arrière-plan désactivés | Edge s'ouvre un peu moins vite |
+| Hibernation, démarrage rapide, SysMain, indexation de la recherche, stationnement des cœurs, état minimal du processeur, minuterie globale | voir chaque fiche dans [CATALOGUE.md](CATALOGUE.md) (ex. recherche de fichiers plus lente, consommation plus élevée) |
+| Programmes au démarrage : toutes les applications facultatives cochées (sauf programmes de mise à jour) | elles se lancent à la demande |
+
+**Jamais touchés, même en Extrême** : protection en temps réel de Defender, pare-feu, Windows Update, Secure Boot, TPM,
+BitLocker, protections du processeur (mitigations), pilotes et composants anti-triche, audio, périphériques.
+
+**Prêter ou donner le PC** : *Restauration → Tout restaurer* remet les réglages d'avant FrameCore (même des mois plus
+tard, tant que l'application est installée), puis choisissez **Équilibré** pour une optimisation légère.
 
 1. Cliquez sur un niveau : le **plan propre à votre PC** apparaît (rien n'est encore modifié) avec, pour chaque réglage,
    la valeur actuelle et la valeur proposée, les réglages déjà en place, ceux exclus (avec la raison : portable, Ryzen X3D

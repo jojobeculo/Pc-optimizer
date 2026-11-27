@@ -28,6 +28,8 @@ public sealed class GameInfo
     public int Popularity { get; set; } = 2;
     public bool RequiresRayTracing { get; set; }
     public LocalizedText? Note { get; set; }
+    /// <summary>In-game settings that raise FPS or lower latency in this game (competitive titles).</summary>
+    public List<LocalizedText> Tips { get; set; } = new();
 }
 
 public sealed class GpuPerf { public string Name { get; set; } = ""; public string Vendor { get; set; } = ""; public double Index { get; set; } public double VramGb { get; set; } }

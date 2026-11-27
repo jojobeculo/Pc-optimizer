@@ -137,3 +137,14 @@ public sealed class OneBasedConverter : IValueConverter
     public object Convert(object value, Type t, object p, CultureInfo c) => value is int i ? (i + 1).ToString(c) + "." : "";
     public object ConvertBack(object value, Type t, object p, CultureInfo c) => Binding.DoNothing;
 }
+
+/// <summary>Available width → number of columns: "860" means 2 columns below 860 px, 4 from there (cards that wrap on small windows).</summary>
+public sealed class WidthToColumnsConverter : IValueConverter
+{
+    public object Convert(object value, Type t, object p, CultureInfo c)
+    {
+        var limit = double.TryParse(p?.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out var l) ? l : 860;
+        return value is double w && w > 0 && w < limit ? 2 : 4;
+    }
+    public object ConvertBack(object value, Type t, object p, CultureInfo c) => Binding.DoNothing;
+}

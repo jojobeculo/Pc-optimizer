@@ -13,6 +13,7 @@ public class CatalogTests
     private static readonly HashSet<string> KnownHandlers = new()
     {
         "cleanup.temp.user", "cleanup.temp.system", "storage.retrim", "storage.pagefile.auto", "storage.hibernate.off", "display.maxRefresh", "net.autotuning.normal",
+        "defender.scanCpuLimit", "defender.gameFolderExclusions",
     };
 
     [Fact]
@@ -42,7 +43,7 @@ public class CatalogTests
         foreach (var t in Catalog.Tweaks)
         {
             if (t.Confidence == Confidence.NotRecommended) Assert.Empty(t.Profiles);
-            if (t.Confidence == Confidence.Experimental) Assert.All(t.Profiles, p => Assert.Equal(ProfileLevel.Maximum, p));
+            if (t.Confidence == Confidence.Experimental) Assert.All(t.Profiles, p => Assert.True(p is ProfileLevel.Maximum or ProfileLevel.Extreme, t.Id));
             // Light profile only contains low-risk, non-experimental changes.
             if (t.Profiles.Contains(ProfileLevel.Balanced))
             {
@@ -68,7 +69,37 @@ public class CatalogTests
         var regs = Catalog.Tweaks.SelectMany(t => t.Actions).Where(a => a.Type == "registry").ToList();
         Assert.DoesNotContain(regs, a => a.Path!.Contains("Windows Defender", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(regs, a => a.Name!.StartsWith("FeatureSettingsOverride", StringComparison.OrdinalIgnoreCase));
-        Assert.DoesNotContain(regs, a => a.Path!.Contains("DeviceGuard", StringComparison.OrdinalIgnoreCase));
+        // The only security setting in the catalog is Memory integrity, as a documented Extreme-only trade-off.
+        Assert.DoesNotContain(regs, a => a.Path!.Contains("DeviceGuard", StringComparison.OrdinalIgnoreCase) && !FrameCore.Core.Catalog.SafetyPolicy.IsSecurityTradeOff(a));
+        Assert.DoesNotContain(regs, a => a.Name is "DisableRealtimeMonitoring" or "DisableAntiSpyware" or "EnableVirtualizationBasedSecurity");
+    }
+
+    [Fact]
+    public void Security_trade_offs_are_extreme_only_consent_gated_and_reversible()
+    {
+        var tradeOffs = Catalog.Tweaks.Where(t => t.Actions.Any(FrameCore.Core.Catalog.SafetyPolicy.IsSecurityTradeOff)).ToList();
+        Assert.Equal(3, tradeOffs.Count); // HVCI, Defender scan CPU limit, Defender game-folder exclusions
+        foreach (var t in tradeOffs)
+        {
+            Assert.Equal(new[] { ProfileLevel.Extreme }, t.Profiles.ToArray());
+            Assert.True(t.RequiresConsent, t.Id);
+            Assert.True(t.Reversible, t.Id);
+        }
+    }
+
+    [Fact]
+    public void Extreme_plan_contains_maximum_plus_its_own_settings_all_preselected()
+    {
+        var sim = new Sim();
+        var facts = Sim.Facts(Sim.DesktopProfile());
+        var evals = Catalog.Tweaks.Select(t => sim.Engine.Evaluate(t, facts)).ToList();
+        var max = FrameCore.Core.Engine.PlanBuilder.Build(ProfileLevel.Maximum, evals);
+        var extreme = FrameCore.Core.Engine.PlanBuilder.Build(ProfileLevel.Extreme, evals);
+        var maxIds = max.Items.Select(i => i.Tweak.Id).Concat(max.Conflicting.Select(c => c.Item.Tweak.Id)).ToHashSet();
+        Assert.True(maxIds.IsSubsetOf(extreme.Items.Select(i => i.Tweak.Id).Concat(extreme.Conflicting.Select(c => c.Item.Tweak.Id))));
+        Assert.Contains(extreme.Items, i => i.Tweak.Id == "edge.background.off");
+        Assert.All(extreme.Items, i => Assert.True(i.SelectedByDefault, i.Tweak.Id));
+        Assert.DoesNotContain(max.Items, i => i.Tweak.Profiles.SequenceEqual(new[] { ProfileLevel.Extreme }));
     }
 
     [Fact]

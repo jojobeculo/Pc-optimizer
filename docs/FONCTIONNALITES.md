@@ -17,6 +17,8 @@ AMD EPYC, 16 Go, pilote d'affichage de base Microsoft (pas de GPU), droits admin
 | Application et restauration exacte des optimisations du catalogue | Testée | test d'intégration : chaque réglage compatible appliqué, relu, restauré, état comparé à l'origine |
 | Statut « non applicable » (paramètre absent de la machine) | Testée | constaté et corrigé sur la VM (réglages processeur, plan Performances ultimes) |
 | Profils Équilibré / Performances / Performance maximale, plan avant application, conflits | Testée | tests unitaires + parcours réel (profil Équilibré appliqué sur la VM) |
+| Niveau Extrême (PC dédié au jeu) : avertissement, contreparties listées, tout restaurable | Partielle | règles du catalogue testées (contreparties de sécurité réservées à Extrême, consentement, réversibilité) ; réglages Defender appliqués puis restaurés via son interface officielle (tests avec un Defender simulé + aller-retour réel sur la VM) ; intégrité de la mémoire inactive sur la VM, donc non modifiée |
+| Conseils de réglages en jeu (10 jeux compétitifs : Fortnite, Valorant, CS2…) | Testée (affichage) | textes affichés dans la fiche du jeu ; FrameCore ne modifie jamais les fichiers des jeux |
 | Vérification & réparation (relecture, ≤ 2 réécritures, restauration) | Testée | tests unitaires (Windows « oublie » la valeur, valeur conservée au 2e essai) + rapport réel 9/9 vérifiés |
 | Retour arrière sur régression de performance mesurée | Partielle | tests unitaires (régression qui disparaît / qui persiste) ; aucune régression réelle provoquée sur la VM |
 | Reprise d'une optimisation interrompue, vérification après redémarrage | Partielle | logique testée (tests unitaires du journal) ; coupure de courant réelle non simulée |
@@ -49,7 +51,7 @@ AMD EPYC, 16 Go, pilote d'affichage de base Microsoft (pas de GPU), droits admin
 
 ## Réglages expérimentaux
 
-Proposés uniquement dans « Performance maximale », jamais cochés d'office, avec confirmation spécifique :
+Proposés dans « Performance maximale » (jamais cochés d'office, avec confirmation spécifique) et cochés dans « Extrême » (après l'avertissement du niveau) :
 Win32PrioritySeparation (marqué non recommandé), MMCSS (réactivité, limitation réseau, tâche « Games »), minuterie globale,
 tick dynamique BCD, stationnement des cœurs, état minimal du processeur, préférence énergétique EPP, modération des
 interruptions réseau, Power Throttling, plan Performances ultimes, SysMain, Windows Search. Détails dans

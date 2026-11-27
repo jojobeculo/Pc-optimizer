@@ -1,7 +1,7 @@
 # Catalogue des optimisations
 
 Généré automatiquement depuis `catalog/tweaks/*.json` (`python3 build/gen-catalog-doc.py`).
-**73 optimisations.** La valeur initiale est lue sur chaque machine au moment du diagnostic et enregistrée avant toute modification ; elle apparaît dans FrameCore (Mode Pro) et dans le journal de restauration.
+**78 optimisations.** La valeur initiale est lue sur chaque machine au moment du diagnostic et enregistrée avant toute modification ; elle apparaît dans FrameCore (Mode Pro) et dans le journal de restauration.
 
 Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) vérification de la compatibilité, (3) enregistrement de l'état initial, (4) application, (5) relecture, (6) vérification de la prise en compte, (7) journalisation. En cas d'échec, les actions déjà faites sont annulées.
 
@@ -40,8 +40,8 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 | `svc.trkwks` | Client de suivi des liens distribués en manuel | Services | Probable | Nul | Performance maximale | Réactivité du système |
 | `svc.pcasvc` | Assistant Compatibilité des programmes en manuel | Services | Probable | Nul | Performance maximale | Réactivité du système |
 | `svc.spooler` | Spouleur d'impression en manuel (sans imprimante) | Services | Probable | Faible | Performance maximale | Réactivité du système |
-| `svc.sysmain` | SysMain (Superfetch) en manuel | Services | Expérimental | Faible | Mode Pro uniquement | Réactivité du système |
-| `svc.wsearch` | Indexation Windows Search en manuel | Services | Expérimental | Moyen | Mode Pro uniquement | Réactivité du système |
+| `svc.sysmain` | SysMain (Superfetch) en manuel | Services | Expérimental | Faible | Extrême | Réactivité du système |
+| `svc.wsearch` | Indexation Windows Search en manuel | Services | Expérimental | Moyen | Extrême | Réactivité du système |
 | `task.appraiser` | Tâche Microsoft Compatibility Appraiser | Services | Probable | Faible | Performance maximale | Confidentialité, Réactivité du système |
 | `task.ceip` | Tâches du Programme d'amélioration de l'expérience | Services | Probable | Nul | Performance maximale | Confidentialité |
 | `task.diskdiag` | Collecte de diagnostics disque | Services | Probable | Nul | Performance maximale | Confidentialité |
@@ -56,17 +56,17 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 | `power.usb.suspend` | Désactiver la suspension sélective USB (secteur) | Périphériques | Probable | Nul | Performances, Performance maximale | Latence d'entrée, Stabilité / réparation |
 | `power.pcie.aspm` | Gestion d'état du lien PCIe désactivée (secteur) | Processeur | Probable | Nul | Performances, Performance maximale | Latence d'entrée, Stabilité / réparation |
 | `power.disk.timeout` | Ne jamais arrêter les disques durs (secteur) | Stockage | Probable | Nul | Performances, Performance maximale | Réactivité du système |
-| `power.minstate` | État minimal du processeur à 100 % | Processeur | Expérimental | Faible | Mode Pro uniquement | Latence d'entrée |
-| `power.coreparking` | Désactiver le parcage des cœurs | Processeur | Expérimental | Moyen | Mode Pro uniquement | Régularité des images |
+| `power.minstate` | État minimal du processeur à 100 % | Processeur | Expérimental | Faible | Extrême | Latence d'entrée |
+| `power.coreparking` | Désactiver le parcage des cœurs | Processeur | Expérimental | Moyen | Extrême | Régularité des images |
 | `power.epp` | Préférence énergétique : performance maximale | Processeur | Expérimental | Faible | Mode Pro uniquement | FPS, Latence d'entrée |
-| `power.fastboot` | Désactiver le démarrage rapide | Windows | Probable | Nul | Mode Pro uniquement | Stabilité / réparation, Démarrage |
+| `power.fastboot` | Désactiver le démarrage rapide | Windows | Probable | Nul | Extrême | Stabilité / réparation, Démarrage |
 | `net.wifi.powersave` | Wi-Fi : performances maximales sur secteur | Réseau | Probable | Nul | Performances, Performance maximale | Latence réseau |
 | `power.throttling.off` | Désactiver le Power Throttling (EcoQoS) | Processeur | Expérimental | Faible | Performance maximale | Régularité des images, Autonomie (effet négatif) |
 | `sched.priosep.38` | Win32PrioritySeparation = 0x26 (placebo) | Processeur | Non recommandé | Faible | Mode Pro uniquement | Réactivité du système |
 | `mmcss.responsiveness` | MMCSS SystemResponsiveness = 10 | Processeur | Expérimental | Faible | Mode Pro uniquement | Régularité des images |
 | `mmcss.networkthrottling` | Désactiver la limitation réseau MMCSS | Réseau | Expérimental | Faible | Mode Pro uniquement | Latence réseau |
 | `mmcss.gamestask` | Priorités MMCSS de la tâche « Games » | Processeur | Expérimental | Faible | Mode Pro uniquement | Régularité des images |
-| `timer.global` | Résolution de timer globale | Processeur | Expérimental | Faible | Mode Pro uniquement | Latence d'entrée |
+| `timer.global` | Résolution de timer globale | Processeur | Expérimental | Faible | Extrême | Latence d'entrée |
 | `bcd.platformclock.remove` | Retirer le forçage de HPET (useplatformclock) | Processeur | Confirmé | Faible | Équilibré, Performances, Performance maximale | Régularité des images, Stabilité / réparation |
 | `bcd.dynamictick.remove` | Retirer le forçage disabledynamictick | Processeur | Expérimental | Faible | Mode Pro uniquement | Latence d'entrée |
 | `input.mouse.accel` | Désactiver « Améliorer la précision du pointeur » | Périphériques | Confirmé | Nul | Performances, Performance maximale | Latence d'entrée, Confort |
@@ -79,9 +79,14 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 | `cleanup.temp.user` | Nettoyer les fichiers temporaires (utilisateur) | Stockage | Confirmé | Nul | Équilibré, Performances, Performance maximale | Espace disque |
 | `cleanup.temp.system` | Nettoyer les fichiers temporaires (système) | Stockage | Confirmé | Nul | Performances, Performance maximale | Espace disque |
 | `storage.pagefile.auto` | Fichier d'échange géré par le système | Mémoire | Confirmé | Nul | Performances, Performance maximale | Stabilité / réparation |
-| `storage.hibernate.off` | Désactiver la veille prolongée | Stockage | Probable | Faible | Mode Pro uniquement | Espace disque |
+| `storage.hibernate.off` | Désactiver la veille prolongée | Stockage | Probable | Faible | Extrême | Espace disque |
 | `security.vmp` | Désactiver la Plateforme de machine virtuelle | Sécurité | Probable | Moyen | Performance maximale | FPS |
 | `input.accessibility.shortcuts` | Désactiver les raccourcis Touches filtres et Touches bascule | Périphériques | Confirmé | Nul | Performances, Performance maximale | Confort |
+| `security.hvci.off` | Désactiver l'intégrité de la mémoire (HVCI) | Sécurité | Probable | Élevé | Extrême | FPS, Régularité des images |
+| `defender.scan.cpulimit` | Limiter les analyses planifiées de Defender à 20 % du processeur | Sécurité | Probable | Faible | Extrême | Régularité des images, Réactivité du système |
+| `defender.gamefolders.exclude` | Exclure les dossiers de jeux de l'analyse en temps réel de Defender | Sécurité | Probable | Moyen | Extrême | Régularité des images |
+| `network.deliveryoptimization.nopeering` | Ne plus partager les mises à jour avec d'autres PC | Réseau | Confirmé | Faible | Performance maximale | Latence réseau, Réactivité du système |
+| `edge.background.off` | Empêcher Microsoft Edge de tourner en arrière-plan | Windows | Confirmé | Faible | Extrême | Réactivité du système |
 
 ## Fiches détaillées
 
@@ -638,7 +643,7 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 - **Régressions possibles** : Lancements plus lents, surtout sur HDD.
 - **Confiance** : Expérimental — **Risque** : Faible — **Redémarrage** : Aucun redémarrage
 - **Persistance** : Permanent (survit au redémarrage)
-- **Profils** : Mode Pro uniquement
+- **Profils** : Extrême
 - **Compatibilité** : toutes les machines Windows 10/11 x64
 - **Conflits** : aucun
 - **Application** :
@@ -655,7 +660,7 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 - **Régressions possibles** : Recherche Démarrer/Explorateur/Outlook beaucoup plus lente.
 - **Confiance** : Expérimental — **Risque** : Moyen — **Redémarrage** : Aucun redémarrage
 - **Persistance** : Permanent (survit au redémarrage)
-- **Profils** : Mode Pro uniquement
+- **Profils** : Extrême
 - **Compatibilité** : toutes les machines Windows 10/11 x64
 - **Conflits** : aucun
 - **Application** :
@@ -912,7 +917,7 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 - **Régressions possibles** : Chaleur et consommation.
 - **Confiance** : Expérimental — **Risque** : Faible — **Redémarrage** : Aucun redémarrage
 - **Persistance** : Permanent (survit au redémarrage)
-- **Profils** : Mode Pro uniquement
+- **Profils** : Extrême
 - **Compatibilité** : toutes les machines Windows 10/11 x64
 - **Conflits** : aucun
 - **Application** :
@@ -929,7 +934,7 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 - **Régressions possibles** : Interdit sur CPU hybrides Intel et Ryzen X3D bi-CCD (parcage volontaire).
 - **Confiance** : Expérimental — **Risque** : Moyen — **Redémarrage** : Aucun redémarrage
 - **Persistance** : Permanent (survit au redémarrage)
-- **Profils** : Mode Pro uniquement
+- **Profils** : Extrême
 - **Compatibilité** : `cpu.isDualCcdX3D isFalse` ET `cpu.isHybrid isFalse`
 - **Conflits** : aucun
 - **Application** :
@@ -963,7 +968,7 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 - **Régressions possibles** : Démarrage un peu plus long.
 - **Confiance** : Probable — **Risque** : Nul — **Redémarrage** : Redémarrage requis
 - **Persistance** : Permanent (survit au redémarrage)
-- **Profils** : Mode Pro uniquement
+- **Profils** : Extrême
 - **Compatibilité** : toutes les machines Windows 10/11 x64
 - **Conflits** : aucun
 - **Application** :
@@ -1089,7 +1094,7 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 - **Régressions possibles** : Consommation plus élevée (le CPU entre moins en veille).
 - **Confiance** : Expérimental — **Risque** : Faible — **Redémarrage** : Redémarrage requis
 - **Persistance** : Permanent (survit au redémarrage)
-- **Profils** : Mode Pro uniquement
+- **Profils** : Extrême
 - **Compatibilité** : toutes les machines Windows 10/11 x64
 - **Conflits** : aucun
 - **Application** :
@@ -1312,7 +1317,7 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 - **Régressions possibles** : Plus de veille prolongée ni de démarrage rapide.
 - **Confiance** : Probable — **Risque** : Faible — **Redémarrage** : Aucun redémarrage
 - **Persistance** : Permanent (survit au redémarrage)
-- **Profils** : Mode Pro uniquement
+- **Profils** : Extrême
 - **Compatibilité** : `system.isDesktop isTrue`
 - **Conflits** : aucun
 - **Application** :
@@ -1356,6 +1361,97 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 - **Vérification** : Relecture de la valeur de registre
 - **Restauration** : Réécriture de la valeur d'origine, ou suppression si elle n'existait pas
 - **Sources** : https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-filterkeys
+
+### Désactiver l'intégrité de la mémoire (HVCI) (`security.hvci.off`)
+
+- **Catégorie** : Sécurité — **Objectif** : Supprimer le coût de la virtualisation du contrôle des pilotes, mesurable dans les jeux limités par le processeur.
+- **Description** : Désactive l'isolation du noyau « Intégrité de la mémoire » (sécurité basée sur la virtualisation des pilotes). Microsoft indique que les joueurs qui privilégient les performances peuvent la désactiver.
+- **Impact attendu** : Gain variable selon la machine, surtout dans les jeux limités par le processeur (à mesurer avec le Benchmark et une capture en jeu).
+- **Peut influencer** : FPS, Régularité des images
+- **Régressions possibles** : Protection réduite contre les pilotes malveillants ; Windows Sécurité affiche un avertissement ; certains anti-triche ou logiciels d'entreprise peuvent exiger cette protection (restaurez-la alors depuis Restauration).
+- **Confiance** : Probable — **Risque** : Élevé — **Redémarrage** : Redémarrage requis
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Extrême — validation spécifique requise
+- **Compatibilité** : `security.hvci isTrue`
+- **Conflits** : aucun
+- **Application** :
+  - Registre `HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity\Enabled` = `0` (DWord)
+- **Vérification** : Relecture de la valeur de registre
+- **Restauration** : Réécriture de la valeur d'origine, ou suppression si elle n'existait pas
+- **Sources** : https://support.microsoft.com/en-us/windows/options-to-optimize-gaming-performance-in-windows-11-a255f612-2949-4373-a566-ff6f3f474613
+
+### Limiter les analyses planifiées de Defender à 20 % du processeur (`defender.scan.cpulimit`)
+
+- **Catégorie** : Sécurité — **Objectif** : Éviter qu'une analyse en arrière-plan prenne la moitié du processeur pendant une partie.
+- **Description** : Une analyse planifiée de Microsoft Defender peut démarrer pendant une partie si le PC n'a pas été inactif à l'heure prévue. Son utilisation du processeur est plafonnée à 20 % au lieu de 50 %. La protection en temps réel n'est pas modifiée.
+- **Impact attendu** : Moins de chutes de FPS si une analyse démarre pendant le jeu ; aucun effet le reste du temps.
+- **Peut influencer** : Régularité des images, Réactivité du système
+- **Régressions possibles** : Les analyses planifiées durent plus longtemps.
+- **Confiance** : Probable — **Risque** : Faible — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Extrême — validation spécifique requise
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Opération `defender.scanCpuLimit`
+- **Vérification** : Contrôle propre à l'opération
+- **Restauration** : Restauration propre à l'opération
+- **Sources** : https://learn.microsoft.com/en-us/defender-endpoint/configure-advanced-scan-types-microsoft-defender-antivirus
+
+### Exclure les dossiers de jeux de l'analyse en temps réel de Defender (`defender.gamefolders.exclude`)
+
+- **Catégorie** : Sécurité — **Objectif** : Moins d'analyse des fichiers quand un jeu charge ou diffuse ses ressources.
+- **Description** : Ajoute à Microsoft Defender une exclusion pour les dossiers de bibliothèque des lanceurs installés (Steam, Epic Games, Riot, Xbox, EA, Ubisoft). Le reste du PC reste analysé en temps réel.
+- **Impact attendu** : Chargements et micro-saccades de chargement réduits dans certains jeux ; effet faible sur les FPS moyens.
+- **Peut influencer** : Régularité des images
+- **Régressions possibles** : Un fichier malveillant placé dans ces dossiers (mod, triche, programme téléchargé) ne serait plus analysé à l'ouverture : installez uniquement des jeux et mods de sources officielles. La restauration retire exactement les dossiers ajoutés.
+- **Confiance** : Probable — **Risque** : Moyen — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Extrême — validation spécifique requise
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Opération `defender.gameFolderExclusions`
+- **Vérification** : Contrôle propre à l'opération
+- **Restauration** : Restauration propre à l'opération
+- **Sources** : https://learn.microsoft.com/en-us/defender-endpoint/configure-exclusions-microsoft-defender-antivirus
+
+### Ne plus partager les mises à jour avec d'autres PC (`network.deliveryoptimization.nopeering`)
+
+- **Catégorie** : Réseau — **Objectif** : Supprimer l'envoi de données de mise à jour en arrière-plan (bande passante montante et disque).
+- **Description** : Stratégie officielle de l'Optimisation de la distribution : Windows télécharge ses mises à jour uniquement depuis les serveurs Microsoft et n'en envoie plus à d'autres PC. Windows Update n'est pas désactivé.
+- **Impact attendu** : Moins de trafic montant et d'activité disque en arrière-plan ; utile en jeu en ligne sur une connexion modeste.
+- **Peut influencer** : Latence réseau, Réactivité du système — *aucune raison technique de modifier les FPS*
+- **Régressions possibles** : Les mises à jour ne profitent plus des autres PC du réseau local (téléchargement un peu plus long sur plusieurs PC).
+- **Confiance** : Confirmé — **Risque** : Faible — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Performance maximale
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Registre `HKLM\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization\DODownloadMode` = `0` (DWord)
+- **Vérification** : Relecture de la valeur de registre
+- **Restauration** : Réécriture de la valeur d'origine, ou suppression si elle n'existait pas
+- **Sources** : https://learn.microsoft.com/en-us/windows/deployment/do/waas-delivery-optimization-reference
+
+### Empêcher Microsoft Edge de tourner en arrière-plan (`edge.background.off`)
+
+- **Catégorie** : Windows — **Objectif** : Libérer la mémoire et le processeur occupés par Edge quand vous ne l'utilisez pas.
+- **Description** : Stratégies officielles d'Edge : pas de « démarrage rapide » à l'ouverture de session et pas d'exécution en arrière-plan une fois Edge fermé.
+- **Impact attendu** : Quelques processus et quelques centaines de Mo de mémoire en moins en arrière-plan.
+- **Peut influencer** : Réactivité du système — *aucune raison technique de modifier les FPS*
+- **Régressions possibles** : Edge s'ouvre un peu plus lentement ; ses pages de paramètres indiquent « géré par votre organisation » (effet normal d'une stratégie).
+- **Confiance** : Confirmé — **Risque** : Faible — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Extrême
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Registre `HKLM\SOFTWARE\Policies\Microsoft\Edge\StartupBoostEnabled` = `0` (DWord)
+  - Registre `HKLM\SOFTWARE\Policies\Microsoft\Edge\BackgroundModeEnabled` = `0` (DWord)
+- **Vérification** : Relecture de la valeur de registre
+- **Restauration** : Réécriture de la valeur d'origine, ou suppression si elle n'existait pas
+- **Sources** : https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies
 
 ## Réglages écartés
 

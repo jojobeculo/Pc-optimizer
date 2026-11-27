@@ -530,7 +530,9 @@
    "risk": "Low",
    "kind": "Performance",
    "restart": "None",
-   "profiles": [],
+   "profiles": [
+    "Extreme"
+   ],
    "actions": [
     {
      "type": "powerSetting",
@@ -574,7 +576,9 @@
    "risk": "Medium",
    "kind": "Performance",
    "restart": "None",
-   "profiles": [],
+   "profiles": [
+    "Extreme"
+   ],
    "actions": [
     {
      "type": "powerSetting",
@@ -681,7 +685,9 @@
    "risk": "None",
    "kind": "Stability",
    "restart": "Reboot",
-   "profiles": [],
+   "profiles": [
+    "Extreme"
+   ],
    "actions": [
     {
      "type": "registry",

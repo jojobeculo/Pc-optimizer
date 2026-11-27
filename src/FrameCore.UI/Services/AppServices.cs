@@ -54,12 +54,16 @@ public sealed class AppServices
         StartupKb = StartupKnowledgeBase.Load();
     }
 
+    private static readonly IDefenderPreferences Defender = new WmiDefenderPreferences();
+
     public static ExecutorRegistry CreateExecutors(IRegistryAccess reg, IServiceConfigurator svc, ITaskSchedulerAccess tasks, IPowerAccess power)
     {
         var handlers = new IActionHandler[]
         {
             new TempCleanupHandler(system: false), new TempCleanupHandler(system: true), new RetrimHandler(), new PagefileHandler(),
             new HibernateHandler(reg), new MaxRefreshHandler(), new AutotuningHandler(),
+            // Extreme level only (consent-gated): scoped Microsoft Defender preferences through its official interface.
+            new DefenderScanCpuHandler(Defender), new DefenderGameFolderExclusionsHandler(Defender, () => GameLibraryFolders.Detect(reg)),
         };
         return new ExecutorRegistry(new IActionExecutor[]
         {

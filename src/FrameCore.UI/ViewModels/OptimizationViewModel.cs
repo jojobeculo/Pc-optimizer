@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FrameCore.BenchmarkManager.QuickBench;
 using CommunityToolkit.Mvvm.Input;
+using FrameCore.Core.Catalog;
 using FrameCore.Core.Engine;
 using FrameCore.Core.Localization;
 using FrameCore.Core.Models;
@@ -35,6 +36,9 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
     [ObservableProperty] private int _balancedCount;
     [ObservableProperty] private int _performanceCount;
     [ObservableProperty] private int _maximumCount;
+    [ObservableProperty] private int _extremeCount;
+    /// <summary>The plan shown is the Extreme level (gaming-only PC): warning banner and confirmation.</summary>
+    [ObservableProperty] private bool _isExtreme;
     [ObservableProperty] private bool _measureBeforeAfter = true;
     [ObservableProperty] private bool _applyRunning;
     [ObservableProperty] private string _currentStep = "";
@@ -70,20 +74,27 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
         BalancedCount = PlanBuilder.Build(ProfileLevel.Balanced, r.Evaluations).Items.Count(i => i.Section == PlanSection.Standard);
         PerformanceCount = PlanBuilder.Build(ProfileLevel.Performance, r.Evaluations).Items.Count(i => i.Section == PlanSection.Standard);
         MaximumCount = PlanBuilder.Build(ProfileLevel.Maximum, r.Evaluations).Items.Count;
+        ExtremeCount = PlanBuilder.Build(ProfileLevel.Extreme, r.Evaluations).Items.Count;
         if (SelectedProfile is { } p) Prepare(p.ToString());
     }
 
     public void OnEvaluationsRefreshed(DiagnosticResult r) => OnDiagnostic(r);
 
     /// <summary>Startup: helpers/updaters/launchers that can be disabled without uninstalling anything (reversible).</summary>
-    public void FillStartupSuggestions(DiagnosticResult r)
+    public void FillStartupSuggestions(DiagnosticResult r, bool extreme = false)
     {
         StartupSuggestions.Clear();
         List<StartupEntry> list;
         lock (r) list = r.Startup.ToList();
         foreach (var e in list.Where(e => e.Enabled && e.CanToggle && !e.Protected && e.Kind is StartupKind.RunKey or StartupKind.StartupFolder or StartupKind.ScheduledTask
                                           && e.Classification is StartupClassification.Optional or StartupClassification.Risky))
-            StartupSuggestions.Add(new StartupSuggestion { Entry = e, IsSelected = e.Category == "adware" || e.Classification == StartupClassification.Risky });
+            StartupSuggestions.Add(new StartupSuggestion
+            {
+                Entry = e,
+                // Extreme (gaming-only PC): every optional helper is ticked, except updaters (they may carry security fixes).
+                IsSelected = e.Category == "adware" || e.Classification == StartupClassification.Risky
+                             || (extreme && e.Classification == StartupClassification.Optional && e.Category is not ("updater" or "browser-updater" or "security-updater")),
+            });
     }
 
     [RelayCommand]
@@ -104,11 +115,12 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
         AlreadyApplied = plan.AlreadyApplied.Count;
         NeedsElevation = plan.NeedsElevation;
 
-        FillStartupSuggestions(r);
+        IsExtreme = level == ProfileLevel.Extreme;
+        FillStartupSuggestions(r, IsExtreme);
 
         // Guidance that needs the user (BIOS, hardware tuning) — never automatic.
         foreach (var f in r.Findings.Where(f => f.Category is "Bios" or "Ram" or "Display" && f.Severity >= Severity.Suggestion)) Guidance.Add(f);
-        if (level == ProfileLevel.Maximum)
+        if (level is ProfileLevel.Maximum or ProfileLevel.Extreme)
             Guidance.Add(new Finding { Id = "guide.oc", Category = "Gpu", Severity = Severity.Info, Title = Loc.T("opt.ocCard.title"), Detail = Loc.T("opt.ocCard.detail"), ActionId = "nav:overclock", ActionLabel = Loc.T("action.openOverclock") });
         HasPlan = true;
         ResultText = "";
@@ -122,6 +134,15 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
         if (SelectedProfile is not { } level) return;
         var selected = Standard.Concat(Consent).Where(x => x.IsSelected).ToList();
         var experimental = Experimental.Where(x => x.IsSelected).ToList();
+        if (level == ProfileLevel.Extreme && selected.Count + experimental.Count > 0)
+        {
+            // One explicit warning for the whole level, listing what it trades away; it also covers the experimental items.
+            var tradeOffs = selected.Concat(experimental).Where(x => x.Tweak.Profiles.All(p => p == ProfileLevel.Extreme) || x.Tweak.Actions.Any(SafetyPolicy.IsSecurityTradeOff))
+                                    .Select(x => string.IsNullOrWhiteSpace(x.Regressions) ? x.Name : $"{x.Name} — {x.Regressions}").ToList();
+            if (experimental.Count > 0) tradeOffs.Add(Loc.T("opt.extreme.experimentalBullet", experimental.Count));
+            if (!Dialogs.Confirm(Loc.T("opt.extreme.confirm.title"), Loc.T("opt.extreme.confirm"), Loc.T("opt.extreme.confirm.ok"), true, tradeOffs)) return;
+            ExperimentalAcknowledged = true;
+        }
         if (experimental.Count > 0 && !ExperimentalAcknowledged)
         {
             Dialogs.Info(Loc.T("opt.experimental.title"), Loc.T("opt.experimental.needAck"));

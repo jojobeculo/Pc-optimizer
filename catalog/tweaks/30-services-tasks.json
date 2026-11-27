@@ -265,7 +265,9 @@
    "risk": "Low",
    "kind": "Background",
    "restart": "None",
-   "profiles": [],
+   "profiles": [
+    "Extreme"
+   ],
    "actions": [
     {
      "type": "service",
@@ -308,7 +310,9 @@
    "risk": "Medium",
    "kind": "Background",
    "restart": "None",
-   "profiles": [],
+   "profiles": [
+    "Extreme"
+   ],
    "actions": [
     {
      "type": "service",

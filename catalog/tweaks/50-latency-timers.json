@@ -231,7 +231,9 @@
    "risk": "Low",
    "kind": "Latency",
    "restart": "Reboot",
-   "profiles": [],
+   "profiles": [
+    "Extreme"
+   ],
    "actions": [
     {
      "type": "registry",

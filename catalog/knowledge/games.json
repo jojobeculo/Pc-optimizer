@@ -50,7 +50,33 @@
    "cpuSensitivity": 0.6,
    "memorySensitivity": 0.5,
    "dataQuality": 1,
-   "popularity": 1
+   "popularity": 1,
+   "tips": [
+    {
+     "fr": "Paramètres > Vidéo > Mode de rendu « Performance » : le moyen le plus efficace de viser 240-360 FPS (DirectX 12 est plus joli mais plafonne plus bas sur la plupart des PC). Le jeu doit redémarrer.",
+     "en": "Settings > Video > Rendering Mode 'Performance': the most effective way to aim for 240-360 FPS (DirectX 12 looks better but tops out lower on most PCs). The game restarts."
+    },
+    {
+     "fr": "En mode Performance : maillages « Faible », distance d'affichage « Moyenne », ombres et effets désactivés — ce sont eux qui chargent le plus le processeur.",
+     "en": "In Performance mode: meshes 'Low', view distance 'Medium', shadows and effects off — they weigh most on the CPU."
+    },
+    {
+     "fr": "NVIDIA Reflex (cartes NVIDIA) : « Activé + Boost » — moins de latence ; sur Radeon, AMD Anti-Lag 2 s'il est proposé.",
+     "en": "NVIDIA Reflex (NVIDIA cards): 'On + Boost' — lower latency; on Radeon, AMD Anti-Lag 2 when offered."
+    },
+    {
+     "fr": "Limite d'images = fréquence de l'écran (ex. 360) : un plafond tenu en permanence donne des images plus régulières qu'un FPS qui oscille. Mode « Plein écran ».",
+     "en": "Frame rate limit = monitor refresh (e.g. 360): a cap that is always reached gives steadier frames than a fluctuating FPS. 'Fullscreen' mode."
+    },
+    {
+     "fr": "Paramètres > Replays : désactiver l'enregistrement des replays si vous ne vous en servez pas (un peu de processeur et de disque en moins).",
+     "en": "Settings > Replays: turn replay recording off if you do not use it (a little less CPU and disk work)."
+    },
+    {
+     "fr": "Au-delà de 240-300 FPS le jeu est limité par le processeur et la mémoire : activer EXPO/XMP dans le BIOS (DDR5-6000 sur AM5) rapporte plus qu'une carte graphique plus puissante — voir la page Overclocking.",
+     "en": "Beyond 240-300 FPS the game is limited by the CPU and memory: enabling EXPO/XMP in the BIOS (DDR5-6000 on AM5) gains more than a faster graphics card — see the Overclocking page."
+    }
+   ]
   },
   {
    "id": "valorant",
@@ -66,7 +92,25 @@
    "cpuSensitivity": 0.9,
    "memorySensitivity": 0.6,
    "dataQuality": 1,
-   "popularity": 1
+   "popularity": 1,
+   "tips": [
+    {
+     "fr": "NVIDIA Reflex (cartes NVIDIA) : « Activé + Boost » — moins de latence ; sur Radeon, AMD Anti-Lag 2 s'il est proposé.",
+     "en": "NVIDIA Reflex (NVIDIA cards): 'On + Boost' — lower latency; on Radeon, AMD Anti-Lag 2 when offered."
+    },
+    {
+     "fr": "Qualité des matériaux, textures et détails « Faible », « Améliorer la clarté » désactivé, MSAA 2x au plus : le jeu reste lisible et gagne nettement en FPS.",
+     "en": "Material, texture and detail quality 'Low', 'Improve Clarity' off, MSAA 2x at most: the game stays readable and gains noticeably."
+    },
+    {
+     "fr": "Limite d'images en partie désactivée (ou bien au-dessus de la fréquence de l'écran) ; mode « Plein écran ».",
+     "en": "In-game frame limit off (or well above the monitor refresh); 'Fullscreen' mode."
+    },
+    {
+     "fr": "Au-delà de 240-300 FPS le jeu est limité par le processeur et la mémoire : activer EXPO/XMP dans le BIOS (DDR5-6000 sur AM5) rapporte plus qu'une carte graphique plus puissante — voir la page Overclocking.",
+     "en": "Beyond 240-300 FPS the game is limited by the CPU and memory: enabling EXPO/XMP in the BIOS (DDR5-6000 on AM5) gains more than a faster graphics card — see the Overclocking page."
+    }
+   ]
   },
   {
    "id": "cs2",
@@ -82,7 +126,21 @@
    "cpuSensitivity": 0.85,
    "memorySensitivity": 0.6,
    "dataQuality": 1,
-   "popularity": 1
+   "popularity": 1,
+   "tips": [
+    {
+     "fr": "NVIDIA Reflex (cartes NVIDIA) : « Activé + Boost » — moins de latence ; sur Radeon, AMD Anti-Lag 2 s'il est proposé.",
+     "en": "NVIDIA Reflex (NVIDIA cards): 'On + Boost' — lower latency; on Radeon, AMD Anti-Lag 2 when offered."
+    },
+    {
+     "fr": "Mode d'affichage « Plein écran » ; FidelityFX Super Resolution et profondeur de champ désactivés pour une image nette ; anticrénelage CMAA2 = bon compromis.",
+     "en": "'Fullscreen' display mode; FidelityFX Super Resolution and depth of field off for a sharp image; CMAA2 anti-aliasing is a good compromise."
+    },
+    {
+     "fr": "Très sensible au cache et à la mémoire : EXPO/XMP activé ; les Ryzen X3D y sont particulièrement à l'aise.",
+     "en": "Very sensitive to cache and memory: EXPO/XMP on; Ryzen X3D chips do especially well."
+    }
+   ]
   },
   {
    "id": "gta5",
@@ -187,7 +245,21 @@
    "cpuSensitivity": 0.55,
    "memorySensitivity": 0.5,
    "dataQuality": 1,
-   "popularity": 1
+   "popularity": 1,
+   "tips": [
+    {
+     "fr": "NVIDIA Reflex (cartes NVIDIA) : « Activé + Boost » — moins de latence ; sur Radeon, AMD Anti-Lag 2 s'il est proposé.",
+     "en": "NVIDIA Reflex (NVIDIA cards): 'On + Boost' — lower latency; on Radeon, AMD Anti-Lag 2 when offered."
+    },
+    {
+     "fr": "Au premier lancement, laissez la compilation des shaders se terminer dans le menu avant de jouer : sinon saccades pendant les premières parties.",
+     "en": "On first launch, let shader compilation finish in the menu before playing; otherwise stutters during the first matches."
+    },
+    {
+     "fr": "Carte de 8 Go : textures « Normale » et utilisation de la mémoire vidéo à 80-90 % pour éviter les saccades ; DLSS/FSR « Qualité » pour gagner des FPS.",
+     "en": "8 GB card: textures 'Normal' and VRAM usage at 80-90 % to avoid stutters; DLSS/FSR 'Quality' to gain FPS."
+    }
+   ]
   },
   {
    "id": "bo6",
@@ -203,7 +275,21 @@
    "cpuSensitivity": 0.5,
    "memorySensitivity": 0.5,
    "dataQuality": 2,
-   "popularity": 1
+   "popularity": 1,
+   "tips": [
+    {
+     "fr": "NVIDIA Reflex (cartes NVIDIA) : « Activé + Boost » — moins de latence ; sur Radeon, AMD Anti-Lag 2 s'il est proposé.",
+     "en": "NVIDIA Reflex (NVIDIA cards): 'On + Boost' — lower latency; on Radeon, AMD Anti-Lag 2 when offered."
+    },
+    {
+     "fr": "Au premier lancement, laissez la compilation des shaders se terminer dans le menu avant de jouer.",
+     "en": "On first launch, let shader compilation finish in the menu before playing."
+    },
+    {
+     "fr": "Carte de 8 Go : textures « Normale », utilisation de la mémoire vidéo à 80-90 % ; DLSS/FSR « Qualité ».",
+     "en": "8 GB card: textures 'Normal', VRAM usage at 80-90 %; DLSS/FSR 'Quality'."
+    }
+   ]
   },
   {
    "id": "apex",
@@ -220,7 +306,21 @@
    "memorySensitivity": 0.5,
    "dataQuality": 1,
    "popularity": 1,
-   "fpsCap": 300
+   "fpsCap": 300,
+   "tips": [
+    {
+     "fr": "Apex est plafonné à 300 FPS par défaut : option de lancement « +fps_max 0 » (illimité) ou la fréquence de votre écran (Steam : Propriétés > Options de lancement ; EA app : Propriétés > Arguments).",
+     "en": "Apex is capped at 300 FPS by default: launch option '+fps_max 0' (unlimited) or your monitor refresh (Steam: Properties > Launch options; EA app: Properties > Arguments)."
+    },
+    {
+     "fr": "NVIDIA Reflex (cartes NVIDIA) : « Activé + Boost » — moins de latence ; sur Radeon, AMD Anti-Lag 2 s'il est proposé.",
+     "en": "NVIDIA Reflex (NVIDIA cards): 'On + Boost' — lower latency; on Radeon, AMD Anti-Lag 2 when offered."
+    },
+    {
+     "fr": "Budget de streaming des textures adapté à la mémoire vidéo (8 Go : « Élevé » au maximum) ; ombres « Faible ».",
+     "en": "Texture streaming budget matched to video memory (8 GB: 'High' at most); shadows 'Low'."
+    }
+   ]
   },
   {
    "id": "pubg",
@@ -253,7 +353,17 @@
    "memorySensitivity": 0.4,
    "dataQuality": 1,
    "popularity": 1,
-   "fpsCap": 600
+   "fpsCap": 600,
+   "tips": [
+    {
+     "fr": "NVIDIA Reflex (cartes NVIDIA) : « Activé + Boost » — moins de latence ; sur Radeon, AMD Anti-Lag 2 s'il est proposé.",
+     "en": "NVIDIA Reflex (NVIDIA cards): 'On + Boost' — lower latency; on Radeon, AMD Anti-Lag 2 when offered."
+    },
+    {
+     "fr": "Limite FPS « Personnalisée » = fréquence de l'écran (jusqu'à 600) ; échelle de rendu 100 % ; ombres et effets « Faible » pour la lisibilité.",
+     "en": "Frame rate 'Custom' = monitor refresh (up to 600); render scale 100 %; shadows and effects 'Low' for readability."
+    }
+   ]
   },
   {
    "id": "r6siege",
@@ -269,7 +379,17 @@
    "cpuSensitivity": 0.6,
    "memorySensitivity": 0.4,
    "dataQuality": 2,
-   "popularity": 1
+   "popularity": 1,
+   "tips": [
+    {
+     "fr": "Le moteur Vulkan donne souvent plus d'FPS que DirectX 11 sur les cartes récentes (choix au lancement depuis Ubisoft Connect ou Steam).",
+     "en": "The Vulkan renderer often gives more FPS than DirectX 11 on recent cards (chosen at launch from Ubisoft Connect or Steam)."
+    },
+    {
+     "fr": "NVIDIA Reflex (cartes NVIDIA) : « Activé + Boost » — moins de latence ; sur Radeon, AMD Anti-Lag 2 s'il est proposé.",
+     "en": "NVIDIA Reflex (NVIDIA cards): 'On + Boost' — lower latency; on Radeon, AMD Anti-Lag 2 when offered."
+    }
+   ]
   },
   {
    "id": "battlefield6",
@@ -442,7 +562,13 @@
    "cpuSensitivity": 0.9,
    "memorySensitivity": 0.4,
    "dataQuality": 1,
-   "popularity": 1
+   "popularity": 1,
+   "tips": [
+    {
+     "fr": "Limite d'images « Illimitée » ou ≥ 240, synchronisation verticale désactivée ; la vitesse d'un cœur du processeur et la mémoire comptent le plus.",
+     "en": "Frame rate cap 'Uncapped' or ≥ 240, vertical sync off; single-core CPU speed and memory matter most."
+    }
+   ]
   },
   {
    "id": "dota2",
@@ -532,7 +658,17 @@
    "cpuSensitivity": 0.55,
    "memorySensitivity": 0.5,
    "dataQuality": 1,
-   "popularity": 1
+   "popularity": 1,
+   "tips": [
+    {
+     "fr": "NVIDIA Reflex (cartes NVIDIA) : « Activé + Boost » — moins de latence ; sur Radeon, AMD Anti-Lag 2 s'il est proposé.",
+     "en": "NVIDIA Reflex (NVIDIA cards): 'On + Boost' — lower latency; on Radeon, AMD Anti-Lag 2 when offered."
+    },
+    {
+     "fr": "Unreal Engine 5 très exigeant : DLSS/FSR « Qualité » et qualité globale « Faible »/« Moyenne » ; laissez les shaders se compiler au premier lancement.",
+     "en": "Very demanding Unreal Engine 5: DLSS/FSR 'Quality' and overall quality 'Low'/'Medium'; let shaders compile on first launch."
+    }
+   ]
   },
   {
    "id": "helldivers2",

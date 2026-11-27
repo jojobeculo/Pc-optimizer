@@ -86,9 +86,27 @@ public static class SafetyPolicy
 
     public static bool IsProtectedService(string name) => ProtectedServices.Contains(name);
 
+    /// <summary>
+    /// The only security settings FrameCore may change, and only through Extreme-only, consent-gated, reversible catalog
+    /// entries (enforced by catalog validation): Memory integrity (HVCI) as documented by Microsoft for gamers, and two
+    /// scoped Microsoft Defender preferences (scheduled-scan CPU limit, game-folder exclusions). Real-time protection,
+    /// the firewall, Windows Update, Secure Boot, TPM, BitLocker and CPU mitigations are never touched.
+    /// </summary>
+    private static readonly (string Path, string Name)[] SecurityTradeOffRegistry =
+    {
+        (@"HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity", "Enabled"),
+    };
+    public static readonly string[] SecurityTradeOffHandlers = { "defender.scanCpuLimit", "defender.gameFolderExclusions" };
+
+    public static bool IsSecurityTradeOff(ActionDefinition a) =>
+        (a.Type == "registry" && a.Path != null && SecurityTradeOffRegistry.Any(x => string.Equals(NormalizeRegistryPath(a.Path), x.Path, StringComparison.OrdinalIgnoreCase)
+                                                                                    && string.Equals(a.Name, x.Name, StringComparison.OrdinalIgnoreCase)))
+        || (a.Type == "handler" && SecurityTradeOffHandlers.Contains(a.Name, StringComparer.OrdinalIgnoreCase));
+
     public static bool IsProtectedRegistry(string path, string? valueName)
     {
         var p = NormalizeRegistryPath(path);
+        if (SecurityTradeOffRegistry.Any(x => string.Equals(p, x.Path, StringComparison.OrdinalIgnoreCase) && string.Equals(valueName, x.Name, StringComparison.OrdinalIgnoreCase))) return false;
         if (ProtectedRegistryPrefixes.Any(prefix => p.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))) return true;
         return valueName != null && ProtectedRegistryValues.Contains(valueName, StringComparer.OrdinalIgnoreCase);
     }

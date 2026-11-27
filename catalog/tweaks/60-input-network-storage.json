@@ -530,7 +530,9 @@
    "risk": "Low",
    "kind": "Maintenance",
    "restart": "None",
-   "profiles": [],
+   "profiles": [
+    "Extreme"
+   ],
    "actions": [
     {
      "type": "handler",

@@ -7,7 +7,7 @@ fr = json.load(open(os.path.join(ROOT, "lang", "fr.json"), encoding="utf-8"))
 T = lambda k, d=None: fr.get(k, d if d is not None else k)
 CONF = {"Confirmed": "Confirmé", "Probable": "Probable", "Experimental": "Expérimental", "NotRecommended": "Non recommandé"}
 RISK = {"None": "Nul", "Low": "Faible", "Medium": "Moyen", "High": "Élevé"}
-PROF = {"Balanced": "Équilibré", "Performance": "Performances", "Maximum": "Performance maximale"}
+PROF = {"Balanced": "Équilibré", "Performance": "Performances", "Maximum": "Performance maximale", "Extreme": "Extrême"}
 tweaks = []
 for f in sorted(glob.glob(os.path.join(ROOT, "catalog", "tweaks", "*.json"))):
     tweaks += json.load(open(f, encoding="utf-8"))["tweaks"]

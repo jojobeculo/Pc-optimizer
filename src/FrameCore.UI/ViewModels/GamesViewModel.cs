@@ -41,6 +41,8 @@ public sealed partial class GameRow : ObservableObject
     public string GainAbsText => HasMeasuredChange && Gain?.GainAbsolute is { } a ? (a >= 0 ? "+" : "") + a.ToString("0") + " " + Loc.T("unit.fps") : "";
     public string GainRangeText => Gain?.GainPercentLow is { } lo && Gain.GainPercentHigh is { } hi && Math.Abs(hi - lo) > 0.05 ? Loc.T("game.gainRange", lo.ToString("0.#"), hi.ToString("0.#")) : "";
     public string GainReason => Gain == null ? "" : string.Join(" ", Gain.ReasonKeys.Select(k => Loc.T(k)));
+    public IReadOnlyList<string> Tips => Game.Tips.Select(t => t.ToString()).ToList();
+    public bool HasTips => Game.Tips.Count > 0;
     public string Notes => string.Join("\n", Estimate.NoteKeys.Distinct().Select(k => "• " + Loc.T(k)).Concat(Game.Note != null ? new[] { "• " + Game.Note } : Array.Empty<string>()));
     public string CpuGpuText => Estimate.GpuBoundFps is { } g && Estimate.CpuBoundFps is { } c ? Loc.T("game.cpuGpu", g.ToString("0"), c.ToString("0")) : "";
 }
