@@ -23,6 +23,7 @@
             <i:SeverityIconConverter x:Key="SeverityIcon"/>
             <i:OneBasedConverter x:Key="OneBased"/>
             <i:WidthToColumnsConverter x:Key="WidthToColumns"/>
+            <i:ResourceKeyConverter x:Key="Res"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

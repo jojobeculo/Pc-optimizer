@@ -23,17 +23,60 @@ public sealed partial class StepItem : ObservableObject
     [ObservableProperty] private string _detail = "";
 }
 
-public sealed class MetricRow
+/// <summary>One bar of a small chart: value, height (0–1), tooltip; IsCurrent highlights the run being shown.</summary>
+public sealed class ChartBar
 {
+    public string Label { get; init; } = "";
+    public string Value { get; init; } = "";
+    public double Fraction { get; init; }
+    public bool IsCurrent { get; init; }
+    public string Tip { get; init; } = "";
+    public QuickRunRow? Run { get; init; }
+}
+
+/// <summary>A measured value, readable at a glance and expandable (click) into what it means, every repetition and its history.</summary>
+public sealed partial class MetricRow : ObservableObject
+{
+    public string Key { get; init; } = "";
     public string Name { get; init; } = "";
     public string Component { get; init; } = "";
     public string Value { get; init; } = "";
     public string Spread { get; init; } = "";
     public string Unit { get; init; } = "";
     public string Note { get; init; } = "";
+    /// <summary>One sentence: what the measurement means for the player.</summary>
+    public string What { get; init; } = "";
+    public string Noise { get; init; } = "";
+    public bool Measured { get; init; } = true;
+    public IReadOnlyList<double> Samples { get; init; } = Array.Empty<double>();
+    public double Median { get; init; } = double.NaN;
+    public double CiLow { get; init; } = double.NaN;
+    public double CiHigh { get; init; } = double.NaN;
+    public bool HasSamples => Samples.Count > 1;
+    /// <summary>Medians of this measurement in the previous benchmarks of this PC (oldest first).</summary>
+    public IReadOnlyList<ChartBar> History { get; init; } = Array.Empty<ChartBar>();
+    public bool HasHistory => History.Count >= 2;
+    public bool HasWhat => What.Length > 0;
+    [ObservableProperty] private bool _isExpanded;
 }
 
-public sealed class ComparisonRow
+/// <summary>Summary card for one component: main figure, what it is for, trend against the previous benchmark.</summary>
+public sealed class ComponentCard
+{
+    public string Icon { get; init; } = "Icon.Chip";
+    public string Name { get; init; } = "";
+    public string What { get; init; } = "";
+    public string Headline { get; init; } = "";
+    public string Value { get; init; } = "—";
+    public string Unit { get; init; } = "";
+    public string Trend { get; init; } = "";
+    /// <summary>Success | Danger | Warning | Neutral.</summary>
+    public string TrendKey { get; init; } = "Neutral";
+    public IReadOnlyList<ChartBar> History { get; init; } = Array.Empty<ChartBar>();
+    public bool HasHistory => History.Count >= 2;
+}
+
+public sealed partial class ComparisonRow : ObservableObject
 {
     public string Name { get; init; } = "";
     public string Before { get; init; } = "";
@@ -44,6 +87,12 @@ public sealed class ComparisonRow
     /// <summary>Improved | Regressed | WithinNoise | Inconclusive | NotComparable — drives the colour.</summary>
     public string VerdictKey { get; init; } = "";
     public string Confidence { get; init; } = "";
+    public double BeforeFraction { get; init; } = double.NaN;
+    public double AfterFraction { get; init; } = double.NaN;
+    public string What { get; init; } = "";
+    public string Direction { get; init; } = "";
+    public string Noise { get; init; } = "";
+    [ObservableProperty] private bool _isExpanded;
 }
 
 public sealed class QuickRunRow
@@ -66,6 +115,12 @@ public sealed partial class QuickBenchViewModel : ObservableObject
     public ObservableCollection<ComparisonRow> Comparison { get; } = new();
     public ObservableCollection<QuickRunRow> History { get; } = new();
     public ObservableCollection<MetricRow> LabResults { get; } = new();
+    public ObservableCollection<ComponentCard> Components { get; } = new();
+    /// <summary>History chart: the measurements that can be charted, and the bars of the chosen one.</summary>
+    public ObservableCollection<KeyValuePair<string, string>> ChartMetrics { get; } = new();
+    public ObservableCollection<ChartBar> ChartBars { get; } = new();
+    [ObservableProperty] private string _chartMetric = "cpu.multi";
+    [ObservableProperty] private string _comparisonSummary = "";
 
     [ObservableProperty] private string _mode = "standard";
     [ObservableProperty] private string _label = "";
@@ -97,6 +152,101 @@ public sealed partial class QuickBenchViewModel : ObservableObject
         foreach (var r in _shell.Services.QuickBenches.LoadAll().Take(40)) History.Add(new QuickRunRow { Result = r });
         if (History.Count > 0 && !HasResult) Show(History[0].Result);
         if (History.Count >= 2 && CompareAfter == null) { CompareAfter = History[0]; CompareBefore = History[1]; }
+        FillChartMetrics();
+        BuildChart();
+    }
+
+    private QuickBenchResult? _shown;
+
+    /// <summary>Earlier benchmarks of this PC, oldest first (same machine signature when known).</summary>
+    private List<QuickBenchResult> SameMachineRuns(QuickBenchResult r) =>
+        History.Select(h => h.Result).Where(x => string.IsNullOrEmpty(r.MachineSignature) || string.IsNullOrEmpty(x.MachineSignature) || x.MachineSignature == r.MachineSignature)
+               .OrderBy(x => x.StartedUtc).ToList();
+
+    private static string Num(double v) => v.ToString(Math.Abs(v) >= 100 ? "N0" : "N1", CultureInfo.CurrentCulture);
+
+    private List<ChartBar> HistoryBars(string key, QuickBenchResult current)
+    {
+        var runs = SameMachineRuns(current).Where(x => x.Get(key) is { Measured: true }).TakeLast(12).ToList();
+        if (runs.Count == 0) return new();
+        var values = runs.Select(x => x.Get(key)!.Median).ToList();
+        var higher = runs[0].Get(key)!.HigherIsBetter;
+        var max = values.Max(); var min = values.Min();
+        return runs.Select((x, i) =>
+        {
+            var v = values[i];
+            // Bar height = how good the run is: "lower is better" values are inverted so a taller bar is always better.
+            var f = higher ? v / Math.Max(1e-9, max) : min / Math.Max(1e-9, v);
+            var unit = x.Get(key)!.Unit;
+            return new ChartBar
+            {
+                Label = x.StartedUtc.ToLocalTime().ToString("d MMM", CultureInfo.CurrentCulture), Value = Num(v), Fraction = f,
+                IsCurrent = x.Id == current.Id, Tip = $"{x.StartedUtc.ToLocalTime():g} · {x.Label}\n{Num(v)} {unit}",
+                Run = History.FirstOrDefault(h => h.Result.Id == x.Id),
+            };
+        }).ToList();
+    }
+
+    private void FillChartMetrics()
+    {
+        var keys = History.SelectMany(h => h.Result.Metrics.Where(m => m.Measured).Select(m => m.Key)).Distinct().ToList();
+        if (ChartMetrics.Select(k => k.Key).SequenceEqual(keys)) return;
+        ChartMetrics.Clear();
+        foreach (var k in keys) ChartMetrics.Add(new(k, Loc.T("metric." + k)));
+        if (!keys.Contains(ChartMetric) && keys.Count > 0) ChartMetric = keys[0];
+    }
+
+    partial void OnChartMetricChanged(string value) => BuildChart();
+
+    private void BuildChart()
+    {
+        ChartBars.Clear();
+        var current = _shown ?? History.FirstOrDefault()?.Result;
+        if (current == null || string.IsNullOrEmpty(ChartMetric)) return;
+        foreach (var b in HistoryBars(ChartMetric, current)) ChartBars.Add(b);
+    }
+
+    /// <summary>Click on a bar of the trend chart: show that benchmark.</summary>
+    [RelayCommand]
+    private void ShowRun(ChartBar? bar)
+    {
+        if (bar?.Run == null) return;
+        Show(bar.Run.Result);
+        BuildChart();
+    }
+
+    [RelayCommand] private static void ToggleRow(MetricRow? row) { if (row != null) row.IsExpanded = !row.IsExpanded; }
+    [RelayCommand] private static void ToggleComparison(ComparisonRow? row) { if (row != null) row.IsExpanded = !row.IsExpanded; }
+
+    private static readonly (BenchComponent c, string icon, string key)[] Headlines =
+    {
+        (BenchComponent.Cpu, "Icon.Chip", "cpu.multi"), (BenchComponent.Memory, "Icon.Ram", "mem.bandwidth"),
+        (BenchComponent.Storage, "Icon.Disk", "disk.seqRead"), (BenchComponent.Gpu, "Icon.Gpu", "gpu.compute"), (BenchComponent.System, "Icon.Timer", "sys.wakeP99"),
+    };
+
+    private void BuildComponents(QuickBenchResult r)
+    {
+        Components.Clear();
+        var previous = SameMachineRuns(r).LastOrDefault(x => x.StartedUtc < r.StartedUtc && x.Mode == r.Mode)
+                       ?? SameMachineRuns(r).LastOrDefault(x => x.StartedUtc < r.StartedUtc);
+        var cmp = previous != null ? QuickBenchComparer.Compare(previous, r) : null;
+        foreach (var (c, icon, key) in Headlines)
+        {
+            var m = r.Get(key);
+            if (m == null) continue;
+            var mc = cmp?.Metrics.FirstOrDefault(x => x.Key == key);
+            var trend = previous == null ? Loc.T("quick.summary.noPrevious")
+                : mc == null ? Loc.T("quick.trend.NotComparable")
+                : Loc.T("quick.trend." + mc.Verdict, mc.ImprovementPercent is { } p ? (p >= 0 ? "+" : "") + p.ToString("0.0", CultureInfo.CurrentCulture) + " %" : "");
+            Components.Add(new ComponentCard
+            {
+                Icon = icon, Name = Loc.T("bench.component." + c), What = Loc.T("bench.component." + c + ".what"), Headline = Loc.T("metric." + key),
+                Value = m.Measured ? Num(m.Median) : "—", Unit = m.Measured ? m.Unit : Loc.T("quick.unavailable." + (m.UnavailableReason ?? "unknown")),
+                Trend = trend,
+                TrendKey = mc?.Verdict switch { ChangeVerdict.Improved => "Success", ChangeVerdict.Regressed => "Danger", ChangeVerdict.Inconclusive => "Warning", _ => "Neutral" },
+                History = m.Measured ? HistoryBars(key, r) : new(),
+            });
+        }
     }
 
     partial void OnCompareBeforeChanged(QuickRunRow? value) => Compare();
@@ -156,10 +306,12 @@ public sealed partial class QuickBenchViewModel : ObservableObject
     /// <summary>Lets the automated UI tour run the benchmark through the same code path as the Start button.</summary>
     public Task RunFromTourAsync() => Start();
 
-    private void Show(QuickBenchResult r)
+    public void Show(QuickBenchResult r)
     {
+        _shown = r;
         Metrics.Clear();
-        foreach (var m in r.Metrics) Metrics.Add(ToRow(m));
+        foreach (var m in r.Metrics) Metrics.Add(ToRow(m, HistoryBars(m.Key, r)));
+        BuildComponents(r);
         var t = r.Thermals;
         ThermalText = t.Samples == 0 ? Loc.T("quick.thermal.none")
             : Loc.T("quick.thermal", Fmt(t.CpuTempMaxC, "0"), Fmt(t.GpuTempMaxC, "0"), Fmt(t.CpuClockAvgMhz, "0"), Fmt(t.CpuClockMinUnderLoadMhz, "0"), Fmt(t.PerformanceLimitMinPercent, "0"));
@@ -176,17 +328,21 @@ public sealed partial class QuickBenchViewModel : ObservableObject
         HasResult = true;
     }
 
-    public static MetricRow ToRow(BenchMetric m)
+    public static MetricRow ToRow(BenchMetric m, IReadOnlyList<ChartBar>? history = null)
     {
         var (lo, hi) = m.Ci95;
         return new MetricRow
         {
-            Name = Loc.T("metric." + m.Key), Component = Loc.T("bench.component." + m.Component), Unit = m.Unit,
+            Key = m.Key, Name = Loc.T("metric." + m.Key), Component = Loc.T("bench.component." + m.Component), Unit = m.Unit,
+            What = Loc.Instance.Has("metric." + m.Key + ".what") ? Loc.T("metric." + m.Key + ".what") : "",
+            Noise = Loc.T("quick.details.noise", m.NoiseFloorPercent.ToString("0.#", CultureInfo.CurrentCulture)),
+            Measured = m.Measured, Samples = m.Measured ? m.Samples.ToList() : Array.Empty<double>(),
+            Median = m.Measured ? m.Median : double.NaN, CiLow = lo, CiHigh = hi, History = history ?? Array.Empty<ChartBar>(),
             Value = m.Measured ? m.Median.ToString(m.Median >= 100 ? "N0" : "N1", CultureInfo.CurrentCulture) : "—",
             Spread = !m.Measured ? Loc.T("quick.unavailable." + (m.UnavailableReason ?? "unknown"))
                    : m.Samples.Count < 2 ? Loc.T("quick.singleSample")
                    : Loc.T("quick.spread", m.Samples.Count, m.CvPercent.ToString("0.0"), double.IsNaN(lo) ? "—" : lo.ToString("N1"), double.IsNaN(hi) ? "—" : hi.ToString("N1")),
-            Note = m.HigherIsBetter ? Loc.T("quick.higherBetter") : Loc.T("quick.lowerBetter"),
+            Note = m.HigherIsBetter ? Loc.T("quick.dir.higher") : Loc.T("quick.dir.lower"),
         };
     }
 
@@ -202,8 +358,20 @@ public sealed partial class QuickBenchViewModel : ObservableObject
         foreach (var m in cmp.Metrics)
         {
             var unit = m.Unit;
+            var higher = CompareAfter.Result.Get(m.Key)?.HigherIsBetter ?? CompareBefore.Result.Get(m.Key)?.HigherIsBetter ?? true;
+            double bf = double.NaN, af = double.NaN;
+            if (m.Before is { } bv && m.After is { } av && bv > 0 && av > 0)
+            {
+                // Taller bar = better, also for "lower is better" values.
+                if (higher) { var mx = Math.Max(bv, av); bf = bv / mx; af = av / mx; }
+                else { var mn = Math.Min(bv, av); bf = mn / bv; af = mn / av; }
+            }
             Comparison.Add(new ComparisonRow
             {
+                BeforeFraction = bf, AfterFraction = af,
+                What = Loc.Instance.Has("metric." + m.Key + ".what") ? Loc.T("metric." + m.Key + ".what") : "",
+                Direction = higher ? Loc.T("quick.dir.higher") : Loc.T("quick.dir.lower"),
+                Noise = Loc.T("quick.details.noise", m.NoiseFloorPercent.ToString("0.#", CultureInfo.CurrentCulture)),
                 Name = Loc.T("metric." + m.Key),
                 Before = m.Before is { } b ? b.ToString("N1") + " " + unit : "—",
                 After = m.After is { } a ? a.ToString("N1") + " " + unit : "—",
@@ -214,6 +382,8 @@ public sealed partial class QuickBenchViewModel : ObservableObject
                 Confidence = m.Verdict == ChangeVerdict.NotComparable ? "" : Loc.T("confidence.level." + m.Confidence),
             });
         }
+        ComparisonSummary = Loc.T("quick.compare.summary", cmp.Metrics.Count(x => x.Verdict == ChangeVerdict.Improved),
+            cmp.Metrics.Count(x => x.Verdict == ChangeVerdict.Regressed), cmp.Metrics.Count(x => x.Verdict == ChangeVerdict.WithinNoise));
         IndexValue = cmp.IndexAfterRelativeToBefore ?? double.NaN;
         IndexText = cmp.IndexAfterRelativeToBefore is { } idx ? Loc.T("quick.index", idx.ToString("0.0")) : Loc.T("quick.indexNone");
         ComparisonTitle = Loc.T("quick.compareTitle", CompareBefore.Title, CompareAfter.Title)

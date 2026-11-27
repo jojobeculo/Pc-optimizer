@@ -23,6 +23,40 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
+        <!-- Clickable row (opens the detail of a measurement) -->
+        <Style x:Key="RowToggle" TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="Transparent" CornerRadius="8" Padding="10,9">
+                            <ContentPresenter HorizontalAlignment="Stretch"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.CardHover}"/></Trigger>
+                            <Trigger Property="IsPressed" Value="True"><Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.Inset}"/></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Small bar of a history chart (tooltip = date, name and value) -->
+        <DataTemplate x:Key="MiniBar">
+            <Border x:Name="Slot" Background="Transparent" Margin="1.5,0" ToolTip="{Binding Tip}" ToolTipService.InitialShowDelay="0">
+                <Border x:Name="Bar" CornerRadius="3,3,1,1" Background="{DynamicResource Brush.Chart2}" Opacity="0.5" i:Motion.FractionY="{Binding Fraction}"/>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                    <Setter TargetName="Bar" Property="Background" Value="{DynamicResource Brush.Accent}"/>
+                    <Setter TargetName="Bar" Property="Opacity" Value="1"/>
+                </DataTrigger>
+                <Trigger SourceName="Slot" Property="IsMouseOver" Value="True"><Setter TargetName="Bar" Property="Opacity" Value="1"/></Trigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="BarsPanel"><UniformGrid Rows="1"/></ItemsPanelTemplate>
     </UserControl.Resources>
     <StackPanel>
         <!-- Launch card -->
@@ -97,18 +131,110 @@
                             <TextBlock Text="{Binding StressText}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Foreground="{Binding StressKey, Converter={StaticResource LevelBrush}}"/>
                         </StackPanel>
                     </Border>
-                    <StackPanel AutomationProperties.Name="{i:Loc quick.latest}">
-                        <Grid Margin="8,0,8,6"><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="3*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{i:Loc quick.col.metric}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="1" Text="{i:Loc quick.col.component}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="2" Text="{i:Loc quick.col.median}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="3" Text="{i:Loc quick.col.unit}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="4" Text="{i:Loc quick.col.spread}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/></Grid>
-                        <ItemsControl ItemsSource="{Binding Metrics}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderBrush="{DynamicResource Brush.Grid}" BorderThickness="0,1,0,0" Padding="8,7">
-                                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="3*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{Binding Name}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontWeight="Medium"/><TextBlock Grid.Column="1" Text="{Binding Component}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}"/><TextBlock Grid.Column="2" Text="{Binding Value}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="3" Text="{Binding Unit}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}"/><TextBlock Grid.Column="4" Text="{Binding Spread}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}" FontSize="12"/></Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
+                    <!-- At a glance: one card per component -->
+                    <TextBlock Text="{i:Loc quick.summary.title}" Style="{StaticResource Text.Overline}" Margin="0,0,0,8"/>
+                    <ItemsControl ItemsSource="{Binding Components}" Margin="-4,0,-4,10">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="{Binding ActualWidth, RelativeSource={RelativeSource Self}, Converter={StaticResource WidthToColumns}, ConverterParameter=980:2:5}"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Inset}" Margin="4" Padding="14,12">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <i:Icon Glyph="{Binding Icon, Converter={StaticResource Res}}" Width="16" Height="16" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,8,0"/>
+                                            <TextBlock Text="{Binding Name}" Style="{StaticResource Text.CardTitle}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                            <TextBlock Text="{Binding Value}" Style="{StaticResource Text.Metric}" FontSize="24"/>
+                                            <TextBlock Text="{Binding Unit}" Style="{StaticResource Text.Caption}" VerticalAlignment="Bottom" Margin="5,0,0,4" TextWrapping="Wrap" MaxWidth="120"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Headline}" Style="{StaticResource Text.Caption}"/>
+                                        <ItemsControl ItemsSource="{Binding History}" ItemTemplate="{StaticResource MiniBar}" ItemsPanel="{StaticResource BarsPanel}" Height="30" Margin="0,8,0,0"
+                                                      Visibility="{Binding HasHistory, Converter={StaticResource BoolToVis}}"/>
+                                        <TextBlock Text="{Binding Trend}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{Binding TrendKey, Converter={StaticResource LevelBrush}}"/>
+                                        <TextBlock Text="{Binding What}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Every measurement: click for the detail -->
+                    <DockPanel Margin="0,4,0,4">
+                        <TextBlock DockPanel.Dock="Right" Text="{i:Loc quick.details.click}" Style="{StaticResource Text.Caption}" VerticalAlignment="Bottom"/>
+                        <TextBlock Text="{i:Loc quick.col.metric}" Style="{StaticResource Text.Overline}"/>
+                    </DockPanel>
+                    <ItemsControl ItemsSource="{Binding Metrics}" AutomationProperties.Name="{i:Loc quick.latest}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{DynamicResource Brush.Grid}" BorderThickness="0,1,0,0">
+                                    <StackPanel>
+                                        <Button Style="{StaticResource RowToggle}" AutomationProperties.Name="{Binding Name}"
+                                                Command="{Binding DataContext.ToggleRowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="22"/>
+                                                    <ColumnDefinition Width="2.2*"/>
+                                                    <ColumnDefinition Width="1.3*"/>
+                                                    <ColumnDefinition Width="1.6*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <i:Icon x:Name="Chevron" Glyph="{StaticResource Icon.ChevronRight}" Width="14" Height="14" Foreground="{DynamicResource Brush.TextMuted}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                    <TextBlock Text="{Binding Name}" FontWeight="Medium" TextWrapping="Wrap"/>
+                                                    <TextBlock Text="{Binding Component}" Style="{StaticResource Text.Caption}"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Value}" FontFamily="{StaticResource Font.Mono}" FontSize="16" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Unit}" Style="{StaticResource Text.Caption}" Margin="5,0,0,0" VerticalAlignment="Bottom"/>
+                                                </StackPanel>
+                                                <ItemsControl Grid.Column="3" ItemsSource="{Binding History}" ItemTemplate="{StaticResource MiniBar}" ItemsPanel="{StaticResource BarsPanel}" Height="24"
+                                                              MaxWidth="180" HorizontalAlignment="Left" Visibility="{Binding HasHistory, Converter={StaticResource BoolToVis}}" IsHitTestVisible="False"/>
+                                                <TextBlock Grid.Column="3" Text="{Binding Spread}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" VerticalAlignment="Center"
+                                                           Visibility="{Binding HasHistory, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
+                                            </Grid>
+                                        </Button>
+                                        <!-- Detail -->
+                                        <Border Margin="32,0,10,12" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding What}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Visibility="{Binding HasWhat, Converter={StaticResource BoolToVis}}"/>
+                                                <TextBlock Text="{Binding Note}" Style="{StaticResource Text.Caption}" Margin="0,4,0,0"/>
+                                                <StackPanel Visibility="{Binding HasSamples, Converter={StaticResource BoolToVis}}" Margin="0,10,0,0">
+                                                    <i:SamplePlot Samples="{Binding Samples}" Median="{Binding Median}" Low="{Binding CiLow}" High="{Binding CiHigh}" Unit="{Binding Unit}" Height="52"
+                                                                  DotBrush="{DynamicResource Brush.Accent}" BandBrush="{DynamicResource Brush.ChartFill}" AxisBrush="{DynamicResource Brush.TextMuted}"/>
+                                                    <TextBlock Text="{i:Loc quick.details.samples}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Spread}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                                <TextBlock Text="{Binding Noise}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap"/>
+                                                <StackPanel Visibility="{Binding HasHistory, Converter={StaticResource BoolToVis}}" Margin="0,10,0,0">
+                                                    <TextBlock Text="{i:Loc quick.details.history}" Style="{StaticResource Text.Overline}" Margin="0,0,0,6"/>
+                                                    <ItemsControl ItemsSource="{Binding History}" ItemsPanel="{StaticResource BarsPanel}" MaxWidth="520" HorizontalAlignment="Left">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Margin="2,0" MinWidth="34">
+                                                                    <TextBlock Text="{Binding Value}" Style="{StaticResource Text.Caption}" HorizontalAlignment="Center" FontSize="10.5"/>
+                                                                    <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource MiniBar}" Height="56"/>
+                                                                    <TextBlock Text="{Binding Label}" Style="{StaticResource Text.Caption}" HorizontalAlignment="Center" FontSize="10.5"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                                        <Setter TargetName="Chevron" Property="Glyph" Value="{StaticResource Icon.ChevronDown}"/>
+                                        <Setter TargetName="Chevron" Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </Border>
         </StackPanel>
@@ -146,18 +272,72 @@
                             <TextBlock Text="{Binding IndexText}" Style="{StaticResource Text.Caption}"/>
                         </StackPanel>
                     </DockPanel>
-                    <StackPanel AutomationProperties.Name="{i:Loc quick.compare}">
-                        <Grid Margin="8,0,8,6"><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="0.8*"/><ColumnDefinition Width="0.8*"/><ColumnDefinition Width="2.4*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{i:Loc quick.col.metric}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="1" Text="{i:Loc quick.before}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="2" Text="{i:Loc quick.after}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="3" Text="{i:Loc quick.col.diff}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="4" Text="%" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="5" Text="{i:Loc quick.col.verdict}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="6" Text="{i:Loc quick.col.confidence}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/></Grid>
-                        <ItemsControl ItemsSource="{Binding Comparison}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderBrush="{DynamicResource Brush.Grid}" BorderThickness="0,1,0,0" Padding="8,7">
-                                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="0.8*"/><ColumnDefinition Width="0.8*"/><ColumnDefinition Width="2.4*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{Binding Name}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontWeight="Medium"/><TextBlock Grid.Column="1" Text="{Binding Before}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="2" Text="{Binding After}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="3" Text="{Binding Absolute}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="4" Text="{Binding Percent}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="5" Text="{Binding Verdict}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{Binding VerdictKey, Converter={StaticResource LevelBrush}}" FontSize="12"/><TextBlock Grid.Column="6" Text="{Binding Confidence}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}" FontSize="12"/></Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
+                    <DockPanel Margin="0,0,0,8">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Border Width="12" Height="8" CornerRadius="2" Background="{DynamicResource Brush.Chart2}" Opacity="0.6" Margin="0,0,5,0"/>
+                            <TextBlock Text="{i:Loc quick.compare.legendBefore}" Style="{StaticResource Text.Caption}" Margin="0,0,14,0"/>
+                            <Border Width="12" Height="8" CornerRadius="2" Background="{DynamicResource Brush.Accent}" Margin="0,0,5,0"/>
+                            <TextBlock Text="{i:Loc quick.compare.legendAfter}" Style="{StaticResource Text.Caption}"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding ComparisonSummary}" Style="{StaticResource Text.Body}" FontWeight="Medium" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <ItemsControl ItemsSource="{Binding Comparison}" AutomationProperties.Name="{i:Loc quick.compare}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{DynamicResource Brush.Grid}" BorderThickness="0,1,0,0">
+                                    <StackPanel>
+                                        <Button Style="{StaticResource RowToggle}" AutomationProperties.Name="{Binding Name}"
+                                                Command="{Binding DataContext.ToggleComparisonCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="22"/>
+                                                    <ColumnDefinition Width="1.8*"/>
+                                                    <ColumnDefinition Width="3*"/>
+                                                    <ColumnDefinition Width="1.6*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <i:Icon x:Name="Chevron" Glyph="{StaticResource Icon.ChevronRight}" Width="14" Height="14" Foreground="{DynamicResource Brush.TextMuted}" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="Medium" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                                <!-- Before / after bars: the taller (longer) bar is always the better result -->
+                                                <Grid Grid.Column="2" Margin="0,0,12,0" VerticalAlignment="Center">
+                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto" MinWidth="96"/></Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions><RowDefinition/><RowDefinition Height="4"/><RowDefinition/></Grid.RowDefinitions>
+                                                    <Border Height="9" CornerRadius="4" Background="{DynamicResource Brush.Inset}" ClipToBounds="True" VerticalAlignment="Center">
+                                                        <Border CornerRadius="4" Background="{DynamicResource Brush.Chart2}" Opacity="0.6" i:Motion.Fraction="{Binding BeforeFraction}"/>
+                                                    </Border>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Before}" Style="{StaticResource Text.Caption}" FontFamily="{StaticResource Font.Mono}" Margin="8,0,0,0"/>
+                                                    <Border Grid.Row="2" Height="9" CornerRadius="4" Background="{DynamicResource Brush.Inset}" ClipToBounds="True" VerticalAlignment="Center">
+                                                        <Border CornerRadius="4" Background="{DynamicResource Brush.Accent}" i:Motion.Fraction="{Binding AfterFraction}"/>
+                                                    </Border>
+                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding After}" Style="{StaticResource Text.Caption}" FontFamily="{StaticResource Font.Mono}" Margin="8,0,0,0" Foreground="{DynamicResource Brush.Text}"/>
+                                                </Grid>
+                                                <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                                    <Border Style="{StaticResource Badge}" HorizontalAlignment="Left" Margin="0" Background="{Binding VerdictKey, Converter={StaticResource LevelBrush}, ConverterParameter=soft}">
+                                                        <TextBlock Style="{StaticResource Text.Badge}" Text="{Binding Percent}" Foreground="{Binding VerdictKey, Converter={StaticResource LevelBrush}}" FontFamily="{StaticResource Font.Mono}"/>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Verdict}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,3,0,0" Foreground="{Binding VerdictKey, Converter={StaticResource LevelBrush}}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Button>
+                                        <Border Margin="32,0,10,12" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding What}" Style="{StaticResource Text.Body}" TextWrapping="Wrap"/>
+                                                <TextBlock Style="{StaticResource Text.Caption}" Margin="0,4,0,0" TextWrapping="Wrap">
+                                                    <Run Text="{Binding Direction, Mode=OneWay}"/> · <Run Text="{i:Loc quick.col.diff}"/> <Run Text="{Binding Absolute, Mode=OneWay}"/> · <Run Text="{Binding Confidence, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Text="{Binding Noise}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                                        <Setter TargetName="Chevron" Property="Glyph" Value="{StaticResource Icon.ChevronDown}"/>
+                                        <Setter TargetName="Chevron" Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -165,6 +345,32 @@
         <!-- History -->
         <TextBlock Text="{i:Loc quick.history}" Style="{StaticResource Text.Section}" Margin="0,8,0,10"/>
         <TextBlock Text="{i:Loc quick.history.empty}" Style="{StaticResource Text.Muted}" Visibility="{Binding History.Count, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
+        <Border Style="{StaticResource Card}" Visibility="{Binding ChartBars.Count, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,10">
+                    <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding ChartMetrics}" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding ChartMetric}"
+                              MinWidth="240" AutomationProperties.Name="{i:Loc quick.chart.title}"/>
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc quick.chart.title}" Style="{StaticResource Text.CardTitle}"/>
+                        <TextBlock Text="{i:Loc quick.chart.desc}" Style="{StaticResource Text.Caption}"/>
+                    </StackPanel>
+                </DockPanel>
+                <ItemsControl ItemsSource="{Binding ChartBars}" ItemsPanel="{StaticResource BarsPanel}" MaxWidth="900" HorizontalAlignment="Left">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource RowToggle}" Padding="0" MinWidth="44" ToolTip="{Binding Tip}" AutomationProperties.Name="{Binding Tip}"
+                                    Command="{Binding DataContext.ShowRunCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Value}" Style="{StaticResource Text.Caption}" HorizontalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/>
+                                    <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource MiniBar}" Height="110" Margin="4,4,4,4"/>
+                                    <TextBlock Text="{Binding Label}" Style="{StaticResource Text.Caption}" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
         <ItemsControl ItemsSource="{Binding History}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>

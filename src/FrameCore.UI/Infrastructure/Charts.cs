@@ -143,3 +143,96 @@ public sealed class LineChart : FrameworkElement
             }
     }
 }
+
+/// <summary>
+/// Benchmark repetitions as dots on one axis, with the median (line) and the 95 % confidence interval (band).
+/// Hovering a dot shows its value.
+/// </summary>
+public sealed class SamplePlot : FrameworkElement
+{
+    public static readonly DependencyProperty SamplesProperty = DependencyProperty.Register(nameof(Samples), typeof(IReadOnlyList<double>), typeof(SamplePlot),
+        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty MedianProperty = DependencyProperty.Register(nameof(Median), typeof(double), typeof(SamplePlot),
+        new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty LowProperty = DependencyProperty.Register(nameof(Low), typeof(double), typeof(SamplePlot),
+        new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty HighProperty = DependencyProperty.Register(nameof(High), typeof(double), typeof(SamplePlot),
+        new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty DotBrushProperty = DependencyProperty.Register(nameof(DotBrush), typeof(Brush), typeof(SamplePlot),
+        new FrameworkPropertyMetadata(Brushes.MediumSeaGreen, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty BandBrushProperty = DependencyProperty.Register(nameof(BandBrush), typeof(Brush), typeof(SamplePlot),
+        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty AxisBrushProperty = DependencyProperty.Register(nameof(AxisBrush), typeof(Brush), typeof(SamplePlot),
+        new FrameworkPropertyMetadata(Brushes.Gray, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty UnitProperty = DependencyProperty.Register(nameof(Unit), typeof(string), typeof(SamplePlot),
+        new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsRender));
+
+    public IReadOnlyList<double>? Samples { get => (IReadOnlyList<double>?)GetValue(SamplesProperty); set => SetValue(SamplesProperty, value); }
+    public double Median { get => (double)GetValue(MedianProperty); set => SetValue(MedianProperty, value); }
+    public double Low { get => (double)GetValue(LowProperty); set => SetValue(LowProperty, value); }
+    public double High { get => (double)GetValue(HighProperty); set => SetValue(HighProperty, value); }
+    public Brush DotBrush { get => (Brush)GetValue(DotBrushProperty); set => SetValue(DotBrushProperty, value); }
+    public Brush? BandBrush { get => (Brush?)GetValue(BandBrushProperty); set => SetValue(BandBrushProperty, value); }
+    public Brush AxisBrush { get => (Brush)GetValue(AxisBrushProperty); set => SetValue(AxisBrushProperty, value); }
+    public string Unit { get => (string)GetValue(UnitProperty); set => SetValue(UnitProperty, value); }
+
+    private readonly System.Windows.Controls.ToolTip _tip = new();
+    private (double min, double max) _range;
+
+    public SamplePlot()
+    {
+        ToolTip = _tip;
+        System.Windows.Controls.ToolTipService.SetInitialShowDelay(this, 0);
+    }
+
+    private (double min, double max) Range(IReadOnlyList<double> s)
+    {
+        var all = s.Concat(new[] { Low, High, Median }).Where(v => !double.IsNaN(v) && !double.IsInfinity(v)).ToList();
+        var min = all.Min(); var max = all.Max();
+        var pad = Math.Max((max - min) * 0.12, Math.Abs(max) * 0.01 + 1e-9);
+        return (min - pad, max + pad);
+    }
+
+    private double X(double v, double w) => 8 + (v - _range.min) / Math.Max(1e-12, _range.max - _range.min) * (w - 16);
+
+    protected override void OnRender(DrawingContext dc)
+    {
+        var w = ActualWidth; var h = ActualHeight;
+        dc.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, Math.Max(0, w), Math.Max(0, h)));
+        var s = Samples;
+        if (s == null || s.Count == 0 || w < 40 || h < 24) return;
+        _range = Range(s);
+        var mid = Math.Round((h - 16) / 2) + 0.5;
+        if (BandBrush != null && !double.IsNaN(Low) && !double.IsNaN(High))
+            dc.DrawRoundedRectangle(BandBrush, null, new Rect(new Point(X(Low, w), mid - 9), new Point(X(High, w), mid + 9)), 4, 4);
+        dc.DrawLine(new Pen(AxisBrush, 1), new Point(8, mid), new Point(w - 8, mid));
+        for (var i = 0; i < s.Count; i++)
+        {
+            // Small vertical offsets keep identical values visible.
+            var y = mid + (i % 3 - 1) * 4;
+            dc.DrawEllipse(DotBrush, null, new Point(X(s[i], w), y), 3.6, 3.6);
+        }
+        if (!double.IsNaN(Median))
+        {
+            var x = Math.Round(X(Median, w)) + 0.5;
+            dc.DrawLine(new Pen(AxisBrush, 2), new Point(x, mid - 12), new Point(x, mid + 12));
+        }
+        var dpi = VisualTreeHelper.GetDpi(this).PixelsPerDip;
+        var face = new Typeface(System.Windows.Controls.Control.FontFamilyProperty.DefaultMetadata.DefaultValue as FontFamily ?? new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+        FormattedText T(double v) => new(v.ToString(Math.Abs(v) >= 100 ? "N0" : "N1", CultureInfo.CurrentCulture), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, face, 11, AxisBrush, dpi);
+        var lo = T(s.Min()); var hi = T(s.Max());
+        dc.DrawText(lo, new Point(Math.Max(0, X(s.Min(), w) - lo.Width / 2), h - 14));
+        dc.DrawText(hi, new Point(Math.Min(w - hi.Width, X(s.Max(), w) - hi.Width / 2), h - 14));
+    }
+
+    protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+        var s = Samples;
+        if (s == null || s.Count == 0) { _tip.Content = null; return; }
+        var x = e.GetPosition(this).X;
+        var best = 0;
+        for (var i = 1; i < s.Count; i++) if (Math.Abs(X(s[i], ActualWidth) - x) < Math.Abs(X(s[best], ActualWidth) - x)) best = i;
+        _tip.Content = FrameCore.Core.Localization.Loc.T("quick.details.sample", best + 1, s[best].ToString(Math.Abs(s[best]) >= 100 ? "N0" : "N2", CultureInfo.CurrentCulture), Unit);
+    }
+}

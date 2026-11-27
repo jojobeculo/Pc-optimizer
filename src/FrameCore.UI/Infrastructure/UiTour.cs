@@ -156,6 +156,19 @@ public static class UiTour
                 quick.Load();
                 if (quick.History.Count >= 2) { quick.CompareAfter = quick.History[0]; quick.CompareBefore = quick.History[1]; }
                 report["comparisonExported"] = quick.ExportComparisonTo(Path.Combine(dir, "comparison.html"));
+                // Graphical results: one measurement and one comparison line opened, as a user clicking them.
+                if (quick.History.Count > 0) quick.Show(quick.History[0].Result);
+                if (quick.Metrics.FirstOrDefault(m => m.HasSamples) is { } open) quick.ToggleRowCommand.Execute(open);
+                if (quick.Comparison.FirstOrDefault() is { } openCmp) quick.ToggleComparisonCommand.Execute(openCmp);
+                pages.Add(await Visit(shell, window, dir, "flow-bench-graphical", () => { shell.CurrentKey = "benchmark"; shell.Benchmark.Section = "quick"; }, scrollShots: 5));
+                report["benchGraphical"] = new Dictionary<string, object?>
+                {
+                    ["components"] = quick.Components.Select(c => $"{c.Name}: {c.Value} {c.Unit} · {c.Trend}").ToList(),
+                    ["expandedRow"] = quick.Metrics.FirstOrDefault(m => m.IsExpanded)?.Name,
+                    ["explained"] = quick.Metrics.Count(m => m.HasWhat) + "/" + quick.Metrics.Count,
+                    ["chartBars"] = quick.ChartBars.Count,
+                    ["comparisonSummary"] = quick.ComparisonSummary,
+                };
 
                 shell.Games.Ready = false;
                 pages.Add(await Visit(shell, window, dir, "flow-games-after", () => shell.CurrentKey = "games", scrollShots: 2));

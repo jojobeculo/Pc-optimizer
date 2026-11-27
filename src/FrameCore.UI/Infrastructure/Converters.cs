@@ -138,13 +138,27 @@ public sealed class OneBasedConverter : IValueConverter
     public object ConvertBack(object value, Type t, object p, CultureInfo c) => Binding.DoNothing;
 }
 
-/// <summary>Available width → number of columns: "860" means 2 columns below 860 px, 4 from there (cards that wrap on small windows).</summary>
+/// <summary>
+/// Available width → number of columns (cards that wrap on small windows): "860" = 2 columns below 860 px, 4 from there;
+/// "900:2:5" = 2 columns below 900 px, 5 from there.
+/// </summary>
 public sealed class WidthToColumnsConverter : IValueConverter
 {
     public object Convert(object value, Type t, object p, CultureInfo c)
     {
-        var limit = double.TryParse(p?.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out var l) ? l : 860;
-        return value is double w && w > 0 && w < limit ? 2 : 4;
+        var parts = (p?.ToString() ?? "860").Split(':');
+        var limit = double.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var l) ? l : 860;
+        var small = parts.Length > 1 && int.TryParse(parts[1], out var sm) ? sm : 2;
+        var large = parts.Length > 2 && int.TryParse(parts[2], out var lg) ? lg : 4;
+        return value is double w && w > 0 && w < limit ? small : large;
     }
+    public object ConvertBack(object value, Type t, object p, CultureInfo c) => Binding.DoNothing;
+}
+
+/// <summary>Resource key (e.g. "Icon.Chip") → the application resource, for icons chosen by the view model.</summary>
+public sealed class ResourceKeyConverter : IValueConverter
+{
+    public object Convert(object value, Type t, object p, CultureInfo c) =>
+        value is string key && Application.Current?.TryFindResource(key) is { } r ? r : DependencyProperty.UnsetValue;
     public object ConvertBack(object value, Type t, object p, CultureInfo c) => Binding.DoNothing;
 }

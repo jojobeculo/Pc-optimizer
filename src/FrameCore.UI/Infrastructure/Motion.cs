@@ -84,6 +84,21 @@ public static class Motion
         if (!Enabled) { st.BeginAnimation(ScaleTransform.ScaleXProperty, null); st.ScaleX = target; return; }
         st.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(target, TimeSpan.FromMilliseconds(600)) { EasingFunction = Ease });
     }
+
+    // ---------------------------------------------------------------- vertical bar growing to a fraction (charts)
+    public static readonly DependencyProperty FractionYProperty =
+        DependencyProperty.RegisterAttached("FractionY", typeof(double), typeof(Motion), new PropertyMetadata(double.NaN, OnFractionYChanged));
+    public static void SetFractionY(DependencyObject d, double v) => d.SetValue(FractionYProperty, v);
+    public static double GetFractionY(DependencyObject d) => (double)d.GetValue(FractionYProperty);
+
+    private static void OnFractionYChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is not FrameworkElement fe) return;
+        var target = double.IsNaN((double)e.NewValue) ? 0 : Math.Clamp((double)e.NewValue, 0.02, 1);
+        if (fe.RenderTransform is not ScaleTransform st) { st = new ScaleTransform(1, 0); fe.RenderTransform = st; fe.RenderTransformOrigin = new Point(0.5, 1); }
+        if (!Enabled) { st.BeginAnimation(ScaleTransform.ScaleYProperty, null); st.ScaleY = target; return; }
+        st.BeginAnimation(ScaleTransform.ScaleYProperty, new DoubleAnimation(target, TimeSpan.FromMilliseconds(600)) { EasingFunction = Ease });
+    }
 }
 
 /// <summary>Page host that cross-fades and slides content when the page changes.</summary>

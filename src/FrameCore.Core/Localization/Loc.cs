@@ -60,6 +60,10 @@ public sealed class Loc : INotifyPropertyChanged
         return key;
     }
 
+    /// <summary>True when the key exists in the current language or in French (optional texts).</summary>
+    public bool Has(string key) =>
+        (_tables.TryGetValue(CurrentLanguage, out var t) && t.ContainsKey(key)) || (_tables.TryGetValue("fr", out var fr) && fr.ContainsKey(key));
+
     /// <summary>Translate with string.Format arguments.</summary>
     public static string T(string key, params object?[] args)
     {
