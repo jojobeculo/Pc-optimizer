@@ -301,6 +301,8 @@
  "dialog.revert": "Revenir",
  "dialog.revertIn": "Retour automatique dans {0} s.",
  "display.applyMax": "Passer à la fréquence maximale",
+ "display.conn.internal": "Interne",
+ "display.conn.other": "Autre ({0})",
  "display.keep.message": "La fréquence de l'écran a été augmentée. Si l'image est correcte, confirmez.",
  "display.keep.title": "Conserver ce mode d'affichage ?",
  "display.linkLimit": "L'écran annonce {0} Hz mais Windows ne propose que {1} Hz à la résolution native via {2} : câble, port ou version HDMI/DisplayPort possiblement limitants.",

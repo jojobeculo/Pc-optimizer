@@ -135,9 +135,11 @@ internal static class DisplayNative
         return z >= 0 ? s[..z] : s;
     }
 
-    public static string Technology(int t) => t switch
+    /// <summary>Connector name; null when Windows does not report it (-1, e.g. virtual displays).</summary>
+    public static string? Technology(int t) => t switch
     {
-        0 => "VGA", 4 => "DVI", 5 => "HDMI", 6 => "LVDS", 10 => "DisplayPort", 11 => "eDP (interne)", 15 => "Miracast",
-        16 or 17 => "Indirect", 18 => "DisplayPort (USB-C)", unchecked((int)0x80000000) => "Interne", _ => $"Autre ({t})",
+        0 => "VGA", 4 => "DVI", 5 => "HDMI", 6 => "LVDS", 10 => "DisplayPort", 11 => "eDP", 15 => "Miracast",
+        16 or 17 => "Indirect", 18 => "DisplayPort (USB-C)", unchecked((int)0x80000000) => Core.Localization.Loc.T("display.conn.internal"),
+        -1 => null, _ => Core.Localization.Loc.T("display.conn.other", t),
     };
 }

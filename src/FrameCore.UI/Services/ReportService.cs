@@ -89,22 +89,23 @@ public static class ReportService
         foreach (var g in p.Gpus.Where(g => !g.IsSoftware))
             Table(Loc.T("hw.gpu") + " – " + g.Name, new (string, string?)[]
             {
-                (Loc.T("hw.gpu.vram"), g.DedicatedVramBytes is { } v ? $"{v / 1073741824.0:0.#} Go" : null), (Loc.T("hw.gpu.driver"), $"{g.DriverVersion} ({g.DriverDate:d})"),
+                (Loc.T("hw.gpu.vram"), g.DedicatedVramBytes is { } v and > 0 ? Infrastructure.BytesConverter.Format(v) : null),
+                (Loc.T("hw.gpu.driver"), g.DriverVersion == null ? null : g.DriverVersion + (g.DriverDate is { } dd ? $" ({dd.ToString("d", CultureInfo.CurrentCulture)})" : "")),
                 (Loc.T("hw.gpu.arch"), g.Architecture), (Loc.T("hw.gpu.rebar"), Loc.T("rebar." + g.ResizableBar) + (g.ResizableBarDetail != null ? " – " + g.ResizableBarDetail : "")),
                 (Loc.T("hw.gpu.hags"), g.HagsEnabled is { } h ? Loc.T(h ? "common.yes" : "common.no") : null), (Loc.T("hw.gpu.vbios"), g.VbiosVersion),
             });
         Table(Loc.T("hw.ram"), new (string, string?)[]
         {
-            (Loc.T("hw.ram.total"), $"{p.Memory.TotalBytes / 1073741824.0:0.#} Go"), (Loc.T("hw.ram.type"), p.Memory.Type),
-            (Loc.T("hw.ram.speed"), p.Memory.ConfiguredSpeedMts is { } s ? $"{s} MT/s ({s / 2} MHz)" : null), (Loc.T("hw.ram.channels"), Loc.T("channels." + p.Memory.Channels)),
+            (Loc.T("hw.ram.total"), Infrastructure.BytesConverter.Format(p.Memory.TotalBytes)), (Loc.T("hw.ram.type"), p.Memory.Type),
+            (Loc.T("hw.ram.speed"), p.Memory.ConfiguredSpeedMts is { } s ? $"{s} MT/s ({s / 2} MHz)" : null), (Loc.T("hw.ram.channels"), p.Memory.Channels == ChannelMode.Unknown ? null : Loc.T("channels." + p.Memory.Channels)),
             (Loc.T("hw.ram.xmp"), Loc.T("xmp." + p.Memory.Xmp) + " – " + p.Memory.XmpReasoning),
-            (Loc.T("hw.ram.modules"), string.Join(" ; ", p.Memory.Modules.Select(m => $"{m.Slot}: {m.CapacityBytes / 1073741824} Go {m.Manufacturer} {m.PartNumber}"))),
+            (Loc.T("hw.ram.modules"), string.Join(" ; ", p.Memory.Modules.Select(m => $"{m.Slot}: {Infrastructure.BytesConverter.Format(m.CapacityBytes)} {m.Manufacturer} {m.PartNumber}".Trim()))),
         });
         Table(Loc.T("hw.board"), new (string, string?)[]
         {
             (Loc.T("hw.board.model"), $"{p.Board.Manufacturer} {p.Board.Product}"), (Loc.T("hw.board.system"), $"{p.Board.SystemManufacturer} {p.Board.SystemModel}"),
             (Loc.T("hw.board.chipset"), p.Board.Chipset), (Loc.T("hw.bios.version"), $"{p.Firmware.Version} ({p.Firmware.ReleaseDate:d})"),
-            (Loc.T("hw.bios.mode"), p.Firmware.Mode.ToString()), (Loc.T("hw.bios.secureboot"), Loc.T("tri." + p.Firmware.SecureBoot)), (Loc.T("hw.bios.tpm"), p.Firmware.TpmVersion),
+            (Loc.T("hw.bios.mode"), p.Firmware.Mode == FirmwareMode.Unknown ? null : p.Firmware.Mode.ToString().ToUpperInvariant()), (Loc.T("hw.bios.secureboot"), Loc.T("tri." + p.Firmware.SecureBoot)), (Loc.T("hw.bios.tpm"), p.Firmware.TpmVersion),
         });
         foreach (var d in p.Displays)
             Table(Loc.T("hw.display") + " – " + (d.FriendlyName ?? d.DeviceName), new (string, string?)[]
@@ -119,6 +120,7 @@ public static class ReportService
               .Append(E(f.Title)).Append("</b><div class=\"muted\">").Append(E(f.Detail)).Append("</div>")
               .Append(f.Recommendation != null ? "<div>" + E(f.Recommendation) + "</div>" : "").Append("</div>");
         sb.Append("<h2>").Append(E(Loc.T("report.changes"))).Append("</h2><div class=\"card\"><table>");
+        if (!journal.ChangeSets.Any()) sb.Append("<tr><td class=\"muted\">").Append(E(Loc.T("home.noOpt"))).Append("</td></tr>");
         foreach (var c in journal.ChangeSets.Take(200))
             sb.Append("<tr><th>").Append(E(c.CreatedUtc.ToLocalTime().ToString("g", CultureInfo.CurrentCulture))).Append("</th><td>").Append(E(c.Title.ToString()))
               .Append(" — ").Append(E(Loc.T("changeStatus." + c.Status))).Append("</td></tr>");

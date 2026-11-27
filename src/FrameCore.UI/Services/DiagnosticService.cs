@@ -166,7 +166,7 @@ public sealed class DiagnosticService
                 });
             if (d.LinkLimitNote != null)
                 Add(new Finding { Id = "display.link." + d.DeviceName, Category = "Display", Severity = Severity.Info, Confidence = Confidence.Probable, Title = Loc.T("find.display.link.title"), Detail = d.LinkLimitNote });
-            if (d.NativeWidth is { } nw && d.NativeHeight is { } nh && (nw != d.CurrentWidth || nh != d.CurrentHeight) && !d.IsInternal)
+            if (d.NativeWidth is { } nw && d.NativeHeight is { } nh && (nw != d.CurrentWidth || nh != d.CurrentHeight) && !d.IsInternal && !p.Board.IsVirtualMachine)
                 Add(new Finding { Id = "display.native." + d.DeviceName, Category = "Display", Severity = Severity.Info, Title = Loc.T("find.display.native.title"), Detail = Loc.T("find.display.native.detail", d.CurrentWidth, d.CurrentHeight, nw, nh) });
         }
 
@@ -177,7 +177,7 @@ public sealed class DiagnosticService
             Add(new Finding { Id = "ram.single", Category = "Ram", Severity = Severity.Warning, Confidence = Confidence.Probable, Title = Loc.T("find.ram.single.title"), Detail = (mem.ChannelReasoning ?? "") + " " + Loc.T("find.ram.single.detail"), Recommendation = Loc.T("find.ram.single.reco") });
         if (totalGb > 0 && totalGb < 15)
             Add(new Finding { Id = "ram.low", Category = "Ram", Severity = Severity.Suggestion, Title = Loc.T("find.ram.low.title"), Detail = Loc.T("find.ram.low.detail", totalGb.ToString("0.#", CultureInfo.CurrentCulture)) });
-        if (mem.Modules.Select(m => m.CapacityBytes).Distinct().Count() > 1 || mem.Modules.Select(m => m.PartNumber).Distinct().Count() > 1)
+        if (!p.Board.IsVirtualMachine && (mem.Modules.Select(m => m.CapacityBytes).Distinct().Count() > 1 || mem.Modules.Select(m => m.PartNumber).Distinct().Count() > 1))
             Add(new Finding { Id = "ram.mixed", Category = "Ram", Severity = Severity.Info, Confidence = Confidence.Probable, Title = Loc.T("find.ram.mixed.title"), Detail = Loc.T("find.ram.mixed.detail") });
 
         // ---- Storage

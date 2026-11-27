@@ -301,6 +301,8 @@
  "dialog.revert": "Revert",
  "dialog.revertIn": "Automatic revert in {0} s.",
  "display.applyMax": "Switch to maximum refresh rate",
+ "display.conn.internal": "Internal",
+ "display.conn.other": "Other ({0})",
  "display.keep.message": "The display refresh rate was increased. If the picture looks right, confirm.",
  "display.keep.title": "Keep this display mode?",
  "display.linkLimit": "The display advertises {0} Hz but Windows only offers {1} Hz at native resolution over {2}: cable, port or HDMI/DisplayPort version may be limiting.",
