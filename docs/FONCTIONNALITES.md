@@ -11,7 +11,7 @@ AMD EPYC, 16 Go, pilote d'affichage de base Microsoft (pas de GPU), droits admin
 | Fonctionnalité | État | Comment c'est vérifié |
 |---|---|---|
 | Installation, raccourcis, entrée « Applications », désinstallation (données conservées) | Testée | installation silencieuse de l'installateur publié, lancement de l'app installée, désinstallation, contrôles fichiers/registre |
-| Démarrage, navigation, rendu de toutes les pages (thèmes sombre/clair, FR/EN, petite fenêtre) | Testée | visite automatique (~85 captures), 0 erreur de liaison WPF |
+| Démarrage, navigation, rendu de toutes les pages (thèmes sombre/clair, FR/EN, petite fenêtre) | Testée | visite automatique (~90 captures) en administrateur **et** en utilisateur standard, 0 erreur de liaison WPF, 0 exception d'interface ; ressources XAML et traductions vérifiées par des tests |
 | Détection matérielle (CPU, RAM, carte mère, BIOS, stockage, écrans, réseau, Windows, sécurité) | Testée (sur VM) | test d'intégration + profil exporté ; valeurs propres au matériel physique (SPD, SMART, VRR) non vérifiables sur VM |
 | Fiabilité des données (mesuré / déclaré / déduit / indisponible) | Testée | tests unitaires + écran sur VM |
 | Application et restauration exacte des optimisations du catalogue | Testée | test d'intégration : chaque réglage compatible appliqué, relu, restauré, état comparé à l'origine |
@@ -21,7 +21,7 @@ AMD EPYC, 16 Go, pilote d'affichage de base Microsoft (pas de GPU), droits admin
 | Retour arrière sur régression de performance mesurée | Partielle | tests unitaires (régression qui disparaît / qui persiste) ; aucune régression réelle provoquée sur la VM |
 | Reprise d'une optimisation interrompue, vérification après redémarrage | Partielle | logique testée (tests unitaires du journal) ; coupure de courant réelle non simulée |
 | Point de restauration Windows | Non testable ici | indisponible sur Windows Server (message explicite) ; code appelé sur Windows 11 |
-| Élévation UAC à la demande (processus séparé, canal nommé) | Non testable ici | le runner est déjà administrateur ; protocole et validation du processus élevé couverts par des tests unitaires |
+| Élévation UAC à la demande (processus séparé, canal nommé) | Partielle | canal réel testé sur Windows : 33 optimisations appliquées, vérifiées et restaurées à l'identique via le processus élevé ; application en utilisateur standard sans plantage ; fenêtre UAC elle-même non affichable sur le runner |
 | Benchmark rapide (CPU, mémoire, stockage, réactivité, bridage) | Testée | exécuté réellement (express) sur la VM ; statistiques et progression couvertes par des tests |
 | Benchmark rapide — partie GPU | Non testable ici | pas de GPU matériel sur la VM (mesure marquée « non mesuré ») |
 | Températures, fréquences GPU, puissance | Non testable ici | aucun capteur exposé par la VM ; affichés « indéterminés » (jamais 0) |
@@ -36,7 +36,7 @@ AMD EPYC, 16 Go, pilote d'affichage de base Microsoft (pas de GPU), droits admin
 | Test de stabilité CPU (calculs vérifiés + WHEA) | Testée (logique) | unité de calcul déterministe testée ; exécutions courtes sur la VM |
 | Conseils CPU, procédure guidée XMP/EXPO | Testée (affichage) | règles testées ; aucune action automatique par conception |
 | Pilotes : inventaire, Windows Update, historique des versions | Partielle | inventaire réel sur la VM ; installation via Windows Update non déclenchée |
-| Programmes au démarrage : inventaire, classification, désactivation réversible | Partielle | inventaire réel (analyse en arrière-plan) ; désactivation testée sur registre simulé |
+| Programmes au démarrage : inventaire, classification, désactivation réversible | Testée | inventaire réel (analyse en arrière-plan) ; désactivation puis réactivation d'une entrée réelle sur Windows ; mises à jour de sécurité jamais proposées d'office |
 | Rapport de diagnostic HTML/JSON | Testée (logique) | génération couverte ; non ouvert par la visite |
 | Mise à jour de l'application (manifeste, empreinte, consentement) | Non testable ici | désactivée par défaut ; aucun serveur de mise à jour configuré |
 | Accessibilité : focus visible, noms accessibles, tailles, clavier | Testée | audit automatique pendant la visite + contrastes calculés (WCAG AA) |
