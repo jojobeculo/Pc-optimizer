@@ -195,7 +195,7 @@ public sealed partial class QuickBenchViewModel : ObservableObject
                 Absolute = m.AbsoluteChange is { } d ? (d >= 0 ? "+" : "") + d.ToString("N1") : "—",
                 Percent = m.ImprovementPercent is { } p ? (p >= 0 ? "+" : "") + p.ToString("0.0") + " %" : "—",
                 Verdict = Loc.T("verdict." + m.Verdict, m.NoiseFloorPercent.ToString("0.#")),
-                VerdictKey = m.Verdict.ToString(),
+                VerdictKey = m.Verdict switch { ChangeVerdict.Improved => "Success", ChangeVerdict.Regressed => "Danger", ChangeVerdict.Inconclusive => "Warning", _ => "Neutral" },
                 Confidence = m.Verdict == ChangeVerdict.NotComparable ? "" : Loc.T("confidence.level." + m.Confidence),
             });
         }

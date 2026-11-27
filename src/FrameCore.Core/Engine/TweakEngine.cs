@@ -178,7 +178,8 @@ public sealed class TweakEngine
             }
             if (!cs.Reversible) foreach (var e in cs.Entries) e.ApplyVerified = null; // maintenance operations have no target state
 
-            cs.Status = ChangeSetStatus.Applied;
+            // One-time maintenance (cleanup, retrim) has nothing to keep active or restore: it is "completed".
+            cs.Status = cs.Reversible ? ChangeSetStatus.Applied : ChangeSetStatus.Completed;
             _journal.Save(cs);
             var notEffective = cs.Entries.Count(e => e.ApplyVerified == false);
             if (notEffective > 0) Log.Warn("Engine", $"Applied {cs.TweakId ?? cs.Title.En} but {notEffective} action(s) did not read back the target value");

@@ -86,7 +86,7 @@ public sealed class PowerSettingExecutor : IActionExecutor
         lock (MissingSettings) if (MissingSettings.Contains(set)) return ActionState.Absent(Loc.T("power.settingNotOnMachine"));
         var ac = _power.ReadAc(scheme, sub, set);
         var dc = _power.ReadDc(scheme, sub, set);
-        if (ac == null && dc == null) return ActionState.Unreadable(Loc.T("state.powerSettingMissing"));
+        if (ac == null && dc == null) return ActionState.Absent(Loc.T("power.settingNotOnMachine"));
         var matches = (a.Ac == null || ac == (uint)a.Ac) && (a.Dc == null || dc == (uint)a.Dc);
         string Fmt(uint? v) => v?.ToString(CultureInfo.InvariantCulture) ?? "?";
         return new ActionState

@@ -97,6 +97,8 @@
             <StackPanel Visibility="{Binding HasPlan, Converter={StaticResource BoolToVis}}">
                 <DockPanel Margin="0,0,0,10">
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                        <Button Content="{i:Loc opt.applyShort}" Style="{StaticResource Button.SmallPrimary}" Command="{Binding ApplyCommand}" Margin="0,0,12,0"
+                                IsEnabled="{Binding ApplyRunning, Converter={StaticResource Not}}" ToolTip="{i:Loc opt.applyShort.tip}"/>
                         <Button Content="{i:Loc opt.selectAll}" Style="{StaticResource Button.Small}" Command="{Binding SelectAllCommand}" Margin="0,0,6,0"/>
                         <Button Content="{i:Loc opt.selectNone}" Style="{StaticResource Button.Small}" Command="{Binding SelectNoneCommand}"/>
                     </StackPanel>

@@ -61,6 +61,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         S.Language = value; S.Save();
         Loc.Instance.SetLanguage(value);
+        _shell.RefreshLanguage();
         PawnIoStatus = SensorService.PawnIoInstalled ? Loc.T("settings.pawnio.installed") : Loc.T("settings.pawnio.missing");
         _ = _shell.RunDiagnostic(); // findings are generated in the active language
     }

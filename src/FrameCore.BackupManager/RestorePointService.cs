@@ -48,6 +48,11 @@ public static class RestorePointService
             Log.Info("RestorePoint", $"Created restore point '{description}'");
             return new(true, Loc.T("restorepoint.created"));
         }
+        catch (System.Management.ManagementException ex) when (ex.ErrorCode is System.Management.ManagementStatus.NotFound or System.Management.ManagementStatus.InvalidClass or System.Management.ManagementStatus.InvalidNamespace)
+        {
+            Log.Warn("RestorePoint", "System Restore is not available on this edition: " + ex.Message);
+            return new(false, Loc.T("restorepoint.unavailable"));
+        }
         catch (Exception ex)
         {
             Log.Error("RestorePoint", "Creation failed", ex);

@@ -41,7 +41,7 @@
                     </WrapPanel>
                     <DockPanel Margin="0,6,0,0" MaxWidth="460" HorizontalAlignment="Left">
                         <TextBlock DockPanel.Dock="Left" Text="{i:Loc bench.label}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <TextBox Text="{Binding Label, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{i:Loc bench.label}" ToolTip="{i:Loc quick.labelHint}"/>
+                        <TextBox Text="{Binding Label, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{i:Loc bench.label}" ToolTip="{i:Loc quick.labelHint}" MinWidth="300"/>
                     </DockPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">
@@ -88,15 +88,18 @@
                         </Border>
                     </WrapPanel>
                     <TextBlock Text="{Binding ThrottleText}" Style="{StaticResource Text.Body}" Margin="0,0,0,12"/>
-                    <DataGrid ItemsSource="{Binding Metrics}" AutomationProperties.Name="{i:Loc quick.latest}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="{i:Loc quick.col.metric}" Binding="{Binding Name}" Width="2*"/>
-                            <DataGridTextColumn Header="{i:Loc quick.col.component}" Binding="{Binding Component}" Width="*"/>
-                            <DataGridTextColumn Header="{i:Loc quick.col.median}" Binding="{Binding Value}" Width="*"/>
-                            <DataGridTextColumn Header="{i:Loc quick.col.unit}" Binding="{Binding Unit}" Width="70"/>
-                            <DataGridTextColumn Header="{i:Loc quick.col.spread}" Binding="{Binding Spread}" Width="3*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <StackPanel AutomationProperties.Name="{i:Loc quick.latest}">
+                        <Grid Margin="8,0,8,6"><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="3*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{i:Loc quick.col.metric}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="1" Text="{i:Loc quick.col.component}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="2" Text="{i:Loc quick.col.median}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="3" Text="{i:Loc quick.col.unit}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="4" Text="{i:Loc quick.col.spread}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/></Grid>
+                        <ItemsControl ItemsSource="{Binding Metrics}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{DynamicResource Brush.Grid}" BorderThickness="0,1,0,0" Padding="8,7">
+                                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="3*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{Binding Name}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontWeight="Medium"/><TextBlock Grid.Column="1" Text="{Binding Component}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}"/><TextBlock Grid.Column="2" Text="{Binding Value}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="3" Text="{Binding Unit}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}"/><TextBlock Grid.Column="4" Text="{Binding Spread}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}" FontSize="12"/></Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
                 </StackPanel>
             </Border>
         </StackPanel>
@@ -132,23 +135,18 @@
                             <TextBlock Text="{Binding IndexText}" Style="{StaticResource Text.Caption}"/>
                         </StackPanel>
                     </DockPanel>
-                    <DataGrid ItemsSource="{Binding Comparison}" AutomationProperties.Name="{i:Loc quick.compare}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="{i:Loc quick.col.metric}" Binding="{Binding Name}" Width="2*"/>
-                            <DataGridTextColumn Header="{i:Loc quick.before}" Binding="{Binding Before}" Width="*"/>
-                            <DataGridTextColumn Header="{i:Loc quick.after}" Binding="{Binding After}" Width="*"/>
-                            <DataGridTextColumn Header="{i:Loc quick.col.diff}" Binding="{Binding Absolute}" Width="0.8*"/>
-                            <DataGridTextColumn Header="%" Binding="{Binding Percent}" Width="0.8*"/>
-                            <DataGridTemplateColumn Header="{i:Loc quick.col.verdict}" Width="2.4*">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Verdict}" TextWrapping="Wrap" Foreground="{Binding VerdictKey, Converter={StaticResource LevelBrush}}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="{i:Loc quick.col.confidence}" Binding="{Binding Confidence}" Width="*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <StackPanel AutomationProperties.Name="{i:Loc quick.compare}">
+                        <Grid Margin="8,0,8,6"><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="0.8*"/><ColumnDefinition Width="0.8*"/><ColumnDefinition Width="2.4*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{i:Loc quick.col.metric}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="1" Text="{i:Loc quick.before}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="2" Text="{i:Loc quick.after}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="3" Text="{i:Loc quick.col.diff}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="4" Text="%" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="5" Text="{i:Loc quick.col.verdict}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="6" Text="{i:Loc quick.col.confidence}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/></Grid>
+                        <ItemsControl ItemsSource="{Binding Comparison}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{DynamicResource Brush.Grid}" BorderThickness="0,1,0,0" Padding="8,7">
+                                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="0.8*"/><ColumnDefinition Width="0.8*"/><ColumnDefinition Width="2.4*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{Binding Name}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontWeight="Medium"/><TextBlock Grid.Column="1" Text="{Binding Before}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="2" Text="{Binding After}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="3" Text="{Binding Absolute}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="4" Text="{Binding Percent}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="5" Text="{Binding Verdict}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{Binding VerdictKey, Converter={StaticResource LevelBrush}}" FontSize="12"/><TextBlock Grid.Column="6" Text="{Binding Confidence}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}" FontSize="12"/></Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </Border>

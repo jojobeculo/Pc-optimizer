@@ -181,6 +181,12 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
 
     public void OnEvaluationsRefreshed(DiagnosticResult r) => BuildRows(r);
 
+    public void OnStartupScanned(DiagnosticResult r)
+    {
+        lock (r) _startup = r.Startup.ToList();
+        FillStartup();
+    }
+
     private void BuildRows(DiagnosticResult r)
     {
         var active = _shell.Services.Journal.ChangeSets.Where(c => c.Status is ChangeSetStatus.Applied or ChangeSetStatus.PartiallyRestored).Select(c => c.TweakId).ToHashSet();
@@ -271,49 +277,44 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
         foreach (var b in _shell.Services.Journal.Batches.Take(50)) Batches.Add(b);
     }
 
-    private async Task RestoreSet(ChangeSetRow row)
+    private static bool Restorable(ChangeSet c) => c.Reversible && c.Status is ChangeSetStatus.Applied or ChangeSetStatus.PartiallyRestored or ChangeSetStatus.Failed;
+
+    /// <summary>Restores with a visible activity indicator and a clear result, whatever the entry point.</summary>
+    private async Task RestoreWithFeedback(IReadOnlyList<ChangeSet> sets, string title, string confirm, bool danger = false)
     {
-        if (!Dialogs.Confirm(row.Title, Loc.T("restore.confirmOne"), Loc.T("common.restore"))) return;
-        var r = await _shell.TweakService.RestoreAsync(new[] { row.Set });
-        BackupStatus = r.Success ? Loc.T("restore.done", r.Restored) : Loc.T("restore.partial", r.Restored, r.Failed) + " " + string.Join(" ; ", r.Errors);
-        await _shell.RefreshEvaluationsAsync();
-        LoadBackups();
+        var active = sets.Where(Restorable).ToList();
+        if (active.Count == 0) { BackupStatus = Loc.T("restore.nothing"); Dialogs.Info(title, Loc.T("restore.nothing")); return; }
+        if (!Dialogs.Confirm(title, string.Format(confirm, active.Count), Loc.T("common.restore"), danger)) return;
+        _shell.IsBusy = true;
+        _shell.BusyText = Loc.T("restore.running");
+        try
+        {
+            var r = await _shell.TweakService.RestoreAsync(active);
+            BackupStatus = r.Success ? Loc.T("restore.done", r.Restored) : Loc.T("restore.partial", r.Restored, r.Failed) + " " + string.Join(" ; ", r.Errors.Take(5));
+            _shell.StatusText = BackupStatus;
+            await _shell.RefreshEvaluationsAsync();
+            LoadBackups();
+        }
+        finally { _shell.IsBusy = false; _shell.BusyText = ""; }
     }
 
+    private Task RestoreSet(ChangeSetRow row) => RestoreWithFeedback(new[] { row.Set }, row.Title, Loc.T("restore.confirmOne"));
+
     [RelayCommand]
-    private async Task RestoreBatch(ChangeBatch? b)
+    private Task RestoreBatch(ChangeBatch? b)
     {
-        if (b == null) return;
+        if (b == null) return Task.CompletedTask;
         var sets = b.ChangeSetIds.Select(id => _shell.Services.Journal.Find(id)).Where(s => s != null).Cast<ChangeSet>().ToList();
-        if (!Dialogs.Confirm(b.Title.ToString(), Loc.T("restore.confirmBatch", sets.Count), Loc.T("common.restore"))) return;
-        var r = await _shell.TweakService.RestoreAsync(sets);
-        BackupStatus = r.Success ? Loc.T("restore.done", r.Restored) : Loc.T("restore.partial", r.Restored, r.Failed);
-        await _shell.RefreshEvaluationsAsync();
-        LoadBackups();
+        return RestoreWithFeedback(sets, b.Title.ToString(), Loc.Instance.Get("restore.confirmBatch"));
     }
 
     [RelayCommand]
-    private async Task RestoreCategory(string category)
-    {
-        var sets = _shell.Services.Journal.ChangeSets.Where(c => c.Category == category).ToList();
-        if (sets.Count == 0) return;
-        if (!Dialogs.Confirm(Loc.T("pro.cat." + category), Loc.T("restore.confirmBatch", sets.Count), Loc.T("common.restore"))) return;
-        var r = await _shell.TweakService.RestoreAsync(sets);
-        BackupStatus = r.Success ? Loc.T("restore.done", r.Restored) : Loc.T("restore.partial", r.Restored, r.Failed);
-        await _shell.RefreshEvaluationsAsync();
-        LoadBackups();
-    }
+    private Task RestoreCategory(string category) =>
+        RestoreWithFeedback(_shell.Services.Journal.ChangeSets.Where(c => c.Category == category).ToList(), Loc.T("pro.cat." + category), Loc.Instance.Get("restore.confirmBatch"));
 
     [RelayCommand]
-    private async Task RestoreAll()
-    {
-        var sets = _shell.Services.Journal.ChangeSets.ToList();
-        if (!Dialogs.Confirm(Loc.T("restore.all.title"), Loc.T("restore.all.confirm", sets.Count(s => s.Status == ChangeSetStatus.Applied)), Loc.T("common.restore"), true)) return;
-        var r = await _shell.TweakService.RestoreAsync(sets);
-        BackupStatus = r.Success ? Loc.T("restore.done", r.Restored) : Loc.T("restore.partial", r.Restored, r.Failed);
-        await _shell.RefreshEvaluationsAsync();
-        LoadBackups();
-    }
+    private Task RestoreAll() =>
+        RestoreWithFeedback(_shell.Services.Journal.ChangeSets.ToList(), Loc.T("restore.all.title"), Loc.Instance.Get("restore.all.confirm"), danger: true);
 
     [RelayCommand]
     private void ExportBackups()

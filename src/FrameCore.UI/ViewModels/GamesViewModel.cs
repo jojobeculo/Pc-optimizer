@@ -22,8 +22,8 @@ public sealed partial class GameRow : ObservableObject
     public string FpsText => Estimate.Fps is { } f ? f.ToString("0") : "—";
     public string RangeText => Estimate.FpsLow is { } lo && Estimate.FpsHigh is { } hi && lo != hi ? Loc.T("game.range", lo.ToString("0"), hi.ToString("0")) : "";
     public string LimiterText => Loc.T("limiter." + Estimate.Limiter);
-    public string ConfidenceKey => Estimate.Confidence.ToString();
-    public string ConfidenceText => Loc.T("confidence.level." + Estimate.Confidence);
+    public string ConfidenceKey => Estimate.Fps == null ? "Neutral" : Estimate.Confidence switch { ResultConfidence.High => "Success", ResultConfidence.Medium => "Info", _ => "Warning" };
+    public string ConfidenceText => Estimate.Fps == null ? Loc.T("basis.Insufficient") : Loc.T("confidence.level." + Estimate.Confidence);
     public string BasisText => Loc.T("basis." + Estimate.Basis);
     public string SettingsText => Loc.T("game.settings", Estimate.Settings.Width, Estimate.Settings.Height, Loc.T("preset." + Estimate.Settings.Preset));
     public string PresetText => Loc.T("preset." + Estimate.Settings.Preset);
@@ -65,6 +65,8 @@ public sealed partial class GamesViewModel : ObservableObject, IDiagnosticConsum
     [ObservableProperty] private string _gainSourceText = "";
     [ObservableProperty] private bool _showExplorer;
     [ObservableProperty] private int _count;
+    /// <summary>False when the graphics card cannot be identified (basic display driver, VM): no number is shown.</summary>
+    [ObservableProperty] private bool _hasEstimates = true;
 
     public string Provenance => _shell.Services.Games.Provenance?.ToString() ?? "";
     public string ExcludedText => string.Join(" ", _shell.Services.Games.Excluded.Select(e => $"{e.Name} : {e.Reason}"));
@@ -148,6 +150,7 @@ public sealed partial class GamesViewModel : ObservableObject, IDiagnosticConsum
             MachineText = Loc.T("games.machine", diag.Profile.Cpu.Name, diag.Profile.PrimaryGpu?.Name ?? Loc.Unknown, Math.Round(_machine.RamGb));
             GainSourceText = source;
             Count = lib.Games.Count;
+            HasEstimates = rows.Any(r => r.Estimate.Fps != null);
             ApplyFilter();
             Ready = true;
         }

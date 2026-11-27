@@ -63,8 +63,16 @@ public static class UiTour
             DumpJson(Path.Combine(dir, "findings.json"), shell.Diagnostic?.Findings.Select(f => new { f.Id, f.Category, f.Severity, f.Title, f.Detail, f.Recommendation, f.Context }));
             DumpJson(Path.Combine(dir, "evaluations.json"), shell.Diagnostic?.Evaluations.Select(e => new { e.Tweak.Id, Status = e.Status.ToString(), e.Compatible, e.IncompatibilityReasons, Current = e.CurrentSummary, e.NeedsElevation }));
 
+            var a11y = new List<string>();
+            var focusCounts = new Dictionary<string, int>();
             foreach (var nav in shell.Navigation.Where(n => !n.IsHeader).Select(n => n.Key).ToList())
+            {
                 pages.Add(await Visit(shell, window, dir, nav, () => shell.CurrentKey = nav, scrollShots: 3));
+                a11y.AddRange(AccessibilityAudit(window, nav));
+                focusCounts[nav] = await KeyboardWalk(window);
+            }
+            report["accessibilityIssues"] = a11y.Distinct().ToList();
+            report["keyboardFocusStops"] = focusCounts;
 
             foreach (var cat in shell.Pro.Categories.Select(c => c.Key).ToList())
                 pages.Add(await Visit(shell, window, dir, "pro-" + cat, () => { shell.CurrentKey = "pro"; shell.Pro.SelectedCategory = cat; }, scrollShots: 2));
@@ -204,6 +212,54 @@ public static class UiTour
         }
         catch (Exception ex) { entry["error"] = ex.Message; }
         return entry;
+    }
+
+    /// <summary>Buttons and toggles must have an accessible name and a usable size.</summary>
+    private static IEnumerable<string> AccessibilityAudit(Window window, string page)
+    {
+        var stack = new Stack<DependencyObject>();
+        stack.Push(window);
+        while (stack.Count > 0)
+        {
+            var d = stack.Pop();
+            if (d is System.Windows.Controls.Primitives.ButtonBase b && b.IsVisible)
+            {
+                var name = System.Windows.Automation.AutomationProperties.GetName(b);
+                var text = b.Content as string ?? FindText(b);
+                if (string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(text) && b.ToolTip == null)
+                    yield return $"{page}: {b.GetType().Name} without accessible name";
+                if (b.ActualHeight is > 0 and < 22 && b is not CheckBox && b is not RadioButton { Style: null })
+                    yield return $"{page}: {b.GetType().Name} '{text ?? name}' smaller than 22 px ({b.ActualHeight:0})";
+            }
+            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(d); i++) stack.Push(VisualTreeHelper.GetChild(d, i));
+        }
+    }
+
+    private static string? FindText(DependencyObject d)
+    {
+        if (d is TextBlock t && !string.IsNullOrWhiteSpace(t.Text)) return t.Text;
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(d); i++)
+            if (FindText(VisualTreeHelper.GetChild(d, i)) is { } s) return s;
+        return null;
+    }
+
+    /// <summary>Walks the page with Tab (MoveFocus) and counts distinct focus stops (keyboard reachability).</summary>
+    private static async Task<int> KeyboardWalk(Window window)
+    {
+        window.Activate();
+        System.Windows.Input.Keyboard.Focus(window);
+        var seen = new HashSet<object>();
+        for (var i = 0; i < 80; i++)
+        {
+            if (System.Windows.Input.Keyboard.FocusedElement is UIElement el)
+            {
+                if (!seen.Add(el) && i > 5) break;
+                el.MoveFocus(new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Next));
+            }
+            else window.MoveFocus(new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.First));
+            await Task.Delay(5);
+        }
+        return seen.Count;
     }
 
     private static async Task WaitUntil(Func<bool> condition, TimeSpan timeout)

@@ -38,9 +38,16 @@ public sealed class StartupScanner
 
     public List<StartupEntry> ScanAll(bool includeServices = true, bool includeShellExtensions = true)
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         var running = RunningPaths();
+        Log.Info("Startup", $"{sw.ElapsedMilliseconds} ms running processes");
         var list = new List<StartupEntry>();
-        void Safe(Action a, string what) { try { a(); } catch (Exception ex) { Log.Warn("Startup", $"{what}: {ex.Message}"); } }
+        void Safe(Action a, string what)
+        {
+            var t = System.Diagnostics.Stopwatch.StartNew();
+            try { a(); } catch (Exception ex) { Log.Warn("Startup", $"{what}: {ex.Message}"); }
+            Log.Info("Startup", $"{t.ElapsedMilliseconds} ms {what}");
+        }
         Safe(() => list.AddRange(RunKey(CuRun, CuApproved + @"\Run", StartupKind.RunKey, false)), "HKCU Run");
         Safe(() => list.AddRange(RunKey(LmRun, LmApproved + @"\Run", StartupKind.RunKey, true)), "HKLM Run");
         Safe(() => list.AddRange(RunKey(LmRun32, LmApproved + @"\Run32", StartupKind.RunKey, true)), "HKLM Run32");

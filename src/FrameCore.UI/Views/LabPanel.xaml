@@ -119,15 +119,18 @@
                 <ProgressBar IsIndeterminate="True" Margin="0,0,0,10" Visibility="{Binding Running, Converter={StaticResource BoolToVis}}"/>
                 <TextBlock Text="{Binding LabStatus}" Style="{StaticResource Text.Body}" Margin="0,0,0,10"/>
                 <TextBlock Text="{i:Loc lab.empty}" Style="{StaticResource Text.Muted}" Visibility="{Binding LabResults.Count, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
-                <DataGrid ItemsSource="{Binding LabResults}" Visibility="{Binding LabResults.Count, Converter={StaticResource BoolToVis}}" AutomationProperties.Name="{i:Loc lab.results}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="{i:Loc quick.col.metric}" Binding="{Binding Name}" Width="2*"/>
-                        <DataGridTextColumn Header="{i:Loc quick.col.component}" Binding="{Binding Component}" Width="*"/>
-                        <DataGridTextColumn Header="{i:Loc quick.col.median}" Binding="{Binding Value}" Width="*"/>
-                        <DataGridTextColumn Header="{i:Loc quick.col.unit}" Binding="{Binding Unit}" Width="80"/>
-                        <DataGridTextColumn Header="{i:Loc quick.col.spread}" Binding="{Binding Spread}" Width="3*"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <StackPanel Visibility="{Binding LabResults.Count, Converter={StaticResource BoolToVis}}" AutomationProperties.Name="{i:Loc lab.results}">
+                        <Grid Margin="8,0,8,6"><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="3*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{i:Loc quick.col.metric}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="1" Text="{i:Loc quick.col.component}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="2" Text="{i:Loc quick.col.median}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="3" Text="{i:Loc quick.col.unit}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="4" Text="{i:Loc quick.col.spread}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/></Grid>
+                        <ItemsControl ItemsSource="{Binding LabResults}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{DynamicResource Brush.Grid}" BorderThickness="0,1,0,0" Padding="8,7">
+                                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="3*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{Binding Name}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontWeight="Medium"/><TextBlock Grid.Column="1" Text="{Binding Component}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}"/><TextBlock Grid.Column="2" Text="{Binding Value}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource Font.Mono}"/><TextBlock Grid.Column="3" Text="{Binding Unit}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}"/><TextBlock Grid.Column="4" Text="{Binding Spread}" TextWrapping="Wrap" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}" FontSize="12"/></Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
                 <TextBlock Text="{i:Loc lab.tools}" Style="{StaticResource Text.Caption}" Margin="0,12,0,0"/>
             </StackPanel>
         </Border>

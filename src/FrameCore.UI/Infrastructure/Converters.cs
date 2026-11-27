@@ -70,7 +70,7 @@ public sealed class LevelToBrushConverter : IValueConverter
             RiskLevel r => r switch { RiskLevel.None => "Success", RiskLevel.Low => "Info", RiskLevel.Medium => "Warning", _ => "Danger" },
             TweakStatus st => st switch { TweakStatus.Applied => "Success", TweakStatus.NotApplied => "Neutral", TweakStatus.Partial => "Warning", TweakStatus.Unsupported => "Neutral", TweakStatus.Error => "Danger", _ => "Neutral" },
             StartupClassification sc => sc switch { StartupClassification.Essential => "Success", StartupClassification.Recommended => "Info", StartupClassification.Optional => "Accent", StartupClassification.Risky => "Danger", _ => "Neutral" },
-            ChangeSetStatus cs => cs switch { ChangeSetStatus.Applied => "Success", ChangeSetStatus.Restored => "Neutral", ChangeSetStatus.RolledBack => "Warning", ChangeSetStatus.Failed or ChangeSetStatus.PartiallyRestored => "Danger", _ => "Neutral" },
+            ChangeSetStatus cs => cs switch { ChangeSetStatus.Applied => "Success", ChangeSetStatus.Completed => "Info", ChangeSetStatus.Restored => "Neutral", ChangeSetStatus.RolledBack => "Warning", ChangeSetStatus.Failed or ChangeSetStatus.PartiallyRestored => "Danger", _ => "Neutral" },
             bool b => b ? "Success" : "Neutral",
             string s2 => s2,
             _ => "Neutral",

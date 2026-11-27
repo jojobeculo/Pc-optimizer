@@ -71,6 +71,17 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
 
     public void OnEvaluationsRefreshed(DiagnosticResult r) => OnDiagnostic(r);
 
+    /// <summary>Startup: helpers/updaters/launchers that can be disabled without uninstalling anything (reversible).</summary>
+    public void FillStartupSuggestions(DiagnosticResult r)
+    {
+        StartupSuggestions.Clear();
+        List<StartupEntry> list;
+        lock (r) list = r.Startup.ToList();
+        foreach (var e in list.Where(e => e.Enabled && e.CanToggle && !e.Protected && e.Kind is StartupKind.RunKey or StartupKind.StartupFolder or StartupKind.ScheduledTask
+                                          && e.Classification is StartupClassification.Optional or StartupClassification.Risky))
+            StartupSuggestions.Add(new StartupSuggestion { Entry = e, IsSelected = e.Category is "updater" or "adware" || e.Classification == StartupClassification.Risky });
+    }
+
     [RelayCommand]
     private void Prepare(string profile)
     {
@@ -89,10 +100,7 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
         AlreadyApplied = plan.AlreadyApplied.Count;
         NeedsElevation = plan.NeedsElevation;
 
-        // Startup: helpers/updaters/launchers that can be disabled without uninstalling anything (reversible).
-        foreach (var e in r.Startup.Where(e => e.Enabled && e.CanToggle && !e.Protected && e.Kind is StartupKind.RunKey or StartupKind.StartupFolder or StartupKind.ScheduledTask
-                                                && e.Classification is StartupClassification.Optional or StartupClassification.Risky))
-            StartupSuggestions.Add(new StartupSuggestion { Entry = e, IsSelected = e.Category is "updater" or "adware" || e.Classification == StartupClassification.Risky });
+        FillStartupSuggestions(r);
 
         // Guidance that needs the user (BIOS, hardware tuning) — never automatic.
         foreach (var f in r.Findings.Where(f => f.Category is "Bios" or "Ram" or "Display" && f.Severity >= Severity.Suggestion)) Guidance.Add(f);

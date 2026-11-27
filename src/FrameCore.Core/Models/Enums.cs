@@ -57,7 +57,7 @@ public enum StartupClassification { Essential, Recommended, Optional, Risky, Unk
 
 public enum TriState { Unknown, No, Yes }
 
-public enum ChangeSetStatus { Pending, Applied, Failed, RolledBack, Restored, PartiallyRestored }
+public enum ChangeSetStatus { Pending, Applied, Failed, RolledBack, Restored, PartiallyRestored, Completed }
 
 public enum PlanSection { Standard, Consent, Experimental }
 

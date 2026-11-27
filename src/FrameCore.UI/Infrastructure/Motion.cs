@@ -72,7 +72,7 @@ public static class Motion
 
     // ---------------------------------------------------------------- horizontal bar growing to a fraction
     public static readonly DependencyProperty FractionProperty =
-        DependencyProperty.RegisterAttached("Fraction", typeof(double), typeof(Motion), new PropertyMetadata(0.0, OnFractionChanged));
+        DependencyProperty.RegisterAttached("Fraction", typeof(double), typeof(Motion), new PropertyMetadata(double.NaN, OnFractionChanged));
     public static void SetFraction(DependencyObject d, double v) => d.SetValue(FractionProperty, v);
     public static double GetFraction(DependencyObject d) => (double)d.GetValue(FractionProperty);
 

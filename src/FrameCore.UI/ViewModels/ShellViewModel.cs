@@ -123,6 +123,15 @@ public sealed partial class ShellViewModel : ObservableObject
             foreach (var p in new object[] { Home, Optimization, Hardware, Drivers, Overclock, Pro, Benchmark, Settings, Games, Restore })
                 (p as IDiagnosticConsumer)?.OnDiagnostic(r);
             if (!Services.Settings.FirstRunCompleted) { Services.Settings.FirstRunCompleted = true; Services.Settings.Save(); }
+            _ = r.StartupTask.ContinueWith(_ => Ui(() =>
+            {
+                if (!ReferenceEquals(Diagnostic, r)) return;
+                DiagnosticService.AddStartupFindings(r);
+                Pro.OnStartupScanned(r);
+                Home.OnDiagnostic(r);
+                if (Optimization.HasPlan) Optimization.FillStartupSuggestions(r);
+                StatusText = Loc.T("status.diagDone", r.CompletedAt.ToString("t"), r.Findings.Count);
+            }), TaskScheduler.Default);
         }
         catch (Exception ex)
         {
@@ -130,6 +139,16 @@ public sealed partial class ShellViewModel : ObservableObject
             StatusText = Loc.T("status.diagFailed", ex.Message);
         }
         finally { IsBusy = false; BusyText = ""; }
+    }
+
+    /// <summary>After a language change: rebuild every computed text from the last diagnostic (no rescan).</summary>
+    public void RefreshLanguage()
+    {
+        if (Diagnostic is not { } r) return;
+        Diagnostics.RebuildFindings(r);
+        foreach (var p in new object[] { Home, Optimization, Hardware, Drivers, Overclock, Pro, Benchmark, Settings, Games, Restore })
+            (p as IDiagnosticConsumer)?.OnDiagnostic(r);
+        StatusText = Loc.T("status.diagDone", r.CompletedAt.ToString("t"), r.Findings.Count);
     }
 
     /// <summary>Re-evaluates catalog statuses after changes (fast, no hardware rescan).</summary>

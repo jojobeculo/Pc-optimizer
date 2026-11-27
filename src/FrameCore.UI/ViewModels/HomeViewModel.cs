@@ -114,7 +114,9 @@ public sealed partial class HomeViewModel : ObservableObject, IDiagnosticConsume
         RamTotal = BytesConverter.Format(p.Memory.TotalBytes);
         var channels = Loc.T("channels." + p.Memory.Channels);
         if (p.Memory.ChannelsConfidence == DataConfidence.Inferred) channels = Loc.T("channels.probable", channels);
-        RamDetail = Loc.T("home.ram.detail", p.Memory.Type ?? Loc.Unknown, p.Memory.ConfiguredSpeedMts?.ToString() ?? Loc.Unknown, channels);
+        RamDetail = p.Memory.ConfiguredSpeedMts is { } mts
+            ? Loc.T("home.ram.detail", p.Memory.Type ?? Loc.Unknown, mts, channels)
+            : Loc.T("home.ram.detailNoSpeed", p.Memory.Type ?? Loc.Unknown, channels);
         var sys = p.Storage.SelectMany(s => s.Volumes.Select(v => (s, v))).FirstOrDefault(x => x.v.IsSystem);
         if (sys.v != null)
         {

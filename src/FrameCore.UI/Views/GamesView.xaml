@@ -103,6 +103,12 @@
                 </StackPanel>
             </Border>
 
+            <!-- No identified graphics card: explain instead of showing empty numbers -->
+            <Border Style="{StaticResource Banner}" BorderBrush="{DynamicResource Brush.Warning}" Background="{DynamicResource Brush.WarningSoft}"
+                    Visibility="{Binding HasEstimates, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
+                <TextBlock Text="{i:Loc games.noEstimates}" Style="{StaticResource Text.Body}"/>
+            </Border>
+
             <!-- Showcase -->
             <DockPanel Margin="0,8,0,10">
                 <Button DockPanel.Dock="Right" Style="{StaticResource Button.Secondary}" Command="{Binding ToggleExplorerCommand}">

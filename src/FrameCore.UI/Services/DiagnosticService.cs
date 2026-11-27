@@ -23,6 +23,8 @@ public sealed class DiagnosticResult
     public List<Finding> Findings { get; set; } = new();
     public List<DriverEntry> Drivers { get; set; } = new();
     public List<StartupEntry> Startup { get; set; } = new();
+    /// <summary>The startup analysis is slow on some PCs: it completes after the diagnostic is shown.</summary>
+    [System.Text.Json.Serialization.JsonIgnore] public Task StartupTask { get; set; } = Task.CompletedTask;
     public CpuTuningReport? CpuTuning { get; set; }
     public DateTime CompletedAt { get; set; } = DateTime.Now;
     public int Count(Severity s) => Findings.Count(f => f.Severity == s);
@@ -52,14 +54,17 @@ public sealed class DiagnosticService
             try { r.Drivers = DriverInventory.Scan(r.Profile); } catch (Exception ex) { Log.Error("Diag", "drivers", ex); }
             Log.Info("Diag", $"{sw.ElapsedMilliseconds,6} ms  drivers (parallel)");
         });
-        var startup = Task.Run(() =>
+        // The startup scan does not block the diagnostic: its findings are added when it completes.
+        r.StartupTask = Task.Run(() =>
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
-            try { r.Startup = _s.CreateStartupScanner().ScanAll(includeServices: true, includeShellExtensions: false); } catch (Exception ex) { Log.Error("Diag", "startup", ex); }
-            Log.Info("Diag", $"{sw.ElapsedMilliseconds,6} ms  startup (parallel)");
+            List<StartupEntry> list = new();
+            try { list = _s.CreateStartupScanner().ScanAll(includeServices: true, includeShellExtensions: false); } catch (Exception ex) { Log.Error("Diag", "startup", ex); }
+            Log.Info("Diag", $"{sw.ElapsedMilliseconds,6} ms  startup (background)");
+            lock (r) r.Startup = list; // findings are added on the UI thread (see AddStartupFindings)
         });
         r.Evaluations = EvaluateAll(r.Facts);
-        Task.WaitAll(drivers, startup);
+        drivers.Wait();
         progress?.Report(Loc.T("scan.findings"));
         r.CpuTuning = CpuTuningAdvisor.Analyze(r.Profile, _s.Registry);
         r.Findings = BuildFindings(r);
@@ -103,6 +108,24 @@ public sealed class DiagnosticService
             try { return _s.Engine.Evaluate(t, facts); }
             catch (Exception ex) { return new TweakEvaluation { Tweak = t, Status = TweakStatus.Error, ActionStates = new[] { ActionState.Unreadable(ex.Message) } }; }
         }).ToList();
+
+    /// <summary>Regenerates the findings texts (e.g. after a language change) without scanning again.</summary>
+    public void RebuildFindings(DiagnosticResult r) => r.Findings = BuildFindings(r);
+
+    /// <summary>Called on the UI thread once the background startup scan has completed.</summary>
+    public static void AddStartupFindings(DiagnosticResult r)
+    {
+        foreach (var f in StartupFindings(r)) if (r.Findings.All(e => e.Id != f.Id)) r.Findings.Add(f);
+    }
+
+    private static IEnumerable<Finding> StartupFindings(DiagnosticResult r)
+    {
+        var optionalOn = r.Startup.Count(e => e.Enabled && e.Kind is StartupKind.RunKey or StartupKind.StartupFolder or StartupKind.ScheduledTask && e.Classification is StartupClassification.Optional or StartupClassification.Risky);
+        if (optionalOn >= 4)
+            yield return new Finding { Id = "startup.many", Category = "Startup", Severity = Severity.Suggestion, Title = Loc.T("find.startup.title"), Detail = Loc.T("find.startup.detail", optionalOn), ActionId = "nav:pro:startup", ActionLabel = Loc.T("action.review") };
+        foreach (var e in r.Startup.Where(e => e.Classification == StartupClassification.Risky && e.Enabled))
+            yield return new Finding { Id = "startup.risky." + e.Id, Category = "Startup", Severity = Severity.Warning, Confidence = Confidence.Probable, Title = Loc.T("find.startup.risky.title", e.Name), Detail = e.Reason ?? "", ActionId = "nav:pro:startup" };
+    }
 
     private List<Finding> BuildFindings(DiagnosticResult r)
     {
@@ -218,12 +241,8 @@ public sealed class DiagnosticService
         if (p.Security.FirewallEnabled == TriState.No)
             Add(new Finding { Id = "security.firewall", Category = "Security", Severity = Severity.Warning, Title = Loc.T("find.firewall.title"), Detail = Loc.T("find.firewall.detail") });
 
-        // ---- Startup
-        var optionalOn = r.Startup.Count(e => e.Enabled && e.Kind is StartupKind.RunKey or StartupKind.StartupFolder or StartupKind.ScheduledTask && e.Classification is StartupClassification.Optional or StartupClassification.Risky);
-        if (optionalOn >= 4)
-            Add(new Finding { Id = "startup.many", Category = "Startup", Severity = Severity.Suggestion, Title = Loc.T("find.startup.title"), Detail = Loc.T("find.startup.detail", optionalOn), ActionId = "nav:pro:startup", ActionLabel = Loc.T("action.review") });
-        foreach (var e in r.Startup.Where(e => e.Classification == StartupClassification.Risky && e.Enabled))
-            Add(new Finding { Id = "startup.risky." + e.Id, Category = "Startup", Severity = Severity.Warning, Confidence = Confidence.Probable, Title = Loc.T("find.startup.risky.title", e.Name), Detail = e.Reason ?? "", ActionId = "nav:pro:startup" });
+        // ---- Startup (usually added later, when the background scan completes)
+        foreach (var x in StartupFindings(r)) Add(x);
 
         // ---- Drivers, firmware, CPU vendor specifics
         try { foreach (var x in DriverInventory.Analyze(r.Drivers, p)) Add(x); } catch { }
