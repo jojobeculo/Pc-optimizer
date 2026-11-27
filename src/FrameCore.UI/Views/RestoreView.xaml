@@ -26,7 +26,19 @@
                 <Border Style="{StaticResource Card}" Margin="0,0,0,12" i:Motion.Enter="2">
                     <StackPanel>
                         <TextBlock Text="{i:Loc restore.notEffective}" Style="{StaticResource Text.Overline}"/>
-                        <TextBlock Style="{StaticResource Text.Metric}" Foreground="{DynamicResource Brush.Warning}" i:Motion.CountTo="{Binding NotEffectiveCount}"/>
+                        <TextBlock i:Motion.CountTo="{Binding NotEffectiveCount}">
+                            <TextBlock.Style>
+                                <!-- Orange only when something is actually not effective -->
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Metric}">
+                                    <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding NotEffectiveCount}" Value="0">
+                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                         <TextBlock Text="{i:Loc restore.notEffectiveHint}" Style="{StaticResource Text.Caption}"/>
                     </StackPanel>
                 </Border>
