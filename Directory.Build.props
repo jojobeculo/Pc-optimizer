@@ -19,4 +19,11 @@
     <SatelliteResourceLanguages>en;fr</SatelliteResourceLanguages>
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
+  <!-- Release builds carry nothing from the build machine: deterministic output, source and symbol paths
+       mapped to "/_/", symbols embedded in the assemblies (no separate .pdb files in the package). -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Deterministic>true</Deterministic>
+    <DebugType>embedded</DebugType>
+    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=/_/</PathMap>
+  </PropertyGroup>
 </Project>

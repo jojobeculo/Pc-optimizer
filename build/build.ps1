@@ -40,8 +40,13 @@ if (Get-Command pandoc -ErrorAction SilentlyContinue) {
   Copy-Item build\doc.css (Join-Path $Pub 'docs\doc.css'); Copy-Item build\doc.css (Join-Path $Pub 'doc.css')
 }
 
-$bad = Get-ChildItem $Pub -Recurse -Include settings.json, *.journal.json | Select-Object -First 1
+# The package must never contain per-machine data (what lives in %LOCALAPPDATA%\FrameCore on a PC).
+$bad = Get-ChildItem $Pub -Recurse -Include settings.json, *.journal.json, *.log, profile.json, gpu-profiles.json, *.etl | Select-Object -First 1
+if (-not $bad) { $bad = Get-ChildItem $Pub -Recurse -Directory | Where-Object { $_.Name -in 'Backups', 'Benchmarks', 'Reports', 'Logs', 'Profiles', 'QuickBench', 'Verification' } | Select-Object -First 1 }
 if ($bad) { throw "Per-machine data found in publish folder: $($bad.FullName)" }
+# No absolute path of the build machine may remain in the binaries (deterministic, path-mapped Release build).
+$leak = Get-ChildItem $Pub -Recurse -File -Include *.dll, *.exe | Where-Object { Select-String -Path $_.FullName -SimpleMatch -Pattern $Root -Quiet } | Select-Object -First 1
+if ($leak) { throw "Build machine path found in $($leak.FullName)" }
 foreach ($p in 'FrameCore.exe', 'catalog\tweaks', 'lang\fr.json') { if (-not (Test-Path (Join-Path $Pub $p))) { throw "Missing $p" } }
 
 if (-not $NoInstaller) {

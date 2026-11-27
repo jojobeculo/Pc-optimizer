@@ -62,6 +62,10 @@ if grep -rIl -E '[A-Za-z]:\\\\Users\\\\[A-Za-z0-9._-]+|/home/[a-z0-9._-]+/' "$PU
   grep -rIl -E '[A-Za-z]:\\\\Users\\\\[A-Za-z0-9._-]+|/home/[a-z0-9._-]+/' "$PUB/catalog" "$PUB/lang" "$PUB/docs" >&2
   exit 1
 fi
+# No absolute path of the build machine may remain in the shipped binaries (deterministic, path-mapped build).
+if grep -rlaF "$ROOT" "$PUB" | grep -q .; then
+  echo "ERROR: build machine paths found in the publish folder:" >&2; grep -rlaF "$ROOT" "$PUB" | head >&2; exit 1
+fi
 test -f "$PUB/FrameCore.exe"
 test -d "$PUB/catalog/tweaks"
 test -f "$PUB/lang/fr.json"
