@@ -153,7 +153,7 @@ Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 121 tests) ; « IT 
 | Exigence | Statut | Où / comment c'est vérifié |
 |---|---|---|
 | Application (Program Files) séparée des données de chaque PC (`%LOCALAPPDATA%\FrameCore`) | Fait | `AppPaths` ; désinstallation : application supprimée, données conservées (ou `/PURGE`) |
-| Installateur sans données personnelles ni profil matériel du développeur | Fait | le script de build refuse de produire l'installateur si le dossier publié contient réglages, journaux, sauvegardes, benchmarks, rapports, profils, journaux d'exécution ou un chemin de profil utilisateur |
+| Installateur sans données personnelles ni profil matériel du développeur | Fait | le script de build refuse de produire l'installateur si le dossier publié contient réglages, journaux, sauvegardes, benchmarks, rapports, profils, journaux d'exécution, un chemin de profil utilisateur ou un chemin de la machine de build (build déterministe, symboles intégrés, aucun .pdb) ; aucun profil matériel n'est créé avant le premier lancement sur le PC de l'utilisateur |
 | Installateur x64 autonome (runtime .NET embarqué), raccourcis, entrée « Applications », désinstallation | Fait | test d'installation silencieuse / lancement / désinstallation sur Windows |
 | Mise à jour : manifeste HTTPS, empreinte SHA-256 obligatoire, accord de l'utilisateur | Fait / Non testable ici | aucun serveur de mise à jour configuré (désactivée par défaut) |
 

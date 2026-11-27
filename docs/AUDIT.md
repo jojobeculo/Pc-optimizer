@@ -49,6 +49,7 @@ puis correction. Gravité : **critique** (perte de données ou système modifié
 | 37 | Mineure | Machines virtuelles | Conseils « pilote chipset AMD » et « Ryzen de bureau » affichés dans une machine virtuelle. | Conseils adaptés (le processeur est géré par l'hyperviseur). |
 | 38 | Modérée | Portabilité | Le contrôle « aucune donnée personnelle dans l'installateur » ne couvrait que les réglages, le journal et les sauvegardes. | Étendu aux benchmarks, rapports, profils, journaux d'exécution, captures et à tout chemin de profil utilisateur dans les fichiers livrés ; le build échoue sinon. |
 | 39 | Mineure | Rapport | Comparaison partageable : colonne « verdict » écrasée par le style du rapport de diagnostic. | Mise en page dédiée (vérifiée par rendu). |
+| 40 | Mineure | Portabilité | Les assemblages publiés contenaient le chemin absolu du dossier de build (référence aux symboles) et des fichiers .pdb séparés. | Build Release déterministe, chemins remplacés par « /_/ », symboles intégrés ; le build échoue si un chemin de la machine de build subsiste. |
 
 ## 2. Vérifications sans défaut
 

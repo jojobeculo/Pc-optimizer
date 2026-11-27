@@ -25,6 +25,7 @@ publiés comme artefacts de chaque exécution.
 | Mise à l'échelle et redimensionnement : 10 pages à 1366×768 / 125 % et 1920×1080 / 150 % | ✅ aucun contenu coupé (contrôle automatique) |
 | Parcours utilisateur réels (benchmark, application d'un profil, jeux, vérification, restauration, laboratoire, mode Pro, démarrage) | ✅ voir § 3 |
 | Installateur : installation silencieuse, lancement de l'application installée, désinstallation | ✅ voir § 5 |
+| Paquet sans données par machine ni chemin de la machine de build (contrôle bloquant du build) | ✅ |
 | Audit d'accessibilité automatique (noms accessibles, taille des cibles) + parcours au clavier | ✅ voir § 6 |
 
 ## 2. Tests unitaires (121)
