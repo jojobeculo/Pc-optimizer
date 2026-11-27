@@ -5,7 +5,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="{StaticResource Pad.Page}">
             <TextBlock Text="{i:Loc drivers.title}" Style="{StaticResource Text.PageTitle}"/>
-            <TextBlock Text="{i:Loc drivers.subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,2,0,16"/>
+            <TextBlock Text="{i:Loc drivers.subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,4,0,18"/>
 
             <ItemsControl ItemsSource="{Binding Findings}" ItemTemplate="{StaticResource FindingTemplate}"/>
             <Border Style="{StaticResource Card}" Visibility="{Binding History.Count, Converter={StaticResource BoolToVis}}">

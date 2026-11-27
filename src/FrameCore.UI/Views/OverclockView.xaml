@@ -5,7 +5,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="{StaticResource Pad.Page}">
             <TextBlock Text="{i:Loc oc.title}" Style="{StaticResource Text.PageTitle}"/>
-            <TextBlock Text="{i:Loc oc.subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,2,0,14"/>
+            <TextBlock Text="{i:Loc oc.subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,4,0,18"/>
 
             <Border Style="{StaticResource Banner}" Margin="0,0,0,16">
                 <StackPanel>
