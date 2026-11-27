@@ -59,7 +59,7 @@ Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 131 tests) ; « IT 
 |---|---|---|
 | Inventaire du démarrage (Run, dossier, tâches, services, extensions), classification, désactivation réversible sans suppression | Fait | Parcours : entrée réelle désactivée puis réactivée ; UT (StartupApproved, anti-cheats protégés) |
 | Mises à jour de sécurité conservées, jamais proposées d'office | Fait | navigateurs, Acrobat, Java « à conserver » (UT) |
-| Analyse du temps de démarrage de Windows (durées mesurées par Windows, tendance, applications / pilotes / services qui ralentissent) | Fait | journal Diagnostics-Performance ; UT (format des événements, médiane, tendance, classement) ; lecture réelle sur Windows pendant la visite (avec et sans droits) |
+| Analyse du temps de démarrage de Windows (durées mesurées par Windows, tendance, applications / pilotes / services qui ralentissent) | Partiel | journal Diagnostics-Performance ; UT (format des événements, médiane, tendance, classement) ; sur la VM Windows Server ce journal n'existe pas : message « aucune donnée » vérifié en administrateur et en utilisateur standard ; lecture d'un vrai historique non vérifiable ici |
 | Services tiers : passage Manuel/Automatique réversible | Fait | mode Pro › Services |
 | Module RAM sans faux « nettoyeur » | Fait | analyse (canaux, XMP, barrettes mixtes, quantité), processus gourmands, diagnostic mémoire Windows ; aucune purge de la liste d'attente |
 
