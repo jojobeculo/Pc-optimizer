@@ -13,7 +13,9 @@ public sealed class Loc : INotifyPropertyChanged
     public static Loc Instance { get; } = new();
     public static string Language => Instance.CurrentLanguage;
 
-    private readonly Dictionary<string, Dictionary<string, string>> _tables = new(StringComparer.OrdinalIgnoreCase);
+    // Copy-on-write: readers (any thread) always see a complete set of tables; writers replace it under a lock.
+    private readonly object _writeGate = new();
+    private volatile Dictionary<string, Dictionary<string, string>> _tables = new(StringComparer.OrdinalIgnoreCase);
     public string CurrentLanguage { get; private set; } = "fr";
     public event PropertyChangedEventHandler? PropertyChanged;
     public event EventHandler? LanguageChanged;
@@ -25,14 +27,17 @@ public sealed class Loc : INotifyPropertyChanged
         if (!Directory.Exists(directory)) return;
         foreach (var file in Directory.GetFiles(directory, "*.json"))
         {
-            var lang = Path.GetFileNameWithoutExtension(file);
             var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(file), Json.Options) ?? new();
-            _tables[lang] = new Dictionary<string, string>(dict, StringComparer.OrdinalIgnoreCase);
+            LoadTable(Path.GetFileNameWithoutExtension(file), dict);
         }
     }
 
-    public void LoadTable(string language, IDictionary<string, string> entries) =>
-        _tables[language] = new Dictionary<string, string>(entries, StringComparer.OrdinalIgnoreCase);
+    public void LoadTable(string language, IDictionary<string, string> entries)
+    {
+        var table = new Dictionary<string, string>(entries, StringComparer.OrdinalIgnoreCase);
+        lock (_writeGate)
+            _tables = new Dictionary<string, Dictionary<string, string>>(_tables, StringComparer.OrdinalIgnoreCase) { [language] = table };
+    }
 
     private static CultureInfo? _systemCulture;
 

@@ -167,3 +167,17 @@ Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 136 tests) ; « IT 
 | Installateur `FrameCore-Setup-2.0.0-x64.exe` + `SHA256SUMS.txt` | Fait (`artifacts/`) |
 | README, guide d'utilisation, guide de restauration, installation, catalogue, benchmarks, overclocking, design, idées, dépendances et licences, notices tierces | Fait (`docs/`) |
 | Rapport d'audit, rapport de tests, état des fonctionnalités, présente vérification | Fait (`docs/AUDIT.md`, `docs/RAPPORT-TESTS.md`, `docs/FONCTIONNALITES.md`) |
+
+## 16. Demandes de la V2 (retours du premier testeur)
+
+| Demande | Statut | Où / comment c'est vérifié |
+|---|---|---|
+| Résultats de benchmark plus graphiques, lisibles, avec une phrase d'explication par mesure | Fait | cartes par composant, une phrase par mesure (`metric.*.what`, FR/EN, test de cohérence des traductions), capture Windows `flow-bench-graphical` |
+| Graphiques interactifs, détail en cliquant sur chaque ligne | Fait | lignes cliquables (répétitions en nuage de points avec médiane et IC 95 %, survol = valeur), historique en barres, évolution par mesure (clic = afficher ce benchmark), avant/après en barres |
+| Gagner plus d'FPS (ex. Ryzen 5 AM5 + RTX 5060, Fortnite à 360 FPS) | Fait (conseils + réglages) / non mesurable ici | niveau Extrême, conseils en jeu pour 10 jeux compétitifs (Fortnite : mode Performance, Reflex, limite d'images…), guide EXPO/PBO/Curve Optimizer ; aucun gain chiffré promis sans mesure sur le PC concerné |
+| 4e niveau « Extrême » pour un PC dédié au jeu, avec avertissement | Fait | carte Extrême, bandeau rouge, confirmation listant chaque contrepartie ; tests du catalogue |
+| Désactiver les éléments les moins critiques de Defender | Fait, de façon limitée | exclusion des dossiers de jeux et plafond des analyses planifiées (interface officielle de Defender, restaurables) ; la protection en temps réel n'est jamais coupée ; aller-retour réel sur Windows (lecture « 0 = aucune limite » corrigée) |
+| Restaurer l'état d'avant FrameCore à tout moment, même 6 mois plus tard ; puis optimisation légère | Fait | carte « Revenir à l'état d'avant FrameCore », bouton « Prêter ou donner ce PC… » ; journal jamais purgé ; restauration acceptée pour les actions des versions précédentes (test bloquant) |
+| Menus plus graphiques | Fait (partiel) | cartes de niveaux, résultats de benchmark, guide BIOS illustré ; les autres pages gardent la présentation existante |
+| GPU : niveaux Léger / Modéré / Élevé / Personnalisé ; tension en Élevé si raisonnable | Fait | niveaux testés ; tension modifiée seulement par le pilote AMD (sous-voltage automatique) ; NVIDIA : pas d'interface officielle pour la tension (expliqué dans l'application) |
+| CPU : niveaux avec valeurs concrètes, réglages très avancés, illustrations BIOS par marque de carte mère, côté Windows | Fait | guide par famille, liste ASUS/MSI/Gigabyte/ASRock, écrans BIOS schématiques (pas de captures officielles, droits d'auteur), Gestionnaire des tâches et Ryzen Master ; tests des données |
