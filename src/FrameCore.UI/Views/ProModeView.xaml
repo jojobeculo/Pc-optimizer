@@ -32,6 +32,41 @@
 
         <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto" Padding="0,0,4,28">
             <StackPanel>
+                <!-- Graphics adapter per application (Windows Graphics settings, per user, restorable) -->
+                <Border Style="{StaticResource Card}" Margin="0,0,0,12"
+                        Visibility="{Binding SelectedCategory, Converter={StaticResource EqVis}, ConverterParameter=Gpu}">
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc gpupref.title}" Style="{StaticResource Text.CardTitle}"/>
+                        <TextBlock Text="{i:Loc gpupref.desc}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,2,0,6"/>
+                        <TextBlock Text="{Binding GpuPrefNote}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                        <ItemsControl ItemsSource="{Binding GpuPrefs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
+                                        <DockPanel>
+                                            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Small}" Content="{i:Loc gpupref.reset}" VerticalAlignment="Center"
+                                                    Command="{Binding DataContext.ResetGpuPrefCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding FileName}" FontWeight="Medium"/>
+                                                <TextBlock Style="{StaticResource Text.Caption}" TextTrimming="CharacterEllipsis">
+                                                    <Run Text="{Binding Preference, Mode=OneWay, Converter={StaticResource LocKey}, ConverterParameter=gpupref.pref.}"/> · <Run Text="{Binding ExePath, Mode=OneWay}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </DockPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="{i:Loc gpupref.none}" Style="{StaticResource Text.Muted}" Margin="0,0,0,6"
+                                   Visibility="{Binding GpuPrefs.Count, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
+                        <WrapPanel Margin="0,4,0,0">
+                            <Button Style="{StaticResource Button.Small}" Content="{i:Loc gpupref.addHigh}" Command="{Binding AddGpuPrefCommand}" CommandParameter="HighPerformance" Margin="0,0,6,6"/>
+                            <Button Style="{StaticResource Button.Small}" Content="{i:Loc gpupref.addSaving}" Command="{Binding AddGpuPrefCommand}" CommandParameter="PowerSaving" Margin="0,0,6,6"/>
+                            <Button Style="{StaticResource Button.Small}" Content="{i:Loc gpupref.openSettings}" Command="{Binding OpenUriCommand}" CommandParameter="ms-settings:display-advancedgraphics" Margin="0,0,6,6"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
                 <!-- Catalog settings of the category -->
                 <StackPanel Visibility="{Binding IsCatalogCategory, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{i:Loc pro.catalogNote}" Style="{StaticResource Text.Muted}" Margin="0,0,0,10"/>

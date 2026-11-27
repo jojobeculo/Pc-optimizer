@@ -128,6 +128,8 @@
                 <StackPanel Visibility="{Binding HasComparison, Converter={StaticResource BoolToVis}}">
                     <DockPanel Margin="0,0,0,10">
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Style="{StaticResource Button.Small}" Content="{i:Loc quick.share.export}" Command="{Binding ExportComparisonCommand}"
+                                    ToolTip="{i:Loc quick.share.tip}" VerticalAlignment="Center" Margin="0,0,14,0"/>
                             <TextBlock Style="{StaticResource Text.Metric}" FontSize="24" i:Motion.CountFormat="0.0" i:Motion.CountTo="{Binding IndexValue}"/>
                         </StackPanel>
                         <StackPanel>

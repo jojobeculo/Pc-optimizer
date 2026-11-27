@@ -184,6 +184,7 @@ public sealed partial class QuickBenchViewModel : ObservableObject
         HasComparison = false;
         if (CompareBefore == null || CompareAfter == null || ReferenceEquals(CompareBefore, CompareAfter)) return;
         var cmp = QuickBenchComparer.Compare(CompareBefore.Result, CompareAfter.Result);
+        _lastComparison = cmp;
         foreach (var m in cmp.Metrics)
         {
             var unit = m.Unit;
@@ -208,6 +209,35 @@ public sealed partial class QuickBenchViewModel : ObservableObject
         if (rb.GpuDriver != null && ra.GpuDriver != null && rb.GpuDriver != ra.GpuDriver) ComparisonTitle += " · " + Loc.T("quick.driverChanged", rb.GpuDriver, ra.GpuDriver);
         if (rb.OsBuild != null && ra.OsBuild != null && rb.OsBuild != ra.OsBuild) ComparisonTitle += " · " + Loc.T("quick.osChanged");
         HasComparison = true;
+    }
+
+    private QuickBenchComparison? _lastComparison;
+
+    /// <summary>Shareable HTML of the displayed comparison (no machine name, no serial number).</summary>
+    [RelayCommand]
+    private void ExportComparison()
+    {
+        if (_lastComparison == null || CompareBefore == null || CompareAfter == null) return;
+        var name = $"FrameCore-comparaison-{DateTime.Now:yyyyMMdd-HHmm}.html";
+        string path;
+        if (Dialogs.Headless) path = Path.Combine(Core.AppPaths.Reports, name);
+        else
+        {
+            var dlg = new Microsoft.Win32.SaveFileDialog { FileName = name, Filter = "HTML|*.html", InitialDirectory = Core.AppPaths.Reports };
+            if (dlg.ShowDialog() != true) return;
+            path = dlg.FileName;
+        }
+        ExportComparisonTo(path);
+        Dialogs.OpenUri(path);
+    }
+
+    public bool ExportComparisonTo(string path)
+    {
+        if (_lastComparison == null || CompareBefore == null || CompareAfter == null) return false;
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, Services.ReportService.BuildComparisonHtml(_lastComparison, CompareBefore.Title, CompareAfter.Title));
+        _shell.StatusText = Loc.T("settings.report.saved", path);
+        return true;
     }
 
     [RelayCommand]

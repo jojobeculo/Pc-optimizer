@@ -155,6 +155,8 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
     public ObservableCollection<StartupRowViewModel> ServiceRows { get; } = new();
     public ObservableCollection<ChangeSetRow> ChangeSets { get; } = new();
     public ObservableCollection<BatchRow> Batches { get; } = new();
+    public ObservableCollection<GpuManager.AppGpuPreference> GpuPrefs { get; } = new();
+    [ObservableProperty] private string _gpuPrefNote = "";
     public ObservableCollection<CategoryChip> RestorableCategories { get; } = new();
     public ObservableCollection<CustomProfile> CustomProfiles { get; } = new();
     private List<StartupEntry> _startup = new();
@@ -186,6 +188,7 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
         OnPropertyChanged(nameof(IsCatalogCategory));
         FilterRows();
         if (value == "Backups") LoadBackups();
+        if (value == "Gpu") LoadGpuPrefs();
         if (value == "Drivers") _shell.CurrentKey = "drivers";
         if (value == "Benchmark") _shell.CurrentKey = "benchmark";
     }
@@ -283,6 +286,48 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
     }
 
     [RelayCommand] private void OpenAppsSettings() => Dialogs.OpenUri("ms-settings:appsfeatures");
+
+    // ---------------------------------------------------------------- Graphics adapter per application
+    public void LoadGpuPrefs()
+    {
+        GpuPrefs.Clear();
+        try { foreach (var p in GpuManager.GpuPreferences.Read(_shell.Services.Registry)) GpuPrefs.Add(p); }
+        catch (Exception ex) { Log.Warn("GpuPref", ex.Message); }
+        var gpus = _shell.Diagnostic?.Profile.Gpus.Count(g => !g.IsSoftware) ?? 0;
+        GpuPrefNote = Loc.T(gpus >= 2 ? "gpupref.note.multi" : "gpupref.note.single", gpus);
+    }
+
+    [RelayCommand]
+    private async Task AddGpuPref(string? preference)
+    {
+        if (!Enum.TryParse<GpuManager.GpuPreference>(preference, out var pref)) return;
+        var dlg = new Microsoft.Win32.OpenFileDialog { Filter = Loc.T("gpupref.filter") + "|*.exe", Title = Loc.T("gpupref.pick") };
+        if (dlg.ShowDialog() != true) return;
+        await SetGpuPrefAsync(dlg.FileName, pref);
+    }
+
+    public async Task<bool> SetGpuPrefAsync(string exePath, GpuManager.GpuPreference pref)
+    {
+        var r = await Task.Run(() => GpuManager.GpuPreferences.Set(_shell.Services.Engine, exePath, pref));
+        if (!r.Success) Dialogs.Error(r.Error ?? "");
+        else _shell.StatusText = Loc.T("gpupref.done", Path.GetFileName(exePath), Loc.T("gpupref.pref." + pref));
+        LoadGpuPrefs();
+        LoadBackups();
+        return r.Success;
+    }
+
+    /// <summary>Back to Windows' choice: restores the value FrameCore changed, or sets "let Windows decide" for an entry made elsewhere.</summary>
+    [RelayCommand]
+    private async Task ResetGpuPref(GpuManager.AppGpuPreference? p)
+    {
+        if (p == null) return;
+        var mine = _shell.Services.Journal.ChangeSets.Where(c => c.Origin == "gpuPreference" && c.Status == ChangeSetStatus.Applied
+                                                                 && c.Entries.Any(e => string.Equals(e.Action.Name, p.ExePath, StringComparison.OrdinalIgnoreCase))).ToList();
+        if (mine.Count > 0) await _shell.TweakService.RestoreAsync(mine);
+        else await Task.Run(() => GpuManager.GpuPreferences.Set(_shell.Services.Engine, p.ExePath, GpuManager.GpuPreference.Auto));
+        LoadGpuPrefs();
+        LoadBackups();
+    }
     [RelayCommand] private void OpenUri(string uri) => Dialogs.OpenUri(uri);
 
     // ---------------------------------------------------------------- Backups (shown in the restore centre)

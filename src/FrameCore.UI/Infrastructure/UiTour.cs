@@ -133,6 +133,12 @@ public static class UiTour
                 report["applyLines"] = shell.Optimization.ResultLines.ToList();
                 pages.Add(await Visit(shell, window, dir, "flow-apply-outcome", () => { }, scrollShots: 4));
 
+                // Shareable before/after comparison of the two measurements taken around the application.
+                var quick = shell.Benchmark.Quick;
+                quick.Load();
+                if (quick.History.Count >= 2) { quick.CompareAfter = quick.History[0]; quick.CompareBefore = quick.History[1]; }
+                report["comparisonExported"] = quick.ExportComparisonTo(Path.Combine(dir, "comparison.html"));
+
                 shell.Games.Ready = false;
                 pages.Add(await Visit(shell, window, dir, "flow-games-after", () => shell.CurrentKey = "games", scrollShots: 2));
                 await WaitUntil(() => shell.Games.Ready, TimeSpan.FromSeconds(60));
@@ -163,6 +169,18 @@ public static class UiTour
                     }
                     report["flowProSingle"] = proFlow;
                 }
+
+                // Graphics adapter per application: set for a real executable, check it is listed, give it back to Windows.
+                var exe = Path.Combine(Environment.SystemDirectory, "notepad.exe");
+                var gpuFlow = new Dictionary<string, object?> { ["exe"] = exe };
+                shell.CurrentKey = "pro"; shell.Pro.SelectedCategory = "Gpu";
+                gpuFlow["set"] = await shell.Pro.SetGpuPrefAsync(exe, GpuManager.GpuPreference.HighPerformance);
+                gpuFlow["listed"] = shell.Pro.GpuPrefs.Any(p => string.Equals(p.ExePath, exe, StringComparison.OrdinalIgnoreCase) && p.Preference == GpuManager.GpuPreference.HighPerformance);
+                pages.Add(await Visit(shell, window, dir, "flow-gpu-preference", () => { }, scrollShots: 1));
+                var entryPref = shell.Pro.GpuPrefs.FirstOrDefault(p => string.Equals(p.ExePath, exe, StringComparison.OrdinalIgnoreCase));
+                if (entryPref != null) await shell.Pro.ResetGpuPrefCommand.ExecuteAsync(entryPref);
+                gpuFlow["removedAfterReset"] = !shell.Pro.GpuPrefs.Any(p => string.Equals(p.ExePath, exe, StringComparison.OrdinalIgnoreCase));
+                report["flowGpuPreference"] = gpuFlow;
 
                 // Startup manager: disable then re-enable one entry that the user is allowed to toggle.
                 await WaitUntil(() => shell.Diagnostic!.StartupTask.IsCompleted, TimeSpan.FromSeconds(60));
@@ -214,6 +232,24 @@ public static class UiTour
                 .Append($"estimated: {shell.Games.Rows.Count(r => r.Estimate.Fps != null)}/{shell.Games.Rows.Count}").ToList();
             shell.Games.ShowExplorer = false; shell.Games.Selected = null;
             if (shell.Diagnostic != null) shell.Games.OnDiagnostic(shell.Diagnostic);
+
+            // Display scaling: the window gets fewer layout units on scaled screens. 1366×768 at 125 % leaves about
+            // 1093×582 (the window then opens maximised); 1920×1080 at 150 % leaves 1280×680. Every main page is
+            // rendered at those sizes and densities, and anything cut off on the right is reported.
+            var overflow = new List<string>();
+            foreach (var (label, w, h, scale) in new[] { ("dpi125-1366x768", 1093.0, 582.0, 1.25), ("dpi150-1920x1080", 1280.0, 680.0, 1.5) })
+            {
+                window.Width = w; window.Height = h;
+                foreach (var key in new[] { "home", "optimization", "games", "benchmark", "hardware", "drivers", "overclock", "restore", "pro", "settings" })
+                {
+                    if (key == "optimization") { shell.CurrentKey = "optimization"; shell.Optimization.PrepareCommand.Execute("Performance"); }
+                    else shell.CurrentKey = key;
+                    await Settle(); await Task.Delay(500); await Settle();
+                    Save(window, Path.Combine(dir, $"{label}-{key}.png"), scale);
+                    overflow.AddRange(HorizontalOverflow(window).Select(o => $"{label}/{key}: {o}"));
+                }
+            }
+            report["layoutOverflow"] = overflow.Distinct().Take(60).ToList();
 
             // Responsiveness of the layout at a small window size, light theme and English.
             window.Width = 1100; window.Height = 700;
@@ -354,6 +390,30 @@ public static class UiTour
         return entry;
     }
 
+    /// <summary>Visible text or controls whose right edge goes past the window (cut off when the window is narrow).</summary>
+    private static IEnumerable<string> HorizontalOverflow(Window window)
+    {
+        var limit = (window.Content as FrameworkElement)?.ActualWidth ?? window.ActualWidth;
+        var stack = new Stack<DependencyObject>();
+        stack.Push(window);
+        while (stack.Count > 0)
+        {
+            var d = stack.Pop();
+            // Content that scrolls horizontally on purpose (tables) is not cut off.
+            if (d is DataGrid || d is ScrollViewer { ComputedHorizontalScrollBarVisibility: Visibility.Visible }) continue;
+            if (d is FrameworkElement fe && fe.IsVisible && fe.ActualWidth > 0 && (d is TextBlock || d is System.Windows.Controls.Primitives.ButtonBase))
+            {
+                double right;
+                try { right = fe.TransformToAncestor(window).Transform(new Point(fe.ActualWidth, 0)).X; }
+                catch (InvalidOperationException) { right = 0; }
+                if (right > limit + 1)
+                    yield return $"{fe.GetType().Name} '{(fe as TextBlock)?.Text ?? FindText(fe) ?? ""}' ends at {right:0} > {limit:0}";
+                if (d is TextBlock) continue;
+            }
+            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(d); i++) stack.Push(VisualTreeHelper.GetChild(d, i));
+        }
+    }
+
     /// <summary>Buttons and toggles must have an accessible name and a usable size.</summary>
     private static IEnumerable<string> AccessibilityAudit(Window window, string page)
     {
@@ -430,12 +490,15 @@ public static class UiTour
         return best;
     }
 
-    private static void Save(Window window, string path)
+    /// <summary>PNG of the window; <paramref name="scale"/> renders it as a screen with that display scaling would (1.25, 1.5).</summary>
+    private static void Save(Window window, string path, double scale = 0)
     {
         var dpi = VisualTreeHelper.GetDpi(window);
-        var w = (int)Math.Ceiling(window.ActualWidth * dpi.DpiScaleX);
-        var h = (int)Math.Ceiling(window.ActualHeight * dpi.DpiScaleY);
-        var rtb = new RenderTargetBitmap(w, h, dpi.PixelsPerInchX, dpi.PixelsPerInchY, PixelFormats.Pbgra32);
+        var sx = scale > 0 ? scale : dpi.DpiScaleX;
+        var sy = scale > 0 ? scale : dpi.DpiScaleY;
+        var w = (int)Math.Ceiling(window.ActualWidth * sx);
+        var h = (int)Math.Ceiling(window.ActualHeight * sy);
+        var rtb = new RenderTargetBitmap(w, h, 96 * sx, 96 * sy, PixelFormats.Pbgra32);
         rtb.Render(window);
         var enc = new PngBitmapEncoder();
         enc.Frames.Add(BitmapFrame.Create(rtb));
