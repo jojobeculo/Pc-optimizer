@@ -63,7 +63,7 @@ public sealed class StartupScanner
             if (e.FilePath != null) e.IsRunning = running.Contains(e.FilePath);
             if (e.Kind == StartupKind.Service && e.Name != null && SafetyPolicy.IsProtectedService(e.Name)) e.Protected = true;
             _kb.Classify(e);
-            if (e.Kind == StartupKind.Service && SafetyPolicy.IsProtectedService(e.Name)) { e.Protected = true; e.Classification = StartupClassification.Essential; }
+            if (e.Kind == StartupKind.Service && e.Name != null && SafetyPolicy.IsProtectedService(e.Name)) { e.Protected = true; e.Classification = StartupClassification.Essential; }
             if (e.Protected) e.CanToggle = false;
         }
         return list;

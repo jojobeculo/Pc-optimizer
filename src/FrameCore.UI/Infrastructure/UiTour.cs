@@ -61,6 +61,18 @@ public static class UiTour
             report["readyMs"] = sinceStart.ElapsedMilliseconds;
             DumpJson(Path.Combine(dir, "profile.json"), shell.Diagnostic?.Profile);
             DumpJson(Path.Combine(dir, "findings.json"), shell.Diagnostic?.Findings.Select(f => new { f.Id, f.Category, f.Severity, f.Title, f.Detail, f.Recommendation, f.Context }));
+            if (shell.Diagnostic is { } d0)
+            {
+                // The diagnostic report a user would share (anonymised, as by default).
+                try
+                {
+                    File.WriteAllText(Path.Combine(dir, "diagnostic-report.html"), Services.ReportService.BuildHtml(d0, shell.Services.Journal, anonymize: true));
+                    File.WriteAllText(Path.Combine(dir, "diagnostic-report.json"), Services.ReportService.BuildJson(d0, shell.Services.Journal, anonymize: true));
+                }
+                catch (Exception ex) { report["reportError"] = ex.ToString(); }
+                report["evaluationStatus"] = d0.Evaluations.GroupBy(e => e.Status.ToString()).ToDictionary(g => g.Key, g => g.Count());
+                report["unreadableStates"] = d0.Evaluations.SelectMany(e => e.ActionStates.Where(a => !a.Readable).Select(a => e.Tweak.Id + ": " + a.Error)).Distinct().ToList();
+            }
             DumpJson(Path.Combine(dir, "evaluations.json"), shell.Diagnostic?.Evaluations.Select(e => new { e.Tweak.Id, Status = e.Status.ToString(), e.Compatible, e.IncompatibilityReasons, Current = e.CurrentSummary, e.NeedsElevation }));
 
             var a11y = new List<string>();
@@ -98,6 +110,7 @@ public static class UiTour
             if (Environment.GetEnvironmentVariable("FRAMECORE_DISPOSABLE_VM") == "1")
             {
                 Dialogs.AutoConfirm = true;
+                report["workerRoundTrip"] = await Task.Run(() => WorkerRoundTrip(shell));
                 var flow = Stopwatch.StartNew();
                 shell.CurrentKey = "benchmark"; shell.Benchmark.Section = "quick";
                 shell.Benchmark.Quick.Mode = "express";
@@ -125,6 +138,46 @@ public static class UiTour
                 await WaitUntil(() => shell.Games.Ready, TimeSpan.FromSeconds(60));
                 pages.Add(await Visit(shell, window, dir, "flow-games-after-loaded", () => { }, scrollShots: 2));
                 report["gamesShowcaseAfter"] = shell.Games.Showcase.Select(r => $"{r.Name}: {r.FpsText} -> {r.AfterText} ({r.GainText}) {r.GainReason}").ToList();
+
+                // Pro mode: one optimisation applied with its own button, then its whole category restored.
+                var single = shell.Diagnostic!.Evaluations.FirstOrDefault(e => e.Compatible && e.Tweak.Reversible && e.Status == Core.Models.TweakStatus.NotApplied
+                    && e.Tweak.Restart == Core.Models.RestartRequirement.None && e.Tweak.Confidence is Core.Models.Confidence.Confirmed or Core.Models.Confidence.Probable);
+                if (single != null)
+                {
+                    shell.CurrentKey = "pro"; shell.Pro.SelectedCategory = single.Tweak.Category;
+                    await Settle();
+                    var row = shell.Pro.Rows.FirstOrDefault(r => r.Tweak.Id == single.Tweak.Id);
+                    var proFlow = new Dictionary<string, object?> { ["tweak"] = single.Tweak.Id, ["rowFound"] = row != null, ["canApplyBefore"] = row?.CanApply };
+                    if (row != null)
+                    {
+                        await row.ApplyCommand.ExecuteAsync(null);
+                        await WaitUntil(() => shell.Pro.Rows.FirstOrDefault(r => r.Tweak.Id == single.Tweak.Id)?.Status == Core.Models.TweakStatus.Applied, TimeSpan.FromSeconds(20));
+                        var after = shell.Pro.Rows.FirstOrDefault(r => r.Tweak.Id == single.Tweak.Id);
+                        proFlow["statusAfterApply"] = after?.Status.ToString();
+                        proFlow["canRestoreAfterApply"] = after?.CanRestore;
+                        pages.Add(await Visit(shell, window, dir, "flow-pro-single", () => { }, scrollShots: 1));
+                        await shell.Pro.RestoreCategoryCommand.ExecuteAsync(single.Tweak.Category);
+                        await WaitUntil(() => shell.Pro.Rows.FirstOrDefault(r => r.Tweak.Id == single.Tweak.Id)?.Status == Core.Models.TweakStatus.NotApplied, TimeSpan.FromSeconds(20));
+                        proFlow["statusAfterCategoryRestore"] = shell.Pro.Rows.FirstOrDefault(r => r.Tweak.Id == single.Tweak.Id)?.Status.ToString();
+                        proFlow["activeAfterCategoryRestore"] = shell.Services.Engine.ActiveChangeSets(single.Tweak.Id).Count();
+                    }
+                    report["flowProSingle"] = proFlow;
+                }
+
+                // Startup manager: disable then re-enable one entry that the user is allowed to toggle.
+                await WaitUntil(() => shell.Diagnostic!.StartupTask.IsCompleted, TimeSpan.FromSeconds(60));
+                await Settle();
+                var entry = shell.Pro.StartupRows.FirstOrDefault(r => r.CanToggle && r.Enabled);
+                var startupFlow = new Dictionary<string, object?> { ["entries"] = shell.Pro.StartupRows.Count, ["toggleable"] = shell.Pro.StartupRows.Count(r => r.CanToggle) };
+                if (entry != null)
+                {
+                    startupFlow["name"] = entry.Name;
+                    await entry.DisableCommand.ExecuteAsync(null);
+                    startupFlow["enabledAfterDisable"] = entry.Enabled;
+                    await entry.EnableCommand.ExecuteAsync(null);
+                    startupFlow["enabledAfterEnable"] = entry.Enabled;
+                }
+                report["flowStartup"] = startupFlow;
 
                 pages.Add(await Visit(shell, window, dir, "flow-restore-before", () => shell.CurrentKey = "restore", scrollShots: 3));
                 await shell.Restore.VerifyNowCommand.ExecuteAsync(null);
@@ -184,6 +237,72 @@ public static class UiTour
         }
         catch { /* best effort */ }
         Application.Current.Shutdown(0);
+    }
+
+    /// <summary>
+    /// The path every non-administrator user takes: each change that needs rights goes through the elevated worker
+    /// (named pipe, request validation against the catalog, JSON round trip of actions and snapshots). The CI
+    /// process is already elevated, so this forces that path with a dedicated broker and a throw-away journal,
+    /// applies and restores every compatible elevated tweak, and compares the final state with the original.
+    /// </summary>
+    private static Dictionary<string, object?> WorkerRoundTrip(ShellViewModel shell)
+    {
+        var result = new Dictionary<string, object?>();
+        var sw = Stopwatch.StartNew();
+        var journalDir = Path.Combine(Path.GetTempPath(), "framecore-worker-test-" + Guid.NewGuid().ToString("N"));
+        var problems = new List<string>();
+        int tried = 0, applied = 0, verified = 0, notApplicable = 0, exact = 0;
+        try
+        {
+            using var broker = new Core.Elevation.ElevationBroker();
+            var s = shell.Services;
+            var remote = new Core.Engine.RoutingDispatcher(s.Executors, () => broker, processIsElevated: false);
+            var local = new Core.Engine.LocalDispatcher(s.Executors);
+            var engine = new Core.Engine.TweakEngine(remote, new BackupManager.JsonChangeJournal(journalDir));
+            broker.EnsureStarted();
+            result["connectMs"] = sw.ElapsedMilliseconds;
+            result["ping"] = broker.Send<bool>("ping", new { });
+            var facts = shell.Diagnostic?.Facts ?? throw new InvalidOperationException("no diagnostic");
+            foreach (var t in s.Catalog.Tweaks.Where(t => t.Reversible && NeedsRights(remote, t)))
+            {
+                if (t.Actions.Any(a => a.Type == "optionalFeature" || a is { Type: "handler", Name: "display.maxRefresh" })) continue;
+                if (!engine.Evaluate(t, facts).Compatible) continue;
+                tried++;
+                var ctx = new Core.Engine.ActionContext(t.Id, "worker-test");
+                string Snap(Core.Models.ActionDefinition a)
+                {
+                    try { return JsonSerializer.Serialize(local.Capture(a, ctx), Json.Canonical); }
+                    catch (Exception ex) { return "unreadable:" + ex.GetType().Name; }
+                }
+                var before = t.Actions.Select(Snap).ToList();
+                try
+                {
+                    var r = engine.Apply(t, facts);
+                    if (r.Success) applied++;
+                    else if (r.NotApplicable) notApplicable++;
+                    else problems.Add($"{t.Id}: apply failed: {r.Error}");
+                    if (r.Verified == true) verified++;
+                    else if (r.Verified == false) problems.Add($"{t.Id}: not effective after apply");
+                    if (r.ChangeSet != null)
+                    {
+                        var rr = engine.Restore(r.ChangeSet);
+                        if (!rr.Success) problems.Add($"{t.Id}: restore failed: {string.Join("; ", rr.Errors)}");
+                    }
+                }
+                catch (Exception ex) { problems.Add($"{t.Id}: {ex.GetType().Name}: {ex.Message}"); }
+                if (before.SequenceEqual(t.Actions.Select(Snap))) exact++;
+                else problems.Add($"{t.Id}: original state NOT restored");
+            }
+            result["ok"] = problems.Count == 0 && tried > 0;
+        }
+        catch (Exception ex) { result["ok"] = false; problems.Add(ex.ToString()); }
+        finally { try { Directory.Delete(journalDir, true); } catch { } }
+        result["tried"] = tried; result["applied"] = applied; result["verified"] = verified;
+        result["notApplicable"] = notApplicable; result["exactlyRestored"] = exact; result["problems"] = problems;
+        result["ms"] = sw.ElapsedMilliseconds;
+        return result;
+
+        static bool NeedsRights(Core.Engine.RoutingDispatcher d, Core.Models.TweakDefinition t) => t.Actions.Any(d.NeedsElevation);
     }
 
     private static async Task<Dictionary<string, object?>> Visit(ShellViewModel shell, Window window, string dir, string name, Action go, int scrollShots)

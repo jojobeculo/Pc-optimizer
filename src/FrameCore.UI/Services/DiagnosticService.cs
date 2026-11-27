@@ -70,7 +70,7 @@ public sealed class DiagnosticService
         r.Findings = BuildFindings(r);
         r.CompletedAt = DateTime.Now;
         Last = r;
-        progress.Report("done");
+        progress?.Report("done");
         Log.Info("Diag", $"Diagnostic completed: {r.Findings.Count} findings, {r.Evaluations.Count} catalog entries evaluated");
         Completed?.Invoke(this, r);
         return r;

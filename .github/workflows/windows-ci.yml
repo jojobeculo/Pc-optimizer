@@ -75,6 +75,20 @@ jobs:
           "Exit code: $($p.ExitCode)"
           Get-Content "$dir\report.json" -ErrorAction SilentlyContinue | Select-Object -First 400
 
+      - name: UI tour as a standard user (no administrator rights, like a normal session)
+        if: success() || failure()
+        shell: pwsh
+        run: |
+          $dir = "$pwd\out\user-tour"
+          $exe = "$pwd\publish\FrameCore\FrameCore.exe"
+          # Basic User trust level: same account, Administrators group removed from the token.
+          Start-Process runas.exe -ArgumentList "/trustlevel:0x20000 `"$exe --ui-tour $dir`""
+          Start-Sleep -Seconds 5
+          $deadline = (Get-Date).AddMinutes(8)
+          while ((Get-Process FrameCore -ErrorAction SilentlyContinue) -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 3 }
+          Get-Process FrameCore -ErrorAction SilentlyContinue | Stop-Process -Force
+          Get-Content "$dir\report.json" -ErrorAction SilentlyContinue | Select-Object -First 120
+
       - uses: actions/download-artifact@v4
         if: success() || failure()
         with:

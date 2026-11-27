@@ -77,9 +77,15 @@ public sealed partial class SettingsViewModel : ObservableObject
         S.AdvancedSensors = value; S.Save();
         if (!value) return;
         if (!SensorService.PawnIoInstalled) Dialogs.Info(Loc.T("settings.sensors.title"), Loc.T("settings.sensors.noPawnIo"));
-        try { _shell.Privileged.Ensure(); }
+        _ = ConnectSensorsAsync();
+    }
+
+    /// <summary>Starts the elevated worker off the UI thread (the UAC prompt and the connection can take seconds).</summary>
+    private async Task ConnectSensorsAsync()
+    {
+        try { await Task.Run(() => _shell.Privileged.Ensure()); }
         catch (ElevationDeclinedException) { AdvancedSensors = false; }
-        catch (Exception ex) { Dialogs.Error(ex.Message); AdvancedSensors = false; }
+        catch (Exception ex) { Log.Error("Settings", "Sensors elevation failed", ex); Dialogs.Error(ex.Message); AdvancedSensors = false; }
     }
 
     [RelayCommand]
@@ -137,11 +143,13 @@ public sealed partial class SettingsViewModel : ObservableObject
             using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
             http.DefaultRequestHeaders.UserAgent.ParseAdd("FrameCore-Updater/" + AppInfo.Version);
             var m = JsonSerializer.Deserialize<UpdateManifest>(await http.GetStringAsync(UpdateUrl), Json.Options);
-            if (m == null || !System.Version.TryParse(m.Version, out var remote)) { UpdateStatus = Loc.T("update.badManifest"); return; }
+            if (m == null || !System.Version.TryParse(m.Version, out var remote) || string.IsNullOrWhiteSpace(m.Sha256)
+                || !Uri.TryCreate(m.Url, UriKind.Absolute, out var setupUri) || setupUri.Scheme != Uri.UriSchemeHttps)
+            { UpdateStatus = Loc.T("update.badManifest"); return; }
             if (remote <= System.Version.Parse(AppInfo.Version)) { UpdateStatus = Loc.T("update.upToDate"); return; }
             if (!Dialogs.Confirm(Loc.T("update.title"), Loc.T("update.available", m.Version, m.Notes ?? ""), Loc.T("update.download"))) return;
             var file = Path.Combine(Path.GetTempPath(), $"FrameCore-Setup-{m.Version}.exe");
-            await File.WriteAllBytesAsync(file, await http.GetByteArrayAsync(m.Url));
+            await File.WriteAllBytesAsync(file, await http.GetByteArrayAsync(setupUri));
             var hash = Authenticode.Sha256(file);
             var sig = Authenticode.Verify(file);
             if (!hash.Equals(m.Sha256, StringComparison.OrdinalIgnoreCase)) { File.Delete(file); UpdateStatus = Loc.T("update.hashMismatch"); return; }

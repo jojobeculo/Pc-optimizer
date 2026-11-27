@@ -138,6 +138,8 @@ public sealed class TweakService
         {
             bool? ok;
             try { ok = _s.Engine.Verify(cs); } catch { ok = null; }
+            // Not readable without rights (no UAC prompt at start-up): keep it for a later check instead of closing it.
+            if (ok == null && !_priv.IsConnected && cs.Entries.Any(e => _s.Dispatcher.NeedsElevation(e.Action))) continue;
             cs.History.Add(new ChangeEvent { Kind = "postReboot", Detail = Loc.T(ok == true ? "verify.postRebootOk" : ok == false ? "verify.postRebootLost" : "verify.notVerifiable") });
             _s.Journal.Save(cs);
             list.Add((cs, ok));
