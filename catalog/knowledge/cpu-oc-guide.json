@@ -1,0 +1,1739 @@
+{
+ "schemaVersion": 1,
+ "disclaimer": {
+  "fr": "Illustrations schématiques reconstituées par FrameCore, pas des captures officielles : les noms et l'emplacement des options peuvent varier selon la carte mère et la version du BIOS.",
+  "en": "Schematic illustrations drawn by FrameCore, not official screenshots: option names and locations can vary with the motherboard and BIOS version."
+ },
+ "brands": [
+  {
+   "id": "asus",
+   "name": "ASUS",
+   "enter": {
+    "fr": "Touche Suppr (ou F2) au démarrage",
+    "en": "Del (or F2) key at boot"
+   },
+   "advanced": {
+    "fr": "F7 pour le mode avancé",
+    "en": "F7 for Advanced Mode"
+   },
+   "save": {
+    "fr": "F10 pour enregistrer et redémarrer",
+    "en": "F10 to save and restart"
+   },
+   "tabs": [
+    "My Favorites",
+    "Main",
+    "Ai Tweaker",
+    "Advanced",
+    "Monitor",
+    "Boot",
+    "Tool",
+    "Exit"
+   ],
+   "accent": "#2F80ED",
+   "bar": "#0E1A2B"
+  },
+  {
+   "id": "msi",
+   "name": "MSI",
+   "enter": {
+    "fr": "Touche Suppr au démarrage",
+    "en": "Del key at boot"
+   },
+   "advanced": {
+    "fr": "F7 pour le mode avancé",
+    "en": "F7 for Advanced Mode"
+   },
+   "save": {
+    "fr": "F10 pour enregistrer et redémarrer",
+    "en": "F10 to save and restart"
+   },
+   "tabs": [
+    "SETTINGS",
+    "OC",
+    "M-FLASH",
+    "OC PROFILE",
+    "HARDWARE MONITOR",
+    "BOARD EXPLORER"
+   ],
+   "accent": "#E5484D",
+   "bar": "#1A0F10"
+  },
+  {
+   "id": "gigabyte",
+   "name": "Gigabyte / AORUS",
+   "enter": {
+    "fr": "Touche Suppr au démarrage",
+    "en": "Del key at boot"
+   },
+   "advanced": {
+    "fr": "F2 pour le mode avancé",
+    "en": "F2 for Advanced Mode"
+   },
+   "save": {
+    "fr": "F10 pour enregistrer et redémarrer",
+    "en": "F10 to save and restart"
+   },
+   "tabs": [
+    "Favorites",
+    "Tweaker",
+    "Settings",
+    "System Info.",
+    "Boot",
+    "Save & Exit"
+   ],
+   "accent": "#F59E0B",
+   "bar": "#18130A"
+  },
+  {
+   "id": "asrock",
+   "name": "ASRock",
+   "enter": {
+    "fr": "Touche F2 ou Suppr au démarrage",
+    "en": "F2 or Del key at boot"
+   },
+   "advanced": {
+    "fr": "F6 pour le mode avancé",
+    "en": "F6 for Advanced Mode"
+   },
+   "save": {
+    "fr": "F10 pour enregistrer et redémarrer",
+    "en": "F10 to save and restart"
+   },
+   "tabs": [
+    "Main",
+    "OC Tweaker",
+    "Advanced",
+    "Tool",
+    "H/W Monitor",
+    "Security",
+    "Boot",
+    "Exit"
+   ],
+   "accent": "#22C3E6",
+   "bar": "#0B1A1E"
+  }
+ ],
+ "settings": {
+  "expo": {
+   "label": {
+    "fr": "Profil mémoire EXPO / XMP",
+    "en": "EXPO / XMP memory profile"
+   },
+   "why": {
+    "fr": "Fait tourner la mémoire à la vitesse prévue par son fabricant au lieu de la vitesse de secours (souvent 4800 MT/s). Le gain le plus important et le plus sûr pour les jeux à FPS élevés.",
+    "en": "Runs the memory at the speed its maker intended instead of the fallback speed (often 4800 MT/s). The biggest and safest gain for high-FPS games."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Ai Overclock Tuner"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "DRAM Setting",
+      "Extreme Memory Profile (XMP/EXPO)"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Extreme Memory Profile (X.M.P./EXPO)"
+     ]
+    },
+    "asrock": {
+     "tab": "OC Tweaker",
+     "path": [
+      "DRAM Profile Configuration",
+      "DRAM Profile Setting"
+     ]
+    }
+   }
+  },
+  "pbo": {
+   "label": {
+    "fr": "Precision Boost Overdrive (PBO)",
+    "en": "Precision Boost Overdrive (PBO)"
+   },
+   "why": {
+    "fr": "Laisse le processeur utiliser les limites de puissance de la carte mère pour monter plus haut et plus longtemps.",
+    "en": "Lets the CPU use the motherboard power limits to boost higher and longer."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Precision Boost Overdrive",
+      "Precision Boost Overdrive"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Advanced CPU Configuration",
+      "AMD Overclocking",
+      "Precision Boost Overdrive"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced CPU Settings",
+      "Precision Boost Overdrive"
+     ]
+    },
+    "asrock": {
+     "tab": "Advanced",
+     "path": [
+      "AMD Overclocking",
+      "Precision Boost Overdrive"
+     ]
+    }
+   }
+  },
+  "pboLimits": {
+   "label": {
+    "fr": "Limites PBO",
+    "en": "PBO Limits"
+   },
+   "why": {
+    "fr": "« Motherboard » : limites de puissance de la carte mère au lieu de celles d'AMD.",
+    "en": "'Motherboard': motherboard power limits instead of AMD's."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Precision Boost Overdrive",
+      "PBO Limits"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Advanced CPU Configuration",
+      "AMD Overclocking",
+      "Precision Boost Overdrive",
+      "PBO Limits"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced CPU Settings",
+      "Precision Boost Overdrive",
+      "PBO Limits"
+     ]
+    },
+    "asrock": {
+     "tab": "Advanced",
+     "path": [
+      "AMD Overclocking",
+      "Precision Boost Overdrive",
+      "PBO Limits"
+     ]
+    }
+   }
+  },
+  "co": {
+   "label": {
+    "fr": "Curve Optimizer (tous les cœurs)",
+    "en": "Curve Optimizer (all cores)"
+   },
+   "why": {
+    "fr": "Abaisse la tension pour chaque fréquence (sous-voltage) : moins de chaleur, donc le boost tient plus longtemps. « Negative » + une valeur.",
+    "en": "Lowers the voltage at every frequency (undervolt): less heat, so the boost holds longer. 'Negative' + a magnitude."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Precision Boost Overdrive",
+      "Curve Optimizer"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Advanced CPU Configuration",
+      "AMD Overclocking",
+      "Precision Boost Overdrive",
+      "Curve Optimizer"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced CPU Settings",
+      "Precision Boost Overdrive",
+      "Curve Optimizer"
+     ]
+    },
+    "asrock": {
+     "tab": "Advanced",
+     "path": [
+      "AMD Overclocking",
+      "Precision Boost Overdrive",
+      "Curve Optimizer"
+     ]
+    }
+   }
+  },
+  "boost": {
+   "label": {
+    "fr": "Max CPU Boost Clock Override",
+    "en": "Max CPU Boost Clock Override"
+   },
+   "why": {
+    "fr": "Autorise le boost à dépasser la fréquence maximale d'usine (jusqu'à +200 MHz).",
+    "en": "Allows the boost to exceed the factory maximum clock (up to +200 MHz)."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Precision Boost Overdrive",
+      "Max CPU Boost Clock Override"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Advanced CPU Configuration",
+      "AMD Overclocking",
+      "Precision Boost Overdrive",
+      "Max CPU Boost Clock Override"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced CPU Settings",
+      "Precision Boost Overdrive",
+      "Max CPU Boost Clock Override"
+     ]
+    },
+    "asrock": {
+     "tab": "Advanced",
+     "path": [
+      "AMD Overclocking",
+      "Precision Boost Overdrive",
+      "Max CPU Boost Clock Override"
+     ]
+    }
+   }
+  },
+  "thermal": {
+   "label": {
+    "fr": "Platform Thermal Throttle Limit",
+    "en": "Platform Thermal Throttle Limit"
+   },
+   "why": {
+    "fr": "Température à laquelle le processeur commence à ralentir : la baisser garde le PC plus frais et plus silencieux.",
+    "en": "Temperature at which the CPU starts slowing down: lowering it keeps the PC cooler and quieter."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Precision Boost Overdrive",
+      "Platform Thermal Throttle Limit"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Advanced CPU Configuration",
+      "AMD Overclocking",
+      "Precision Boost Overdrive",
+      "Platform Thermal Throttle Limit"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced CPU Settings",
+      "Precision Boost Overdrive",
+      "Platform Thermal Throttle Limit"
+     ]
+    },
+    "asrock": {
+     "tab": "Advanced",
+     "path": [
+      "AMD Overclocking",
+      "Precision Boost Overdrive",
+      "Platform Thermal Throttle Limit"
+     ]
+    }
+   }
+  },
+  "fclk": {
+   "label": {
+    "fr": "Fréquence FCLK (Infinity Fabric)",
+    "en": "FCLK frequency (Infinity Fabric)"
+   },
+   "why": {
+    "fr": "Vitesse du lien entre les cœurs et la mémoire : 2000 MHz est la valeur reconnue pour la DDR5-6000 sur AM5.",
+    "en": "Speed of the link between the cores and memory: 2000 MHz is the established value for DDR5-6000 on AM5."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "FCLK Frequency"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Advanced DRAM Configuration",
+      "FCLK Frequency"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced Memory Settings",
+      "Infinity Fabric Frequency and Dividers"
+     ]
+    },
+    "asrock": {
+     "tab": "OC Tweaker",
+     "path": [
+      "DRAM Configuration",
+      "Infinity Fabric Frequency and Dividers"
+     ]
+    }
+   }
+  },
+  "uclk": {
+   "label": {
+    "fr": "UCLK DIV1 MODE",
+    "en": "UCLK DIV1 MODE"
+   },
+   "why": {
+    "fr": "« UCLK = MEMCLK » : le contrôleur mémoire tourne à la même vitesse que la mémoire (latence plus basse).",
+    "en": "'UCLK = MEMCLK': the memory controller runs at the memory's speed (lower latency)."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "UCLK DIV1 MODE"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Advanced DRAM Configuration",
+      "UCLK DIV1 MODE"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced Memory Settings",
+      "UCLK DIV1 MODE"
+     ]
+    },
+    "asrock": {
+     "tab": "OC Tweaker",
+     "path": [
+      "DRAM Configuration",
+      "UCLK DIV1 MODE"
+     ]
+    }
+   }
+  },
+  "intelDefault": {
+   "label": {
+    "fr": "Intel Default Settings / limites de puissance d'Intel",
+    "en": "Intel Default Settings / Intel power limits"
+   },
+   "why": {
+    "fr": "Applique les limites de puissance et de courant prévues par Intel au lieu des limites « illimitées » de certaines cartes : indispensable sur les Core 13e/14e génération.",
+    "en": "Applies Intel's intended power and current limits instead of the 'unlimited' defaults of some boards: essential on 13th/14th gen Core."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Intel(R) Default Settings"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Intel Default Settings"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Intel Default Settings"
+     ]
+    },
+    "asrock": {
+     "tab": "OC Tweaker",
+     "path": [
+      "Intel Default Settings"
+     ]
+    }
+   }
+  },
+  "vcoreOffset": {
+   "label": {
+    "fr": "Décalage de tension CPU (adaptatif, négatif)",
+    "en": "CPU voltage offset (adaptive, negative)"
+   },
+   "why": {
+    "fr": "Sous-voltage : moins de chaleur et de consommation, le boost tient plus longtemps. À tester par paliers de 10 mV.",
+    "en": "Undervolt: less heat and power, the boost holds longer. Test in 10 mV steps."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "CPU Core/Cache Voltage",
+      "Offset Mode Sign / Offset Voltage"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "CPU Core Voltage Mode",
+      "Adaptive + Offset Mode"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced Voltage Settings",
+      "Dynamic Vcore (DVID)"
+     ]
+    },
+    "asrock": {
+     "tab": "OC Tweaker",
+     "path": [
+      "Voltage Configuration",
+      "CPU Core/Cache Voltage",
+      "Offset Mode"
+     ]
+    }
+   }
+  },
+  "pRatio": {
+   "label": {
+    "fr": "Multiplicateur des P-cores (tous les cœurs)",
+    "en": "P-core ratio (all cores)"
+   },
+   "why": {
+    "fr": "Fréquence des cœurs performants : +1 = +100 MHz.",
+    "en": "Performance-core clock: +1 = +100 MHz."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Performance Core Ratio"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "CPU Ratio"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced CPU Settings",
+      "CPU Clock Ratio"
+     ]
+    },
+    "asrock": {
+     "tab": "OC Tweaker",
+     "path": [
+      "CPU Configuration",
+      "CPU P-Core Ratio"
+     ]
+    }
+   }
+  },
+  "eRatio": {
+   "label": {
+    "fr": "Multiplicateur des E-cores",
+    "en": "E-core ratio"
+   },
+   "why": {
+    "fr": "Fréquence des cœurs économes : utile aux jeux récents qui les sollicitent.",
+    "en": "Efficient-core clock: helps recent games that use them."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Efficient Core Ratio"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Advanced CPU Configuration",
+      "E-Core Ratio"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced CPU Settings",
+      "E-Core Ratio"
+     ]
+    },
+    "asrock": {
+     "tab": "OC Tweaker",
+     "path": [
+      "CPU Configuration",
+      "CPU E-Core Ratio"
+     ]
+    }
+   }
+  },
+  "boost200s": {
+   "label": {
+    "fr": "Intel 200S Boost",
+    "en": "Intel 200S Boost"
+   },
+   "why": {
+    "fr": "Profil officiel d'Intel pour les Core Ultra 200S (couvert par la garantie) : accélère le lien interne et la mémoire.",
+    "en": "Intel's official profile for Core Ultra 200S (covered by warranty): speeds up the internal fabric and memory."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Intel 200S Boost"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Intel 200S Boost"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Intel 200S Boost"
+     ]
+    },
+    "asrock": {
+     "tab": "OC Tweaker",
+     "path": [
+      "Intel 200S Boost"
+     ]
+    }
+   }
+  },
+  "powerLimits": {
+   "label": {
+    "fr": "Limites de puissance (PL1 / PL2)",
+    "en": "Power limits (PL1 / PL2)"
+   },
+   "why": {
+    "fr": "Puissance que le processeur peut consommer longtemps (PL1) et en pointe (PL2).",
+    "en": "Power the CPU may draw long-term (PL1) and in bursts (PL2)."
+   },
+   "paths": {
+    "asus": {
+     "tab": "Ai Tweaker",
+     "path": [
+      "Internal CPU Power Management",
+      "Long / Short Duration Package Power Limit"
+     ]
+    },
+    "msi": {
+     "tab": "OC",
+     "path": [
+      "Advanced CPU Configuration",
+      "Long / Short Duration Power Limit"
+     ]
+    },
+    "gigabyte": {
+     "tab": "Tweaker",
+     "path": [
+      "Advanced CPU Settings",
+      "Turbo Power Limits"
+     ]
+    },
+    "asrock": {
+     "tab": "OC Tweaker",
+     "path": [
+      "CPU Configuration",
+      "Long / Short Duration Power Limit"
+     ]
+    }
+   }
+  }
+ },
+ "families": [
+  {
+   "id": "am5",
+   "title": {
+    "fr": "AMD Ryzen 7000 / 9000 (AM5)",
+    "en": "AMD Ryzen 7000 / 9000 (AM5)"
+   },
+   "levels": {
+    "Light": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "EXPO I (ex. DDR5-6000 CL30)",
+       "en": "EXPO I (e.g. DDR5-6000 CL30)"
+      }
+     },
+     {
+      "setting": "co",
+      "value": {
+       "fr": "All Cores · Negative · 10",
+       "en": "All Cores · Negative · 10"
+      }
+     }
+    ],
+    "Moderate": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "EXPO I",
+       "en": "EXPO I"
+      }
+     },
+     {
+      "setting": "pbo",
+      "value": {
+       "fr": "Advanced",
+       "en": "Advanced"
+      }
+     },
+     {
+      "setting": "pboLimits",
+      "value": {
+       "fr": "Motherboard",
+       "en": "Motherboard"
+      }
+     },
+     {
+      "setting": "co",
+      "value": {
+       "fr": "All Cores · Negative · 20",
+       "en": "All Cores · Negative · 20"
+      }
+     },
+     {
+      "setting": "thermal",
+      "value": {
+       "fr": "85 °C",
+       "en": "85 °C"
+      }
+     },
+     {
+      "setting": "fclk",
+      "value": {
+       "fr": "2000 MHz (avec DDR5-6000)",
+       "en": "2000 MHz (with DDR5-6000)"
+      }
+     },
+     {
+      "setting": "uclk",
+      "value": {
+       "fr": "UCLK = MEMCLK",
+       "en": "UCLK = MEMCLK"
+      }
+     }
+    ],
+    "High": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "EXPO I",
+       "en": "EXPO I"
+      }
+     },
+     {
+      "setting": "pbo",
+      "value": {
+       "fr": "Advanced",
+       "en": "Advanced"
+      }
+     },
+     {
+      "setting": "pboLimits",
+      "value": {
+       "fr": "Motherboard",
+       "en": "Motherboard"
+      }
+     },
+     {
+      "setting": "boost",
+      "value": {
+       "fr": "+200 MHz",
+       "en": "+200 MHz"
+      }
+     },
+     {
+      "setting": "co",
+      "value": {
+       "fr": "Per Core · Negative · 30 (20 sur les 2 meilleurs cœurs)",
+       "en": "Per Core · Negative · 30 (20 on the 2 best cores)"
+      }
+     },
+     {
+      "setting": "thermal",
+      "value": {
+       "fr": "90 °C",
+       "en": "90 °C"
+      }
+     },
+     {
+      "setting": "fclk",
+      "value": {
+       "fr": "2000 MHz",
+       "en": "2000 MHz"
+      }
+     },
+     {
+      "setting": "uclk",
+      "value": {
+       "fr": "UCLK = MEMCLK",
+       "en": "UCLK = MEMCLK"
+      }
+     }
+    ]
+   },
+   "gain": {
+    "Light": {
+     "fr": "≈ +3 à 8 % dans les jeux limités par le processeur (surtout grâce à EXPO), températures plus basses",
+     "en": "≈ +3 to 8 % in CPU-limited games (mostly from EXPO), lower temperatures"
+    },
+    "Moderate": {
+     "fr": "≈ +5 à 10 %",
+     "en": "≈ +5 to 10 %"
+    },
+    "High": {
+     "fr": "≈ +7 à 12 %, selon la qualité de la puce et le refroidissement",
+     "en": "≈ +7 to 12 %, depending on chip quality and cooling"
+    }
+   },
+   "advanced": [
+    {
+     "name": {
+      "fr": "SOC / VSOC voltage",
+      "en": "SOC / VSOC voltage"
+     },
+     "value": {
+      "fr": "≤ 1,30 V (en général 1,20–1,25 V suffisent pour DDR5-6000)",
+      "en": "≤ 1.30 V (1.20–1.25 V usually enough for DDR5-6000)"
+     },
+     "why": {
+      "fr": "AMD limite cette tension à 1,30 V : ne jamais dépasser.",
+      "en": "AMD caps this voltage at 1.30 V: never exceed."
+     }
+    },
+    {
+     "name": {
+      "fr": "DRAM VDD / VDDQ",
+      "en": "DRAM VDD / VDDQ"
+     },
+     "value": {
+      "fr": "Valeur du profil EXPO (souvent 1,35 V)",
+      "en": "EXPO profile value (often 1.35 V)"
+     },
+     "why": {
+      "fr": "Laisser la valeur du profil ; ne monter qu'avec un kit et un refroidissement adaptés.",
+      "en": "Keep the profile value; raise only with a suitable kit and cooling."
+     }
+    },
+    {
+     "name": {
+      "fr": "Curve Optimizer par cœur",
+      "en": "Per-core Curve Optimizer"
+     },
+     "value": {
+      "fr": "Départ −30 partout, puis −5 sur le cœur qui plante (repérer les « meilleurs cœurs » dans AMD Ryzen Master)",
+      "en": "Start at −30 everywhere, then −5 on the core that crashes (find the 'best cores' in AMD Ryzen Master)"
+     },
+     "why": {
+      "fr": "Les instabilités de Curve Optimizer apparaissent souvent au repos ou en charge légère : tester aussi le PC inactif.",
+      "en": "Curve Optimizer instability often shows at idle or light load: also test the idle PC."
+     }
+    },
+    {
+     "name": {
+      "fr": "Curve Shaper (Ryzen 9000, BIOS récents)",
+      "en": "Curve Shaper (Ryzen 9000, recent BIOS)"
+     },
+     "value": {
+      "fr": "Auto (réservé aux experts)",
+      "en": "Auto (experts only)"
+     },
+     "why": {
+      "fr": "Ajuste la courbe par bande de fréquence/température ; gains marginaux, tests longs.",
+      "en": "Adjusts the curve per frequency/temperature band; marginal gains, long tests."
+     }
+    },
+    {
+     "name": {
+      "fr": "Memory Context Restore + Power Down Enable",
+      "en": "Memory Context Restore + Power Down Enable"
+     },
+     "value": {
+      "fr": "Enabled / Enabled",
+      "en": "Enabled / Enabled"
+     },
+     "why": {
+      "fr": "Évite le long réentraînement de la mémoire à chaque démarrage avec EXPO.",
+      "en": "Avoids the long memory retraining at every boot with EXPO."
+     }
+    },
+    {
+     "name": {
+      "fr": "PPT / TDC / EDC",
+      "en": "PPT / TDC / EDC"
+     },
+     "value": {
+      "fr": "Motherboard (aucune valeur manuelle nécessaire)",
+      "en": "Motherboard (no manual value needed)"
+     },
+     "why": {
+      "fr": "Les limites de la carte mère suffisent ; des valeurs manuelles excessives ne donnent rien de plus en jeu.",
+      "en": "Motherboard limits are enough; excessive manual values give nothing more in games."
+     }
+    },
+    {
+     "name": {
+      "fr": "Global C-states / CPPC Preferred Cores",
+      "en": "Global C-states / CPPC Preferred Cores"
+     },
+     "value": {
+      "fr": "Auto / Auto",
+      "en": "Auto / Auto"
+     },
+     "why": {
+      "fr": "Ne pas désactiver : Windows place les jeux sur les meilleurs cœurs grâce à CPPC.",
+      "en": "Do not disable: Windows puts games on the best cores thanks to CPPC."
+     }
+    }
+   ],
+   "notes": [
+    {
+     "fr": "Mettez d'abord le BIOS à jour depuis le site du fabricant de la carte mère (jamais automatiquement, jamais d'un site tiers).",
+     "en": "Update the BIOS first from the motherboard maker's website (never automatically, never from a third-party site)."
+    },
+    {
+     "fr": "Après chaque étape : benchmark « Complet » de FrameCore + 30 min de test de stabilité ; un plantage, un écran bleu ou une erreur WHEA = revenir à l'étape précédente.",
+     "en": "After each step: FrameCore 'Complete' benchmark + 30 min stability test; a crash, blue screen or WHEA error = go back one step."
+    }
+   ]
+  },
+  {
+   "id": "am5x3d",
+   "title": {
+    "fr": "AMD Ryzen X3D (AM5 : 7800X3D, 9800X3D…)",
+    "en": "AMD Ryzen X3D (AM5: 7800X3D, 9800X3D…)"
+   },
+   "levels": {
+    "Light": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "EXPO I (DDR5-6000 CL30)",
+       "en": "EXPO I (DDR5-6000 CL30)"
+      }
+     },
+     {
+      "setting": "co",
+      "value": {
+       "fr": "All Cores · Negative · 10",
+       "en": "All Cores · Negative · 10"
+      }
+     }
+    ],
+    "Moderate": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "EXPO I",
+       "en": "EXPO I"
+      }
+     },
+     {
+      "setting": "pbo",
+      "value": {
+       "fr": "Advanced (si proposé)",
+       "en": "Advanced (if offered)"
+      }
+     },
+     {
+      "setting": "co",
+      "value": {
+       "fr": "All Cores · Negative · 20",
+       "en": "All Cores · Negative · 20"
+      }
+     },
+     {
+      "setting": "fclk",
+      "value": {
+       "fr": "2000 MHz",
+       "en": "2000 MHz"
+      }
+     },
+     {
+      "setting": "uclk",
+      "value": {
+       "fr": "UCLK = MEMCLK",
+       "en": "UCLK = MEMCLK"
+      }
+     }
+    ],
+    "High": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "EXPO I",
+       "en": "EXPO I"
+      }
+     },
+     {
+      "setting": "pbo",
+      "value": {
+       "fr": "Advanced",
+       "en": "Advanced"
+      }
+     },
+     {
+      "setting": "pboLimits",
+      "value": {
+       "fr": "Motherboard",
+       "en": "Motherboard"
+      }
+     },
+     {
+      "setting": "boost",
+      "value": {
+       "fr": "+200 MHz (Ryzen 9000X3D uniquement)",
+       "en": "+200 MHz (Ryzen 9000X3D only)"
+      }
+     },
+     {
+      "setting": "co",
+      "value": {
+       "fr": "Per Core · Negative · 25–30",
+       "en": "Per Core · Negative · 25–30"
+      }
+     },
+     {
+      "setting": "fclk",
+      "value": {
+       "fr": "2000 MHz",
+       "en": "2000 MHz"
+      }
+     },
+     {
+      "setting": "uclk",
+      "value": {
+       "fr": "UCLK = MEMCLK",
+       "en": "UCLK = MEMCLK"
+      }
+     }
+    ]
+   },
+   "gain": {
+    "Light": {
+     "fr": "≈ +2 à 5 % (le cache 3D réduit déjà la dépendance à la mémoire)",
+     "en": "≈ +2 to 5 % (the 3D cache already reduces memory dependence)"
+    },
+    "Moderate": {
+     "fr": "≈ +3 à 7 %",
+     "en": "≈ +3 to 7 %"
+    },
+    "High": {
+     "fr": "≈ +5 à 10 % sur 9800X3D ; moins sur 7800X3D (pas de dépassement du boost)",
+     "en": "≈ +5 to 10 % on 9800X3D; less on 7800X3D (no boost override)"
+    }
+   },
+   "advanced": [
+    {
+     "name": {
+      "fr": "SOC / VSOC voltage",
+      "en": "SOC / VSOC voltage"
+     },
+     "value": {
+      "fr": "≤ 1,30 V",
+      "en": "≤ 1.30 V"
+     },
+     "why": {
+      "fr": "Limite fixée par AMD.",
+      "en": "Limit set by AMD."
+     }
+    },
+    {
+     "name": {
+      "fr": "Ryzen 7000X3D",
+      "en": "Ryzen 7000X3D"
+     },
+     "value": {
+      "fr": "Pas de Max Boost Override ; tension du cœur verrouillée",
+      "en": "No Max Boost Override; core voltage locked"
+     },
+     "why": {
+      "fr": "Le cache 3D supporte mal la tension : seul le sous-voltage (Curve Optimizer) est utile.",
+      "en": "The 3D cache tolerates voltage poorly: only undervolting (Curve Optimizer) helps."
+     }
+    },
+    {
+     "name": {
+      "fr": "Ryzen 9 X3D bi-CCD (7950X3D, 9950X3D…)",
+      "en": "Dual-CCD Ryzen 9 X3D (7950X3D, 9950X3D…)"
+     },
+     "value": {
+      "fr": "Garder le pilote chipset AMD et la Game Bar à jour",
+      "en": "Keep the AMD chipset driver and Game Bar up to date"
+     },
+     "why": {
+      "fr": "Ils placent les jeux sur les cœurs avec cache 3D ; ne pas désactiver le stationnement des cœurs.",
+      "en": "They place games on the 3D-cache cores; do not disable core parking."
+     }
+    }
+   ],
+   "notes": [
+    {
+     "fr": "Mettez d'abord le BIOS à jour depuis le site du fabricant.",
+     "en": "Update the BIOS first from the maker's website."
+    },
+    {
+     "fr": "Après chaque étape : benchmark Complet + test de stabilité.",
+     "en": "After each step: Complete benchmark + stability test."
+    }
+   ]
+  },
+  {
+   "id": "am4",
+   "title": {
+    "fr": "AMD Ryzen 3000 / 5000 (AM4)",
+    "en": "AMD Ryzen 3000 / 5000 (AM4)"
+   },
+   "levels": {
+    "Light": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP / D.O.C.P. (ex. DDR4-3600 CL16)",
+       "en": "XMP / D.O.C.P. (e.g. DDR4-3600 CL16)"
+      }
+     }
+    ],
+    "Moderate": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP / D.O.C.P.",
+       "en": "XMP / D.O.C.P."
+      }
+     },
+     {
+      "setting": "pbo",
+      "value": {
+       "fr": "Enabled / Advanced",
+       "en": "Enabled / Advanced"
+      }
+     },
+     {
+      "setting": "co",
+      "value": {
+       "fr": "All Cores · Negative · 15 (Ryzen 5000)",
+       "en": "All Cores · Negative · 15 (Ryzen 5000)"
+      }
+     },
+     {
+      "setting": "fclk",
+      "value": {
+       "fr": "1800 MHz (avec DDR4-3600, mode 1:1)",
+       "en": "1800 MHz (with DDR4-3600, 1:1 mode)"
+      }
+     }
+    ],
+    "High": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP / D.O.C.P.",
+       "en": "XMP / D.O.C.P."
+      }
+     },
+     {
+      "setting": "pbo",
+      "value": {
+       "fr": "Advanced",
+       "en": "Advanced"
+      }
+     },
+     {
+      "setting": "pboLimits",
+      "value": {
+       "fr": "Motherboard",
+       "en": "Motherboard"
+      }
+     },
+     {
+      "setting": "boost",
+      "value": {
+       "fr": "+200 MHz (pas sur 5800X3D/5700X3D)",
+       "en": "+200 MHz (not on 5800X3D/5700X3D)"
+      }
+     },
+     {
+      "setting": "co",
+      "value": {
+       "fr": "Per Core · Negative · 20–30 (Ryzen 5000)",
+       "en": "Per Core · Negative · 20–30 (Ryzen 5000)"
+      }
+     },
+     {
+      "setting": "fclk",
+      "value": {
+       "fr": "1800 MHz",
+       "en": "1800 MHz"
+      }
+     }
+    ]
+   },
+   "gain": {
+    "Light": {
+     "fr": "≈ +5 à 10 % si la mémoire tournait à 2133/2400",
+     "en": "≈ +5 to 10 % if memory ran at 2133/2400"
+    },
+    "Moderate": {
+     "fr": "≈ +3 à 8 %",
+     "en": "≈ +3 to 8 %"
+    },
+    "High": {
+     "fr": "≈ +5 à 10 %",
+     "en": "≈ +5 to 10 %"
+    }
+   },
+   "advanced": [
+    {
+     "name": {
+      "fr": "Curve Optimizer",
+      "en": "Curve Optimizer"
+     },
+     "value": {
+      "fr": "Ryzen 5000 uniquement (pas Ryzen 3000)",
+      "en": "Ryzen 5000 only (not Ryzen 3000)"
+     },
+     "why": {
+      "fr": "Fonction introduite avec Zen 3.",
+      "en": "Feature introduced with Zen 3."
+     }
+    },
+    {
+     "name": {
+      "fr": "FCLK au-delà de 1800–1900 MHz",
+      "en": "FCLK above 1800–1900 MHz"
+     },
+     "value": {
+      "fr": "Déconseillé",
+      "en": "Not recommended"
+     },
+     "why": {
+      "fr": "Au-delà, erreurs WHEA fréquentes (ID 19) et instabilité.",
+      "en": "Beyond, frequent WHEA errors (ID 19) and instability."
+     }
+    }
+   ],
+   "notes": [
+    {
+     "fr": "Sur ASUS, le profil mémoire s'appelle D.O.C.P. sur AM4.",
+     "en": "On ASUS, the memory profile is called D.O.C.P. on AM4."
+    }
+   ]
+  },
+  {
+   "id": "intelk",
+   "title": {
+    "fr": "Intel Core 12e–14e génération « K »",
+    "en": "Intel Core 12th–14th gen 'K'"
+   },
+   "levels": {
+    "Light": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP I",
+       "en": "XMP I"
+      }
+     },
+     {
+      "setting": "intelDefault",
+      "value": {
+       "fr": "Performance (profil Intel)",
+       "en": "Performance (Intel profile)"
+      }
+     }
+    ],
+    "Moderate": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP I",
+       "en": "XMP I"
+      }
+     },
+     {
+      "setting": "intelDefault",
+      "value": {
+       "fr": "Performance",
+       "en": "Performance"
+      }
+     },
+     {
+      "setting": "vcoreOffset",
+      "value": {
+       "fr": "Adaptatif · −0,050 V",
+       "en": "Adaptive · −0.050 V"
+      }
+     }
+    ],
+    "High": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP I",
+       "en": "XMP I"
+      }
+     },
+     {
+      "setting": "intelDefault",
+      "value": {
+       "fr": "Performance",
+       "en": "Performance"
+      }
+     },
+     {
+      "setting": "vcoreOffset",
+      "value": {
+       "fr": "Adaptatif · −0,030 à −0,050 V",
+       "en": "Adaptive · −0.030 to −0.050 V"
+      }
+     },
+     {
+      "setting": "pRatio",
+      "value": {
+       "fr": "+1 au-dessus du multiplicateur tous cœurs d'origine",
+       "en": "+1 above the stock all-core ratio"
+      }
+     },
+     {
+      "setting": "eRatio",
+      "value": {
+       "fr": "+2",
+       "en": "+2"
+      }
+     }
+    ]
+   },
+   "gain": {
+    "Light": {
+     "fr": "Stabilité et longévité d'abord ; ≈ +3 à 8 % si la mémoire tournait à sa vitesse de secours",
+     "en": "Stability and longevity first; ≈ +3 to 8 % if memory ran at its fallback speed"
+    },
+    "Moderate": {
+     "fr": "Températures plus basses, boost plus stable",
+     "en": "Lower temperatures, steadier boost"
+    },
+    "High": {
+     "fr": "≈ +2 à 5 %",
+     "en": "≈ +2 to 5 %"
+    }
+   },
+   "advanced": [
+    {
+     "name": {
+      "fr": "Microcode (13e/14e gén.)",
+      "en": "Microcode (13th/14th gen)"
+     },
+     "value": {
+      "fr": "0x12B ou plus récent (BIOS à jour)",
+      "en": "0x12B or newer (updated BIOS)"
+     },
+     "why": {
+      "fr": "Corrige le problème d'instabilité « Vmin shift » des i7/i9 13e/14e génération.",
+      "en": "Fixes the 'Vmin shift' instability of 13th/14th gen i7/i9."
+     }
+    },
+    {
+     "name": {
+      "fr": "Tension sous charge",
+      "en": "Voltage under load"
+     },
+     "value": {
+      "fr": "Ne jamais dépasser 1,40 V",
+      "en": "Never exceed 1.40 V"
+     },
+     "why": {
+      "fr": "Au-delà, risque de dégradation accélérée sur 13e/14e génération.",
+      "en": "Beyond, risk of accelerated degradation on 13th/14th gen."
+     }
+    },
+    {
+     "name": {
+      "fr": "AC / DC Load Line",
+      "en": "AC / DC Load Line"
+     },
+     "value": {
+      "fr": "Valeurs du profil Intel ; un AC LL plus bas = sous-voltage (alternative au décalage)",
+      "en": "Intel profile values; a lower AC LL = undervolt (alternative to the offset)"
+     },
+     "why": {
+      "fr": "À tester par petits pas ; ne pas combiner avec un gros décalage négatif.",
+      "en": "Test in small steps; do not combine with a large negative offset."
+     }
+    },
+    {
+     "name": {
+      "fr": "IA CEP (Current Excursion Protection)",
+      "en": "IA CEP (Current Excursion Protection)"
+     },
+     "value": {
+      "fr": "Enabled",
+      "en": "Enabled"
+     },
+     "why": {
+      "fr": "Le désactiver pour « gagner » du sous-voltage masque l'instabilité.",
+      "en": "Disabling it to 'gain' undervolt hides instability."
+     }
+    },
+    {
+     "name": {
+      "fr": "Ring / Cache ratio",
+      "en": "Ring / Cache ratio"
+     },
+     "value": {
+      "fr": "Auto (ou +1/+2 pour les experts)",
+      "en": "Auto (or +1/+2 for experts)"
+     },
+     "why": {
+      "fr": "Gain faible, instabilité fréquente.",
+      "en": "Small gain, frequent instability."
+     }
+    }
+   ],
+   "notes": [
+    {
+     "fr": "Core 13e/14e génération i7/i9 : mettez le BIOS à jour avant tout réglage (microcode 0x12B ou plus).",
+     "en": "13th/14th gen i7/i9: update the BIOS before any tuning (microcode 0x12B or newer)."
+    },
+    {
+     "fr": "Après chaque étape : benchmark Complet + test de stabilité.",
+     "en": "After each step: Complete benchmark + stability test."
+    }
+   ]
+  },
+  {
+   "id": "intelultra",
+   "title": {
+    "fr": "Intel Core Ultra 200S « K »",
+    "en": "Intel Core Ultra 200S 'K'"
+   },
+   "levels": {
+    "Light": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP I",
+       "en": "XMP I"
+      }
+     }
+    ],
+    "Moderate": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP I",
+       "en": "XMP I"
+      }
+     },
+     {
+      "setting": "boost200s",
+      "value": {
+       "fr": "Enabled",
+       "en": "Enabled"
+      }
+     }
+    ],
+    "High": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP I",
+       "en": "XMP I"
+      }
+     },
+     {
+      "setting": "boost200s",
+      "value": {
+       "fr": "Enabled",
+       "en": "Enabled"
+      }
+     },
+     {
+      "setting": "pRatio",
+      "value": {
+       "fr": "+1 sur tous les P-cores",
+       "en": "+1 on all P-cores"
+      }
+     },
+     {
+      "setting": "eRatio",
+      "value": {
+       "fr": "+3",
+       "en": "+3"
+      }
+     }
+    ]
+   },
+   "gain": {
+    "Light": {
+     "fr": "≈ +3 à 6 % si la mémoire tournait à sa vitesse de secours",
+     "en": "≈ +3 to 6 % if memory ran at its fallback speed"
+    },
+    "Moderate": {
+     "fr": "≈ +3 à 8 % (profil officiel, garanti par Intel)",
+     "en": "≈ +3 to 8 % (official profile, warranted by Intel)"
+    },
+    "High": {
+     "fr": "≈ +5 à 10 %",
+     "en": "≈ +5 to 10 %"
+    }
+   },
+   "advanced": [
+    {
+     "name": {
+      "fr": "D2D / NGU",
+      "en": "D2D / NGU"
+     },
+     "value": {
+      "fr": "32x / 32x (inclus dans 200S Boost)",
+      "en": "32x / 32x (included in 200S Boost)"
+     },
+     "why": {
+      "fr": "Liens internes entre tuiles : principal levier de latence sur cette génération.",
+      "en": "Internal links between tiles: the main latency lever on this generation."
+     }
+    }
+   ],
+   "notes": [
+    {
+     "fr": "200S Boost demande une carte Z890 à jour.",
+     "en": "200S Boost requires an updated Z890 board."
+    }
+   ]
+  },
+  {
+   "id": "intellocked",
+   "title": {
+    "fr": "Intel Core non « K » (verrouillé)",
+    "en": "Intel Core non-'K' (locked)"
+   },
+   "levels": {
+    "Light": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP I (si la carte le permet, ex. B660/B760/Z)",
+       "en": "XMP I (if the board allows it, e.g. B660/B760/Z)"
+      }
+     }
+    ],
+    "Moderate": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP I",
+       "en": "XMP I"
+      }
+     },
+     {
+      "setting": "powerLimits",
+      "value": {
+       "fr": "Valeurs Intel du processeur (pas « Unlimited »)",
+       "en": "Intel values for the CPU (not 'Unlimited')"
+      }
+     }
+    ],
+    "High": [
+     {
+      "setting": "expo",
+      "value": {
+       "fr": "XMP I",
+       "en": "XMP I"
+      }
+     },
+     {
+      "setting": "powerLimits",
+      "value": {
+       "fr": "PL1 = PL2 = PL2 d'Intel (si le refroidissement suit)",
+       "en": "PL1 = PL2 = Intel's PL2 (if cooling keeps up)"
+      }
+     }
+    ]
+   },
+   "gain": {
+    "Light": {
+     "fr": "≈ +3 à 8 % si la mémoire tournait à sa vitesse de secours",
+     "en": "≈ +3 to 8 % if memory ran at its fallback speed"
+    },
+    "Moderate": {
+     "fr": "Stabilité",
+     "en": "Stability"
+    },
+    "High": {
+     "fr": "≈ +2 à 5 % en charge prolongée",
+     "en": "≈ +2 to 5 % under sustained load"
+    }
+   },
+   "advanced": [
+    {
+     "name": {
+      "fr": "Multiplicateur",
+      "en": "Ratio"
+     },
+     "value": {
+      "fr": "Verrouillé par Intel",
+      "en": "Locked by Intel"
+     },
+     "why": {
+      "fr": "Pas d'overclocking possible : seuls la mémoire et les limites de puissance comptent.",
+      "en": "No overclocking possible: only memory and power limits matter."
+     }
+    }
+   ],
+   "notes": []
+  }
+ ],
+ "windows": [
+  {
+   "id": "taskmgr.memory",
+   "title": {
+    "fr": "Vérifier EXPO/XMP dans Windows",
+    "en": "Check EXPO/XMP in Windows"
+   },
+   "window": {
+    "fr": "Gestionnaire des tâches",
+    "en": "Task Manager"
+   },
+   "path": [
+    {
+     "fr": "Performances",
+     "en": "Performance"
+    },
+    {
+     "fr": "Mémoire",
+     "en": "Memory"
+    }
+   ],
+   "rows": [
+    {
+     "label": {
+      "fr": "Vitesse",
+      "en": "Speed"
+     },
+     "value": {
+      "fr": "6000 MT/s",
+      "en": "6000 MT/s"
+     }
+    },
+    {
+     "label": {
+      "fr": "Emplacements utilisés",
+      "en": "Slots used"
+     },
+     "value": {
+      "fr": "2 sur 4",
+      "en": "2 of 4"
+     }
+    }
+   ],
+   "highlight": 0,
+   "why": {
+    "fr": "Ctrl+Maj+Échap → Performances → Mémoire : la vitesse doit être celle du profil (ex. 6000 MT/s), sinon EXPO/XMP n'est pas actif.",
+    "en": "Ctrl+Shift+Esc → Performance → Memory: the speed must match the profile (e.g. 6000 MT/s), otherwise EXPO/XMP is not active."
+   }
+  },
+  {
+   "id": "ryzenmaster",
+   "title": {
+    "fr": "Alternative Windows : AMD Ryzen Master",
+    "en": "Windows alternative: AMD Ryzen Master"
+   },
+   "window": {
+    "fr": "AMD Ryzen Master (outil officiel d'AMD)",
+    "en": "AMD Ryzen Master (AMD's official tool)"
+   },
+   "path": [
+    {
+     "fr": "Advanced View",
+     "en": "Advanced View"
+    },
+    {
+     "fr": "Profile 1",
+     "en": "Profile 1"
+    },
+    {
+     "fr": "Curve Optimizer",
+     "en": "Curve Optimizer"
+    }
+   ],
+   "rows": [
+    {
+     "label": {
+      "fr": "Mode",
+      "en": "Mode"
+     },
+     "value": {
+      "fr": "Per Core",
+      "en": "Per Core"
+     }
+    },
+    {
+     "label": {
+      "fr": "Cœur 0 (★ meilleur)",
+      "en": "Core 0 (★ best)"
+     },
+     "value": {
+      "fr": "-20",
+      "en": "-20"
+     }
+    },
+    {
+     "label": {
+      "fr": "Cœur 1",
+      "en": "Core 1"
+     },
+     "value": {
+      "fr": "-30",
+      "en": "-30"
+     }
+    }
+   ],
+   "highlight": 1,
+   "why": {
+    "fr": "Permet d'essayer Curve Optimizer depuis Windows avant de reporter les valeurs stables dans le BIOS ; les ★ indiquent les meilleurs cœurs.",
+    "en": "Lets you try Curve Optimizer from Windows before copying the stable values into the BIOS; ★ marks the best cores."
+   }
+  }
+ ]
+}

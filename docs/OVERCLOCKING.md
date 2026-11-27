@@ -22,7 +22,52 @@ FrameCore distingue trois niveaux, toujours indiqués dans l'interface :
 Les offsets NVML ne survivent pas à un redémarrage. Les réglages ADLX sont conservés par le pilote AMD, qui revient
 lui-même aux valeurs par défaut après un plantage.
 
+### Niveaux du réglage automatique (page Overclocking)
+
+| Niveau | NVIDIA (fréquences via NVML, aucune tension) | AMD (réglage automatique du pilote, ADLX) |
+|---|---|---|
+| **Léger** | cœur jusqu'à +75 MHz, mémoire jusqu'à +200 MHz, paliers de 45 s, arrêt à 80 °C, **2 paliers** de marge, limite de puissance inchangée, validation finale 3 min | sous-voltage automatique d'AMD |
+| **Modéré** | +150 / +500 MHz, paliers de 60 s, 83 °C, 1 palier de marge, limite de puissance au maximum autorisé par le pilote, validation 4 min | overclocking automatique du GPU par AMD |
+| **Élevé** | +250 / +1000 MHz, paliers de 90 s, 85 °C, limite de puissance au maximum, validation 6 min | sous-voltage automatique **+** limite de puissance au maximum (moins de tension pour la même fréquence = plus de marge de boost) |
+| **Personnalisé** | plafond, durée des paliers et mémoire choisis à la main | un réglage automatique précis d'AMD |
+
+Les plafonds restent bornés par les plages que le pilote annonce. En cas d'échec de la validation finale, tout revient
+aux valeurs d'origine (limite de puissance comprise).
+
+**Pourquoi pas de tension sur NVIDIA** : l'interface officielle (NVML) ne permet pas de la régler ; les outils qui le
+font utilisent des fonctions non documentées du pilote, que FrameCore n'intègre pas. Sur les cartes récentes, monter la
+tension n'apporte presque rien (la carte est limitée par sa puissance) : le gain vient des décalages de fréquence et de
+la limite de puissance. Sur AMD, la tension est modifiée **par le pilote lui-même** (sous-voltage automatique), au
+niveau Léger et Élevé.
+
 ## Processeurs
+
+### Guide pas à pas par niveau (page Overclocking → « Overclocking du processeur, pas à pas »)
+
+FrameCore reconnaît la famille du processeur (Ryzen AM5, Ryzen X3D AM5, Ryzen AM4, Intel Core 12e–14e « K », Core
+Ultra 200S « K », Intel verrouillé ; rien pour un portable, une VM ou un processeur inconnu) et propose trois niveaux
+avec des **valeurs concrètes** à saisir dans le BIOS, par exemple pour un Ryzen 5 7600 :
+
+| Niveau | Réglages |
+|---|---|
+| Léger | EXPO I (DDR5-6000 CL30) ; Curve Optimizer tous cœurs −10 |
+| Modéré | + PBO Advanced, limites « Motherboard », Curve Optimizer −20, limite thermique 85 °C, FCLK 2000 MHz, UCLK = MEMCLK |
+| Élevé | + Max CPU Boost Clock Override +200 MHz, Curve Optimizer par cœur −30 (−20 sur les 2 meilleurs cœurs), 90 °C |
+
+Pour chaque réglage : à quoi il sert, son chemin dans le BIOS de la marque choisie (**ASUS, MSI, Gigabyte/AORUS,
+ASRock** — détectée automatiquement, modifiable dans la liste) et une **illustration schématique de l'écran du BIOS**
+avec l'option mise en évidence. Ces illustrations sont dessinées par FrameCore (couleurs et disposition typiques, aucun
+logo, pas de captures officielles) ; les noms et emplacements peuvent varier selon la carte et la version du BIOS.
+Côté Windows : comment vérifier qu'EXPO/XMP est actif (Gestionnaire des tâches → Performances → Mémoire → Vitesse) et
+l'alternative AMD Ryzen Master pour essayer Curve Optimizer avant de reporter les valeurs dans le BIOS.
+
+Section **Réglages très avancés** : VSOC (≤ 1,30 V, limite d'AMD), VDD/VDDQ, Curve Optimizer par cœur, Curve Shaper,
+Memory Context Restore, PPT/TDC/EDC ; Intel : microcode 0x12B+, jamais plus de 1,40 V sous charge, AC/DC Load Line,
+IA CEP, ring. Aucune valeur ne monte une tension de cœur ; FrameCore n'écrit jamais dans le BIOS.
+
+Données : `catalog/knowledge/cpu-oc-guide.json` (vérifiées par des tests : 3 niveaux par famille, chaque réglage
+localisé dans le BIOS des 4 marques, textes FR/EN, aucune tension dangereuse).
+
 
 Aucune interface publique et sûre ne permet de modifier PBO, Curve Optimizer, les limites de puissance Intel ou les
 ratios depuis une application tierce sans pilote noyau. FrameCore :

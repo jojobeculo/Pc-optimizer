@@ -68,14 +68,63 @@ public sealed partial class OverclockViewModel : ObservableObject, IDiagnosticCo
     [ObservableProperty] private int _autoStepSeconds = 60;
     [ObservableProperty] private string _gpuTestResult = "";
     [ObservableProperty] private bool _acknowledgeRisk;
+    /// <summary>Light | Moderate | High | Custom (automatic GPU tuning level).</summary>
+    [ObservableProperty] private string _ocLevel = "Moderate";
+    public bool IsCustomLevel => OcLevel == "Custom";
+    public bool IsAmd => SelectedGpu?.Vendor == "AMD";
+
+    /// <summary>What the chosen level does on this card, with its concrete values.</summary>
+    public string OcLevelText
+    {
+        get
+        {
+            if (SelectedGpu is not { Available: true } caps) return "";
+            var level = Enum.TryParse<GpuOcLevel>(OcLevel, out var l) ? l : GpuOcLevel.Moderate;
+            if (level == GpuOcLevel.Custom) return Loc.T("oc.level.custom.desc");
+            if (caps.Vendor == "AMD")
+            {
+                var (preset, maxPower) = GpuOcLevels.AmdPlan(level);
+                return Loc.T("oc.level.amd." + level) + (maxPower && caps.PowerLimit ? " " + Loc.T("oc.level.powerMax", caps.PowerMax.ToString("0"), caps.PowerUnit) : "");
+            }
+            var o = GpuOcLevels.For(level);
+            return Loc.T("oc.level.nvidia", Math.Min(o.CoreCapMhz, caps.CoreMax), caps.MemOffset ? Math.Min(o.MemCapMhz, caps.MemMax) : 0, o.StepDuration.TotalSeconds,
+                       o.FinalValidation.TotalMinutes, o.MaxTemperatureC, o.MarginSteps)
+                 + " " + (o.RaisePowerLimit && caps.PowerLimit ? Loc.T("oc.level.powerMax", caps.PowerMax.ToString("0"), caps.PowerUnit) : Loc.T("oc.level.powerKept"))
+                 + " " + Loc.T("oc.level.nvidiaVoltage");
+        }
+    }
+
+    partial void OnOcLevelChanged(string value) { OnPropertyChanged(nameof(IsCustomLevel)); OnPropertyChanged(nameof(OcLevelText)); }
+
+    /// <summary>Runs the chosen level: NVIDIA = verified step search; AMD = the driver's automatic tuning (+ power limit in High).</summary>
+    [RelayCommand]
+    private async Task StartLevel()
+    {
+        if (SelectedGpu is not { Available: true } caps || !ConfirmRisk()) return;
+        var level = Enum.TryParse<GpuOcLevel>(OcLevel, out var l) ? l : GpuOcLevel.Moderate;
+        if (level == GpuOcLevel.Custom) { await StartAutoTune(); return; }
+        if (caps.Vendor == "AMD")
+        {
+            var (preset, maxPower) = GpuOcLevels.AmdPlan(level);
+            if (!Dialogs.Confirm(Loc.T("oc.level.title", Loc.T("oc.level." + level)), OcLevelText, Loc.T("oc.auto.start"), true)) return;
+            await RunPresetCore(caps, preset, maxPower && caps.PowerLimit ? caps.PowerMax : null, Loc.T("oc.level." + level));
+            return;
+        }
+        if (!caps.CoreOffset) return;
+        if (!Dialogs.Confirm(Loc.T("oc.level.title", Loc.T("oc.level." + level)), OcLevelText, Loc.T("oc.auto.start"), true)) return;
+        await RunAutoTune(caps, GpuOcLevels.For(level), Loc.T("oc.level." + level));
+    }
 
     public ObservableCollection<GpuTuningCapabilities> GpuCaps { get; } = new();
     public ObservableCollection<string> AutoTuneLog { get; } = new();
     public ObservableCollection<GpuProfile> Profiles { get; } = new();
 
+    public CpuGuideViewModel CpuGuide { get; }
+
     public OverclockViewModel(ShellViewModel shell)
     {
         _shell = shell;
+        CpuGuide = new CpuGuideViewModel(shell.Services.CpuOcGuide);
         LoadProfiles();
     }
 
@@ -83,6 +132,7 @@ public sealed partial class OverclockViewModel : ObservableObject, IDiagnosticCo
     {
         CpuReport = r.CpuTuning;
         CpuSupport = r.CpuTuning == null ? "" : Loc.T("oc.cpu.support." + r.CpuTuning.OverclockSupported);
+        CpuGuide.OnProfile(r.Profile);
     }
 
     // ------------------------------------------------------------------ CPU
@@ -150,6 +200,7 @@ public sealed partial class OverclockViewModel : ObservableObject, IDiagnosticCo
 
     partial void OnSelectedGpuChanged(GpuTuningCapabilities? value)
     {
+        OnPropertyChanged(nameof(OcLevelText)); OnPropertyChanged(nameof(IsAmd));
         CoreOffset = 0; MemOffset = 0; PowerLimit = value?.PowerDefault ?? 0;
         CurrentState = "";
         if (value is { Available: true })
@@ -201,6 +252,11 @@ public sealed partial class OverclockViewModel : ObservableObject, IDiagnosticCo
     {
         if (SelectedGpu is not { Available: true } caps || !ConfirmRisk()) return;
         if (!Dialogs.Confirm(Loc.T("oc.preset.title"), Loc.T("oc.preset.confirm", Loc.T("oc.preset." + preset)), Loc.T("common.apply"), true)) return;
+        await RunPresetCore(caps, preset, null, Loc.T("oc.preset." + preset));
+    }
+
+    private async Task RunPresetCore(GpuTuningCapabilities caps, string preset, double? powerLimit, string profileName)
+    {
         GpuBusy = true;
         AutoTuneLog.Clear();
         try
@@ -208,12 +264,17 @@ public sealed partial class OverclockViewModel : ObservableObject, IDiagnosticCo
             AutoTuneLog.Add(Loc.T("oc.preset.running"));
             var ok = await Task.Run(() => _shell.Privileged.GpuPreset(caps.Vendor, new GpuPresetRequest { Index = caps.Index, Preset = preset }));
             AutoTuneLog.Add(ok ? Loc.T("oc.preset.completed") : Loc.T("oc.preset.notCompleted"));
+            if (powerLimit is { } pl)
+            {
+                await Task.Run(() => _shell.Privileged.GpuApply(caps.Vendor, new GpuTuningState { Index = caps.Index, PowerLimit = pl }));
+                AutoTuneLog.Add(Loc.T("autotune.power", pl.ToString("0"), caps.PowerUnit));
+            }
             AutoTuneLog.Add(Loc.T("oc.preset.validating"));
             var test = await Task.Run(() => Tester(caps).Run(TimeSpan.FromMinutes(3), CancellationToken.None));
             if (test.Passed)
             {
                 AutoTuneLog.Add(Loc.T("oc.test.pass", test.ComputeScore.ToString("0"), test.BandwidthGBs.ToString("0.0")));
-                SaveProfile(new GpuProfile { Name = Loc.T("oc.preset." + preset), Vendor = caps.Vendor, GpuName = caps.GpuName, Index = caps.Index, Validation = "3 min" });
+                SaveProfile(new GpuProfile { Name = profileName, Vendor = caps.Vendor, GpuName = caps.GpuName, Index = caps.Index, PowerLimit = powerLimit, Validation = "3 min" });
             }
             else
             {
@@ -238,15 +299,16 @@ public sealed partial class OverclockViewModel : ObservableObject, IDiagnosticCo
     {
         if (SelectedGpu is not { Available: true, CoreOffset: true } caps || !ConfirmRisk()) return;
         if (!Dialogs.Confirm(Loc.T("oc.auto.title"), Loc.T("oc.auto.confirm", AutoCoreCap, AutoStepSeconds), Loc.T("oc.auto.start"), true)) return;
+        await RunAutoTune(caps, new AutoTuneOptions { CoreCapMhz = AutoCoreCap, TuneMemory = AutoTuneMemory, StepDuration = TimeSpan.FromSeconds(AutoStepSeconds) }, Loc.T("oc.auto.profileName"));
+    }
+
+    private async Task RunAutoTune(GpuTuningCapabilities caps, AutoTuneOptions options, string profileName)
+    {
         try { await Task.Run(() => _shell.Privileged.Ensure()); }
         catch (ElevationDeclinedException) { Dialogs.Info(Loc.T("oc.auto.title"), Loc.T("elevation.declined")); return; }
         GpuBusy = true;
         AutoTuneLog.Clear();
         _cts = new CancellationTokenSource();
-        var options = new AutoTuneOptions
-        {
-            CoreCapMhz = AutoCoreCap, TuneMemory = AutoTuneMemory, StepDuration = TimeSpan.FromSeconds(AutoStepSeconds),
-        };
         var tuner = new GpuAutoTuner(new PrivilegedGpuChannel(_shell.Privileged, caps), Tester(caps));
         var progress = new Progress<string>(s => AutoTuneLog.Add($"{DateTime.Now:T}  {s}"));
         try
@@ -257,8 +319,8 @@ public sealed partial class OverclockViewModel : ObservableObject, IDiagnosticCo
             if (r.Success)
                 SaveProfile(new GpuProfile
                 {
-                    Name = Loc.T("oc.auto.profileName"), Vendor = caps.Vendor, GpuName = caps.GpuName, Index = caps.Index,
-                    CoreOffsetMhz = r.FinalCore, MemOffsetMhz = r.FinalMem, Validation = options.FinalValidation.ToString(),
+                    Name = profileName, Vendor = caps.Vendor, GpuName = caps.GpuName, Index = caps.Index,
+                    CoreOffsetMhz = r.FinalCore, MemOffsetMhz = r.FinalMem, PowerLimit = r.FinalPower, Validation = options.FinalValidation.ToString(),
                 });
         }
         catch (Exception ex) { AutoTuneLog.Add(ex.Message); }

@@ -43,6 +43,53 @@ public sealed class AutoTuneOptions
     public double MaxTemperatureC { get; set; } = 83;
     /// <summary>A memory step that lowers the bandwidth score by more than this ratio is rejected (GDDR error correction retries).</summary>
     public double BandwidthRegressionTolerance { get; set; } = 0.015;
+    /// <summary>Raise the power limit to the maximum the driver allows (more boost headroom; never a voltage change).</summary>
+    public bool RaisePowerLimit { get; set; }
+    /// <summary>Steps taken back below the first unstable step (1 = last stable step minus one step).</summary>
+    public int MarginSteps { get; set; } = 1;
+}
+
+/// <summary>Automatic tuning levels offered to the user; "Custom" keeps the values chosen by hand.</summary>
+public enum GpuOcLevel { Light, Moderate, High, Custom }
+
+public static class GpuOcLevels
+{
+    /// <summary>
+    /// NVIDIA (clock offsets through NVML, no voltage): each level only widens the search; the driver's own ranges
+    /// still bound every value, every step is validated by a checked GPU workload, and the result is kept only after
+    /// a longer final validation.
+    /// </summary>
+    public static AutoTuneOptions For(GpuOcLevel level, AutoTuneOptions? custom = null) => level switch
+    {
+        GpuOcLevel.Light => new AutoTuneOptions
+        {
+            CoreCapMhz = 75, MemCapMhz = 200, StepDuration = TimeSpan.FromSeconds(45), FinalValidation = TimeSpan.FromMinutes(3),
+            MaxTemperatureC = 80, RaisePowerLimit = false, MarginSteps = 2,
+        },
+        GpuOcLevel.Moderate => new AutoTuneOptions
+        {
+            CoreCapMhz = 150, MemCapMhz = 500, StepDuration = TimeSpan.FromSeconds(60), FinalValidation = TimeSpan.FromMinutes(4),
+            MaxTemperatureC = 83, RaisePowerLimit = true, MarginSteps = 1,
+        },
+        GpuOcLevel.High => new AutoTuneOptions
+        {
+            CoreCapMhz = 250, MemCapMhz = 1000, StepDuration = TimeSpan.FromSeconds(90), FinalValidation = TimeSpan.FromMinutes(6),
+            MaxTemperatureC = 85, RaisePowerLimit = true, MarginSteps = 1,
+        },
+        _ => custom ?? new AutoTuneOptions(),
+    };
+
+    /// <summary>
+    /// AMD (ADLX, the driver's own automatic tuning): Light = automatic undervolt (the driver lowers the voltage,
+    /// cooler and quieter, same or higher clocks); Moderate = automatic GPU overclock; High = automatic undervolt plus the
+    /// maximum power limit allowed by the driver — the lower voltage leaves more boost headroom within the power budget.
+    /// </summary>
+    public static (string Preset, bool MaxPower) AmdPlan(GpuOcLevel level) => level switch
+    {
+        GpuOcLevel.Light => ("undervoltGpu", false),
+        GpuOcLevel.Moderate => ("overclockGpu", false),
+        _ => ("undervoltGpu", true),
+    };
 }
 
 public sealed record AutoTuneStep(string Domain, int OffsetMhz, bool Passed, string Detail);
@@ -54,6 +101,9 @@ public sealed class AutoTuneResult
     public int BaselineMem { get; set; }
     public int FinalCore { get; set; }
     public int FinalMem { get; set; }
+    public double? BaselinePower { get; set; }
+    /// <summary>Power limit set by the tuning (null = unchanged).</summary>
+    public double? FinalPower { get; set; }
     public string Message { get; set; } = "";
     public List<AutoTuneStep> Steps { get; } = new();
     public bool Cancelled { get; set; }
@@ -82,9 +132,17 @@ public sealed class GpuAutoTuner
         bool Ok(GpuStabilityResult r) => r.Passed && (r.MaxTemperatureC == null || r.MaxTemperatureC < o.MaxTemperatureC);
         string Describe(GpuStabilityResult r) => r.Error ?? Loc.T("autotune.stepDetail", r.ComputeErrors + r.MemoryErrors, r.MaxTemperatureC?.ToString("0") ?? "?", r.ComputeScore.ToString("0"));
 
+        result.BaselinePower = baseline.PowerLimit;
         void Restore()
         {
-            try { _channel.Apply(new GpuTuningState { Index = index, CoreOffsetMhz = result.BaselineCore, MemOffsetMhz = caps.MemOffset ? result.BaselineMem : null }); }
+            try
+            {
+                _channel.Apply(new GpuTuningState
+                {
+                    Index = index, CoreOffsetMhz = result.BaselineCore, MemOffsetMhz = caps.MemOffset ? result.BaselineMem : null,
+                    PowerLimit = result.FinalPower != null ? result.BaselinePower : null,
+                });
+            }
             catch { /* best effort; offsets are also reset by a reboot */ }
         }
 
@@ -96,6 +154,14 @@ public sealed class GpuAutoTuner
 
         try
         {
+            // 0. Power limit (bounded by the driver's maximum; no voltage change).
+            if (o.RaisePowerLimit && caps.PowerLimit && caps.PowerMax > 0 && (baseline.PowerLimit ?? 0) < caps.PowerMax)
+            {
+                progress?.Report(Loc.T("autotune.power", caps.PowerMax.ToString("0"), caps.PowerUnit));
+                _channel.Apply(new GpuTuningState { Index = index, PowerLimit = caps.PowerMax });
+                result.FinalPower = caps.PowerMax;
+            }
+
             // 1. Core clock
             var bestCore = result.BaselineCore;
             var ceiling = Math.Min(caps.CoreMax, result.BaselineCore + o.CoreCapMhz);
@@ -110,7 +176,7 @@ public sealed class GpuAutoTuner
                 if (!pass) { coreFailed = true; break; }
                 bestCore = off;
             }
-            if (coreFailed) bestCore = Math.Max(result.BaselineCore, bestCore - o.CoreStepMhz);
+            if (coreFailed) bestCore = Math.Max(result.BaselineCore, bestCore - o.CoreStepMhz * Math.Max(1, o.MarginSteps));
             _channel.Apply(new GpuTuningState { Index = index, CoreOffsetMhz = bestCore });
 
             // 2. Memory clock (bandwidth must keep improving)
@@ -133,7 +199,7 @@ public sealed class GpuAutoTuner
                     bestMem = off;
                     bestBandwidth = Math.Max(bestBandwidth, r.BandwidthGBs);
                 }
-                if (memFailed) bestMem = Math.Max(result.BaselineMem, bestMem - o.MemStepMhz);
+                if (memFailed) bestMem = Math.Max(result.BaselineMem, bestMem - o.MemStepMhz * Math.Max(1, o.MarginSteps));
                 _channel.Apply(new GpuTuningState { Index = index, MemOffsetMhz = bestMem });
             }
 

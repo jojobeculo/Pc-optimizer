@@ -92,6 +92,188 @@
                 </Border>
             </Grid>
 
+            <!-- CPU guide: levels with concrete BIOS values, illustrated for the chosen motherboard brand -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,18" DataContext="{Binding CpuGuide}">
+                <StackPanel>
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top" Visibility="{Binding Available, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{i:Loc cpuoc.brand}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <ComboBox ItemsSource="{Binding Brands}" SelectedItem="{Binding Brand}" DisplayMemberPath="Name" MinWidth="170" AutomationProperties.Name="{i:Loc cpuoc.brand}"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="{i:Loc cpuoc.title}" Style="{StaticResource Text.CardTitle}" FontSize="16"/>
+                            <TextBlock Text="{Binding FamilyTitle}" Style="{StaticResource Text.Caption}"/>
+                        </StackPanel>
+                    </DockPanel>
+                    <TextBlock Text="{Binding UnavailableText}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,8,0,0"
+                               Visibility="{Binding Available, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
+                    <StackPanel Visibility="{Binding Available, Converter={StaticResource BoolToVis}}">
+                        <WrapPanel Margin="0,10,0,4">
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc oc.level.Light}" IsChecked="{Binding Level, Converter={StaticResource Eq}, ConverterParameter=Light}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc oc.level.Moderate}" IsChecked="{Binding Level, Converter={StaticResource Eq}, ConverterParameter=Moderate}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc oc.level.High}" IsChecked="{Binding Level, Converter={StaticResource Eq}, ConverterParameter=High}"/>
+                        </WrapPanel>
+                        <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap"><Run Text="{i:Loc cpuoc.expected}"/> <Run Text="{Binding GainText, Mode=OneWay}" FontWeight="SemiBold"/></TextBlock>
+                        <TextBlock Text="{Binding BrandHelp}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,4,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="1.1*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <!-- Settings of the level: click one to see where it is -->
+                            <StackPanel>
+                                <TextBlock Text="{i:Loc cpuoc.steps}" Style="{StaticResource Text.Overline}" Margin="0,0,0,6"/>
+                                <ItemsControl ItemsSource="{Binding Steps}" AlternationCount="30">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button x:Name="Row" Cursor="Hand" Margin="0,0,0,6" HorizontalContentAlignment="Stretch" AutomationProperties.Name="{Binding Label}"
+                                                    Command="{Binding DataContext.SelectStepCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border x:Name="Bd" Background="{DynamicResource Brush.Inset}" BorderBrush="Transparent" BorderThickness="1.5" CornerRadius="8" Padding="12,9">
+                                                            <ContentPresenter/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.BorderStrong}"/></Trigger>
+                                                            <DataTrigger Binding="{Binding IsSelected}" Value="True"><Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/></DataTrigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                                <DockPanel>
+                                                    <TextBlock DockPanel.Dock="Left" Width="22" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Accent}"
+                                                               Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={StaticResource OneBased}}"/>
+                                                    <StackPanel>
+                                                        <DockPanel>
+                                                            <Border DockPanel.Dock="Right" Background="{DynamicResource Brush.AccentSoft}" CornerRadius="5" Padding="7,2" Margin="8,0,0,0" VerticalAlignment="Top">
+                                                                <TextBlock Text="{Binding Value}" FontFamily="{StaticResource Font.Mono}" FontSize="12" Foreground="{DynamicResource Brush.AccentText}" TextWrapping="Wrap" MaxWidth="230"/>
+                                                            </Border>
+                                                            <TextBlock Text="{Binding Label}" FontWeight="Medium" TextWrapping="Wrap"/>
+                                                        </DockPanel>
+                                                        <TextBlock Text="{Binding Path}" Style="{StaticResource Text.Caption}" FontFamily="{StaticResource Font.Mono}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                                        <TextBlock Text="{Binding Why}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            <!-- Schematic BIOS screen of the selected brand -->
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="{i:Loc cpuoc.screen}" Style="{StaticResource Text.Overline}" Margin="0,0,0,6"/>
+                                <Border DataContext="{Binding Screen}" Background="#0B0D12" CornerRadius="8" BorderThickness="1.5" BorderBrush="{Binding Accent}" ClipToBounds="True"
+                                        Visibility="{Binding Converter={StaticResource BoolToVis}}" AutomationProperties.Name="{i:Loc cpuoc.screen}">
+                                    <StackPanel>
+                                        <Border Background="{Binding Bar}" Padding="12,8">
+                                            <TextBlock Text="{Binding Title}" Foreground="#E8EAF0" FontWeight="SemiBold" FontSize="12.5"/>
+                                        </Border>
+                                        <ItemsControl ItemsSource="{Binding Tabs}" Margin="8,6,8,0">
+                                            <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border x:Name="Tab" Padding="7,3" Margin="0,0,4,4" CornerRadius="3">
+                                                        <TextBlock x:Name="T" Text="{Binding Name}" FontSize="11" Foreground="#8C93A3"/>
+                                                    </Border>
+                                                    <DataTemplate.Triggers>
+                                                        <DataTrigger Binding="{Binding Active}" Value="True">
+                                                            <Setter TargetName="Tab" Property="Background" Value="{Binding DataContext.Accent, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                            <Setter TargetName="T" Property="Foreground" Value="#FFFFFF"/>
+                                                            <Setter TargetName="T" Property="FontWeight" Value="SemiBold"/>
+                                                        </DataTrigger>
+                                                    </DataTemplate.Triggers>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <TextBlock Text="{Binding Breadcrumb}" Foreground="#AEB4C2" FontSize="11.5" FontFamily="{StaticResource Font.Mono}" Margin="12,4,12,6" TextWrapping="Wrap"/>
+                                        <ItemsControl ItemsSource="{Binding Rows}" Margin="8,0,8,8">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border x:Name="R" Padding="8,6" CornerRadius="3" BorderThickness="1" BorderBrush="Transparent">
+                                                        <DockPanel>
+                                                            <TextBlock x:Name="V" DockPanel.Dock="Right" Text="{Binding Value}" FontFamily="{StaticResource Font.Mono}" FontSize="11.5" Foreground="#C9CEDA" TextWrapping="Wrap" MaxWidth="190" TextAlignment="Right"/>
+                                                            <TextBlock x:Name="L" Text="{Binding Label}" FontSize="12" Foreground="#C9CEDA" TextWrapping="Wrap" Margin="0,0,10,0"/>
+                                                        </DockPanel>
+                                                    </Border>
+                                                    <DataTemplate.Triggers>
+                                                        <DataTrigger Binding="{Binding Highlight}" Value="True">
+                                                            <Setter TargetName="R" Property="BorderBrush" Value="{Binding DataContext.Accent, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                            <Setter TargetName="R" Property="Background" Value="#1AFFFFFF"/>
+                                                            <Setter TargetName="L" Property="Foreground" Value="#FFFFFF"/>
+                                                            <Setter TargetName="L" Property="FontWeight" Value="SemiBold"/>
+                                                            <Setter TargetName="V" Property="Foreground" Value="#FFFFFF"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Filler}" Value="True"><Setter TargetName="L" Property="Foreground" Value="#5C6270"/></DataTrigger>
+                                                    </DataTemplate.Triggers>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Border Background="{Binding Bar}" Padding="12,6">
+                                            <TextBlock Text="{Binding Footer}" Foreground="#AEB4C2" FontSize="11"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Text="{Binding Disclaimer}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                <!-- Windows side: check and alternative -->
+                                <TextBlock Text="{i:Loc cpuoc.windows}" Style="{StaticResource Text.Overline}" Margin="0,14,0,6"/>
+                                <ItemsControl ItemsSource="{Binding WindowsScreens}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,0,0,10">
+                                                <Border Background="{DynamicResource Brush.Inset}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource Brush.Border}" ClipToBounds="True">
+                                                    <StackPanel>
+                                                        <Border Background="{DynamicResource Brush.CardHover}" Padding="10,6">
+                                                            <DockPanel>
+                                                                <TextBlock DockPanel.Dock="Right" Text="—  ☐  ✕" Style="{StaticResource Text.Caption}"/>
+                                                                <TextBlock Text="{Binding Window}" FontSize="12" FontWeight="Medium"/>
+                                                            </DockPanel>
+                                                        </Border>
+                                                        <TextBlock Text="{Binding Breadcrumb}" Style="{StaticResource Text.Caption}" Margin="10,6,10,2"/>
+                                                        <ItemsControl ItemsSource="{Binding Rows}" Margin="6,0,6,6">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Border x:Name="R" Padding="6,4" CornerRadius="4" BorderThickness="1" BorderBrush="Transparent">
+                                                                        <DockPanel>
+                                                                            <TextBlock DockPanel.Dock="Right" Text="{Binding Value}" FontFamily="{StaticResource Font.Mono}" FontSize="12"/>
+                                                                            <TextBlock Text="{Binding Label}" Style="{StaticResource Text.Caption}"/>
+                                                                        </DockPanel>
+                                                                    </Border>
+                                                                    <DataTemplate.Triggers>
+                                                                        <DataTrigger Binding="{Binding Highlight}" Value="True"><Setter TargetName="R" Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/></DataTrigger>
+                                                                    </DataTemplate.Triggers>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </StackPanel>
+                                                </Border>
+                                                <TextBlock Text="{Binding Title}" Style="{StaticResource Text.Body}" FontWeight="Medium" Margin="0,4,0,0"/>
+                                                <TextBlock Text="{Binding Why}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding Notes}" Margin="0,6,0,0">
+                            <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding StringFormat='• {0}'}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,2,0,0"/></DataTemplate></ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <!-- Expert settings -->
+                        <Expander Header="{i:Loc cpuoc.expert}" Margin="0,10,0,0">
+                            <ItemsControl ItemsSource="{Binding Expert}" Margin="0,8,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{DynamicResource Brush.Grid}" BorderThickness="0,1,0,0" Padding="4,7">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="1.2*"/><ColumnDefinition Width="1.4*"/><ColumnDefinition Width="2*"/></Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Name}" FontWeight="Medium" TextWrapping="Wrap" Margin="0,0,10,0"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding Value}" FontFamily="{StaticResource Font.Mono}" FontSize="12" TextWrapping="Wrap" Margin="0,0,10,0"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Why}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Expander>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
             <!-- GPU -->
             <TextBlock Text="{i:Loc oc.gpu.title}" Style="{StaticResource Text.Section}"/>
             <Border Style="{StaticResource Card}" Margin="0,0,0,12">
@@ -174,6 +356,24 @@
                     <Border Grid.Column="2" Style="{StaticResource Card}">
                         <StackPanel>
                             <TextBlock Text="{i:Loc oc.auto.title}" Style="{StaticResource Text.CardTitle}"/>
+                            <!-- Level: light / moderate / high / custom, with the concrete values for this card -->
+                            <StackPanel Visibility="{Binding SelectedGpu.Available, Converter={StaticResource BoolToVis}}" Margin="0,6,0,0">
+                                <TextBlock Text="{i:Loc oc.level.pick}" Style="{StaticResource Text.Caption}"/>
+                                <WrapPanel Margin="0,2,0,6">
+                                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc oc.level.Light}" IsChecked="{Binding OcLevel, Converter={StaticResource Eq}, ConverterParameter=Light}"/>
+                                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc oc.level.Moderate}" IsChecked="{Binding OcLevel, Converter={StaticResource Eq}, ConverterParameter=Moderate}"/>
+                                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc oc.level.High}" IsChecked="{Binding OcLevel, Converter={StaticResource Eq}, ConverterParameter=High}"/>
+                                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc oc.level.Custom}" IsChecked="{Binding OcLevel, Converter={StaticResource Eq}, ConverterParameter=Custom}"/>
+                                </WrapPanel>
+                                <Border Style="{StaticResource Inset}" Margin="0,0,0,8">
+                                    <TextBlock Text="{Binding OcLevelText}" Style="{StaticResource Text.Body}" TextWrapping="Wrap"/>
+                                </Border>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8" Visibility="{Binding IsCustomLevel, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
+                                    <Button Content="{i:Loc oc.level.start}" Style="{StaticResource Button.Primary}" Command="{Binding StartLevelCommand}" IsEnabled="{Binding GpuBusy, Converter={StaticResource Not}}" Margin="0,0,8,0"/>
+                                    <Button Content="{i:Loc common.stop}" Style="{StaticResource Button.Secondary}" Command="{Binding CancelAutoTuneCommand}" IsEnabled="{Binding GpuBusy}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Visibility="{Binding IsCustomLevel, Converter={StaticResource BoolToVis}}">
                             <StackPanel Visibility="{Binding SelectedGpu.CoreOffset, Converter={StaticResource BoolToVis}}">
                                 <TextBlock Text="{i:Loc oc.auto.desc}" Style="{StaticResource Text.Muted}" Margin="0,4,0,8"/>
                                 <TextBlock Text="{i:Loc oc.auto.cap}" Style="{StaticResource Text.Caption}"/>
@@ -203,6 +403,7 @@
                                     <Button Content="{i:Loc oc.preset.overclockVram}" Style="{StaticResource Button.Small}" Command="{Binding RunPresetCommand}" CommandParameter="overclockVram" Margin="0,0,6,6"
                                             Visibility="{Binding SelectedGpu.AutoOverclockVram, Converter={StaticResource BoolToVis}}"/>
                                 </WrapPanel>
+                            </StackPanel>
                             </StackPanel>
                             <Border Style="{StaticResource Inset}" Margin="0,10,0,0" MaxHeight="260">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">

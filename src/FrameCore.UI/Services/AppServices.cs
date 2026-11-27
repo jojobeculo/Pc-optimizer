@@ -38,6 +38,8 @@ public sealed class AppServices
     public FrameCore.BenchmarkManager.QuickBench.JsonFolderStore<FrameCore.BenchmarkManager.Verification.VerifyRepairReport> VerificationReports { get; } = FrameCore.BenchmarkManager.QuickBench.Stores.Verification();
     private FrameCore.BenchmarkManager.Games.GameLibrary? _games;
     /// <summary>Game library and hardware reference tables, loaded on first use (keeps start-up fast).</summary>
+    private FrameCore.CpuManager.CpuOcGuide? _cpuOcGuide;
+    public FrameCore.CpuManager.CpuOcGuide CpuOcGuide => _cpuOcGuide ??= FrameCore.CpuManager.CpuOcGuide.Load(Path.Combine(AppPaths.CatalogDir, "knowledge"));
     public FrameCore.BenchmarkManager.Games.GameLibrary Games => _games ??= FrameCore.BenchmarkManager.Games.GameLibrary.Load(Path.Combine(AppPaths.CatalogDir, "knowledge"));
 
     public AppServices(AppSettings settings, bool forWorker = false)

@@ -98,6 +98,33 @@ public static class UiTour
             foreach (var section in new[] { "quick", "lab", "ingame" })
                 pages.Add(await Visit(shell, window, dir, "bench-" + section, () => { shell.CurrentKey = "benchmark"; shell.Benchmark.Section = section; }, scrollShots: 2));
 
+            // CPU overclocking guide: the test VM has a server CPU (no guide), so a desktop Ryzen 5 7600 profile is shown
+            // for the screenshots only (nothing is read from or written to this machine), then the real profile is restored.
+            {
+                var guide = shell.Overclock.CpuGuide;
+                var demo = new Core.Hardware.MachineProfile
+                {
+                    Cpu = new Core.Hardware.CpuInfo { Vendor = Core.Hardware.CpuVendor.Amd, Name = "AMD Ryzen 5 7600 6-Core Processor" },
+                    Board = new Core.Hardware.BoardInfo { Manufacturer = "Micro-Star International Co., Ltd." },
+                };
+                guide.Brand = null;
+                guide.OnProfile(demo);
+                foreach (var (level, brand) in new[] { ("Light", "msi"), ("High", "msi"), ("High", "asus"), ("Moderate", "gigabyte"), ("High", "asrock") })
+                {
+                    guide.Level = level;
+                    guide.Brand = guide.Brands.First(b => b.Id == brand);
+                    if (level == "High") guide.SelectStepCommand.Execute(guide.Steps.FirstOrDefault(x => x.SettingId == "co"));
+                    pages.Add(await Visit(shell, window, dir, $"oc-cpu-guide-{level}-{brand}", () => shell.CurrentKey = "overclock", scrollShots: 2));
+                }
+                report["cpuGuideDemo"] = new Dictionary<string, object?>
+                {
+                    ["family"] = guide.FamilyTitle, ["steps"] = guide.Steps.Select(x => $"{x.Label} = {x.Value} [{x.Path}]").ToList(),
+                    ["screen"] = guide.Screen?.Breadcrumb, ["highlight"] = guide.Screen?.Rows.FirstOrDefault(r => r.Highlight)?.Label,
+                };
+                guide.Brand = null;
+                if (shell.Diagnostic != null) guide.OnProfile(shell.Diagnostic.Profile);
+            }
+
             shell.CurrentKey = "games";
             await WaitUntil(() => shell.Games.Ready, TimeSpan.FromSeconds(60));
             shell.Games.ShowExplorer = true;

@@ -377,12 +377,13 @@ public class StressAndTuningTests
     private sealed class FakeGpu : IGpuTuningChannel, IGpuStabilityTester
     {
         public int Core, Mem;
+        public double Power = 115;
         public int CoreLimit = 95, MemLimit = 300;
         public bool FailFinal;
         public List<int> AppliedCores { get; } = new();
-        public GpuTuningCapabilities Capabilities(int index) => new() { Available = true, CoreOffset = true, CoreMin = -200, CoreMax = 250, MemOffset = true, MemMin = -500, MemMax = 1000 };
-        public GpuTuningState Read(int index) => new() { CoreOffsetMhz = Core, MemOffsetMhz = Mem };
-        public void Apply(GpuTuningState s) { if (s.CoreOffsetMhz is { } c) { Core = c; AppliedCores.Add(c); } if (s.MemOffsetMhz is { } m) Mem = m; }
+        public GpuTuningCapabilities Capabilities(int index) => new() { Available = true, CoreOffset = true, CoreMin = -200, CoreMax = 250, MemOffset = true, MemMin = -500, MemMax = 1000, PowerLimit = true, PowerMin = 90, PowerMax = 130 };
+        public GpuTuningState Read(int index) => new() { CoreOffsetMhz = Core, MemOffsetMhz = Mem, PowerLimit = Power };
+        public void Apply(GpuTuningState s) { if (s.CoreOffsetMhz is { } c) { Core = c; AppliedCores.Add(c); } if (s.MemOffsetMhz is { } m) Mem = m; if (s.PowerLimit is { } p) Power = p; }
         public GpuStabilityResult Run(TimeSpan d, CancellationToken ct)
         {
             if (FailFinal && d > TimeSpan.FromSeconds(100)) return new GpuStabilityResult { ComputeErrors = 1 };
@@ -407,6 +408,46 @@ public class StressAndTuningTests
         Assert.Equal(75, r.FinalCore);              // 90 passed, 105 failed → one step back from 90
         Assert.Equal(250, r.FinalMem);              // 300 passed, 350 regressed → one step back
         Assert.All(gpu.AppliedCores, c => Assert.True(c <= 150));
+    }
+
+    [Fact]
+    public void Gpu_levels_widen_the_search_light_keeps_more_margin_and_never_touches_power()
+    {
+        var light = GpuOcLevels.For(GpuOcLevel.Light); var moderate = GpuOcLevels.For(GpuOcLevel.Moderate); var high = GpuOcLevels.For(GpuOcLevel.High);
+        Assert.True(light.CoreCapMhz < moderate.CoreCapMhz && moderate.CoreCapMhz < high.CoreCapMhz);
+        Assert.True(light.MemCapMhz < moderate.MemCapMhz && moderate.MemCapMhz < high.MemCapMhz);
+        Assert.False(light.RaisePowerLimit);
+        Assert.True(high.RaisePowerLimit);
+        Assert.True(high.FinalValidation > light.FinalValidation);
+        Assert.Equal(("undervoltGpu", true), GpuOcLevels.AmdPlan(GpuOcLevel.High));
+        Assert.Equal(("undervoltGpu", false), GpuOcLevels.AmdPlan(GpuOcLevel.Light));
+
+        Repo.LoadLoc();
+        var gpu = new FakeGpu { CoreLimit = 50 };
+        var o = GpuOcLevels.For(GpuOcLevel.Light); o.StepDuration = TimeSpan.FromSeconds(1); o.FinalValidation = TimeSpan.FromSeconds(2);
+        var r = new GpuAutoTuner(gpu, gpu).Run(0, o, null, CancellationToken.None);
+        Assert.True(r.Success, r.Message);
+        Assert.Equal(15, r.FinalCore);              // 45 passed, 60 failed → two steps back for the light level
+        Assert.Equal(115, gpu.Power);               // power limit untouched
+    }
+
+    [Fact]
+    public void High_level_raises_the_power_limit_to_the_driver_maximum_and_gives_it_back_on_failure()
+    {
+        Repo.LoadLoc();
+        var ok = new FakeGpu();
+        var o = GpuOcLevels.For(GpuOcLevel.High); o.StepDuration = TimeSpan.FromSeconds(1); o.FinalValidation = TimeSpan.FromSeconds(2);
+        var r = new GpuAutoTuner(ok, ok).Run(0, o, null, CancellationToken.None);
+        Assert.True(r.Success, r.Message);
+        Assert.Equal(130, ok.Power);
+        Assert.Equal(130, r.FinalPower);
+
+        var failing = new FakeGpu { FailFinal = true };
+        var o2 = GpuOcLevels.For(GpuOcLevel.High); o2.StepDuration = TimeSpan.FromSeconds(1); o2.FinalValidation = TimeSpan.FromSeconds(200); o2.TuneMemory = false;
+        var r2 = new GpuAutoTuner(failing, failing).Run(0, o2, null, CancellationToken.None);
+        Assert.False(r2.Success);
+        Assert.Equal(115, failing.Power);           // baseline power limit restored
+        Assert.Equal(0, failing.Core);
     }
 
     [Fact]
