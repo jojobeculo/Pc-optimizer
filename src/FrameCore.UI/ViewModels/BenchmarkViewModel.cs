@@ -79,12 +79,22 @@ public sealed partial class BenchmarkViewModel : ObservableObject, IDiagnosticCo
     }
 
     public void OnDiagnostic(DiagnosticResult r) { }
+
+    private string? _pendingGameId;
+
+    /// <summary>Opens the in-game capture with a library game already chosen (from the Games page).</summary>
+    public void PreselectGame(string gameId)
+    {
+        _pendingGameId = gameId;
+        CaptureGame = GameChoices.FirstOrDefault(g => g.Id == gameId) ?? CaptureGame;
+    }
     public void OnActivated()
     {
         Quick.Load();
         if (GameChoices.Count == 0)
             try { foreach (var g in _shell.Services.Games.Games.OrderBy(g => g.Name, StringComparer.CurrentCulture)) GameChoices.Add(g); }
             catch (Exception ex) { Log.Warn("Bench", "game library: " + ex.Message); }
+        if (_pendingGameId != null) { CaptureGame = GameChoices.FirstOrDefault(g => g.Id == _pendingGameId) ?? CaptureGame; _pendingGameId = null; }
         RefreshProcesses();
         var pm = PresentMonRunner.Validate(_shell.Services.Settings.PresentMonPath);
         PresentMonState = pm.ok ? Loc.T("bench.pm.ready") : Loc.T("bench.pm.missing");

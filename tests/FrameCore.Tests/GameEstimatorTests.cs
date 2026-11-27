@@ -140,6 +140,9 @@ public class GameEstimatorTests
         Assert.Contains("game.gain.noFpsTweaks", none.ReasonKeys);
 
         Assert.Null(FpsEstimator.ProjectGain(before, null, new[] { cpuTweak }).GainPercent); // needs a before/after benchmark
+        var notOptimized = FpsEstimator.ProjectGain(before, null, Array.Empty<Core.Models.TweakDefinition>());
+        Assert.Null(notOptimized.GainPercent);                                                 // no "after" before any optimisation
+        Assert.Contains("game.gain.notOptimized", notOptimized.ReasonKeys);
 
         var noisy = FpsEstimator.ProjectGain(before, Cmp("cpu.single", 1.2, ChangeVerdict.WithinNoise), new[] { cpuTweak });
         Assert.Equal(0, noisy.GainPercent);

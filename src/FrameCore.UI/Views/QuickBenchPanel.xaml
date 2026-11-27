@@ -38,6 +38,8 @@
                     <WrapPanel>
                         <RadioButton Style="{StaticResource Segment}" Content="{i:Loc quick.mode.standard}" IsChecked="{Binding Mode, Converter={StaticResource Eq}, ConverterParameter=standard}" IsEnabled="{Binding Running, Converter={StaticResource Not}}"/>
                         <RadioButton Style="{StaticResource Segment}" Content="{i:Loc quick.mode.express}" IsChecked="{Binding Mode, Converter={StaticResource Eq}, ConverterParameter=express}" IsEnabled="{Binding Running, Converter={StaticResource Not}}"/>
+                        <RadioButton Style="{StaticResource Segment}" Content="{i:Loc quick.mode.complete}" IsChecked="{Binding Mode, Converter={StaticResource Eq}, ConverterParameter=complete}" IsEnabled="{Binding Running, Converter={StaticResource Not}}"
+                                     ToolTip="{i:Loc quick.mode.complete.tip}"/>
                     </WrapPanel>
                     <DockPanel Margin="0,6,0,0" MaxWidth="460" HorizontalAlignment="Left">
                         <TextBlock DockPanel.Dock="Left" Text="{i:Loc bench.label}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" Margin="0,0,10,0"/>
@@ -87,7 +89,14 @@
                             </StackPanel>
                         </Border>
                     </WrapPanel>
-                    <TextBlock Text="{Binding ThrottleText}" Style="{StaticResource Text.Body}" Margin="0,0,0,12"/>
+                    <TextBlock Text="{Binding ThrottleText}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                    <!-- Complete mode: stability under the combined CPU + GPU load -->
+                    <Border Style="{StaticResource Inset}" Margin="0,0,0,12" Visibility="{Binding StressText, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Text="{i:Loc quick.stress.title}" Style="{StaticResource Text.CardTitle}"/>
+                            <TextBlock Text="{Binding StressText}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Foreground="{Binding StressKey, Converter={StaticResource LevelBrush}}"/>
+                        </StackPanel>
+                    </Border>
                     <StackPanel AutomationProperties.Name="{i:Loc quick.latest}">
                         <Grid Margin="8,0,8,6"><Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="3*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" Text="{i:Loc quick.col.metric}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="1" Text="{i:Loc quick.col.component}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="2" Text="{i:Loc quick.col.median}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="3" Text="{i:Loc quick.col.unit}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/><TextBlock Grid.Column="4" Text="{i:Loc quick.col.spread}" Style="{StaticResource Text.Overline}" Margin="0,0,10,0"/></Grid>
                         <ItemsControl ItemsSource="{Binding Metrics}">

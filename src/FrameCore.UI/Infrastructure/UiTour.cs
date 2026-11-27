@@ -222,6 +222,19 @@ public static class UiTour
                 report["restoreStatus"] = shell.Pro.BackupStatus;
                 report["activeAfterRestore"] = shell.Services.Journal.ChangeSets.Count(c => c.Status == Core.Models.ChangeSetStatus.Applied);
 
+                // Complete benchmark: the real combined stress wiring (checked CPU load + GPU workload when a GPU exists),
+                // shortened to 20 s here; the full 12-minute run is only started by the user.
+                var completeOptions = Services.QuickBenchFactory.Options(shell.Services, shell.Monitoring, shell.Diagnostic?.Profile, "complete");
+                var stress = await Task.Run(() => BenchmarkManager.QuickBench.QuickBenchRunner.RunCombinedStress(completeOptions, 20, null, CancellationToken.None));
+                report["combinedStress"] = new Dictionary<string, object?>
+                {
+                    ["seconds"] = stress.Seconds, ["cpuErrors"] = stress.CpuErrors, ["gpuTested"] = stress.GpuTested, ["gpuErrors"] = stress.GpuErrors,
+                    ["sensors"] = stress.SensorsAvailable, ["stopReason"] = stress.StopReason, ["passed"] = stress.Passed,
+                };
+                shell.Benchmark.Quick.Mode = "complete";
+                pages.Add(await Visit(shell, window, dir, "bench-quick-complete-mode", () => { shell.CurrentKey = "benchmark"; shell.Benchmark.Section = "quick"; }, scrollShots: 1));
+                shell.Benchmark.Quick.Mode = "express";
+
                 foreach (var lab in new[] { "system", "inference" })
                 {
                     shell.CurrentKey = "benchmark"; shell.Benchmark.Section = "lab";

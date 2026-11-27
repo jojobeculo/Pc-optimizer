@@ -20,6 +20,8 @@ public sealed class BatchResult
     public FrameCore.BenchmarkManager.Verification.VerifyRepairReport? Verification { get; set; }
     public int NotApplicable { get; set; }
     public int AlreadyInPlace { get; set; }
+    /// <summary>Settings not applied because administrator rights were refused or unavailable.</summary>
+    public int SkippedNeedRights { get; set; }
 }
 
 /// <summary>Stages of an application, reported to the step progress indicator (fraction null = indeterminate).</summary>
@@ -52,8 +54,21 @@ public sealed class TweakService
             try { await Task.Run(() => _priv.Ensure()); }
             catch (ElevationDeclinedException)
             {
+                // Settings that need rights are left out and reported as such (never counted as applied).
+                var skipped = tweaks.Where(t => NeedsElevation(new[] { t })).ToList();
+                result.SkippedNeedRights = skipped.Count;
+                foreach (var t in skipped) result.Lines.Add("⚠ " + t.Name + " — " + Loc.T("elevation.skippedLine"));
                 result.Lines.Add(Loc.T("elevation.declinedApplyingUser"));
-                tweaks = tweaks.Where(t => !NeedsElevation(new[] { t })).ToList();
+                tweaks = tweaks.Except(skipped).ToList();
+                createRestorePoint = false;
+            }
+            catch (Exception ex) when (ex is TimeoutException or InvalidOperationException or UnauthorizedAccessException)
+            {
+                // The administrator module could not start: same outcome, with the reason.
+                var skipped = tweaks.Where(t => NeedsElevation(new[] { t })).ToList();
+                result.SkippedNeedRights = skipped.Count;
+                result.Lines.Add(Loc.T("elevation.failed", ex.Message));
+                tweaks = tweaks.Except(skipped).ToList();
                 createRestorePoint = false;
             }
         }
@@ -178,6 +193,7 @@ public sealed class TweakService
     {
         var s = Loc.T("apply.summary", r.Applied, r.Failed);
         if (r.AlreadyInPlace > 0) s += "\n" + Loc.T("apply.alreadyInPlaceCount", r.AlreadyInPlace);
+        if (r.SkippedNeedRights > 0) s += "\n" + Loc.T("apply.skippedRights", r.SkippedNeedRights);
         if (r.RebootRequired) s += "\n" + Loc.T("apply.reboot");
         else if (r.SignOutRequired) s += "\n" + Loc.T("apply.signout");
         if (r.RestorePointMessage != null) s += "\n" + r.RestorePointMessage;

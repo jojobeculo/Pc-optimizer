@@ -6,8 +6,9 @@
 |---|---|---|
 | Standard | ≈ 4 à 5 min | Mesure de référence, avant/après manuel |
 | Express | ≈ 1 min 30 | Utilisé automatiquement par l'option « Mesurer avant et après » de l'optimisation |
+| Complet | ≈ 12 min | **Uniquement à la demande** : plus de répétitions (mesures plus précises), 4 min de charge prolongée, puis 3 min de stress processeur + carte graphique avec vérification des erreurs de calcul et arrêt thermique (95 °C CPU / 90 °C GPU ; 1 min 30 au maximum si aucune température n'est lisible) |
 
-| Étape | Mesure | Unité | Répétitions (std / express) | Seuil de bruit minimal |
+| Étape | Mesure | Unité | Répétitions (std / express ; complet : environ ×1,7 à ×4) | Seuil de bruit minimal |
 |---|---|---|---|---|
 | CPU 1 cœur | unités de calcul vérifiées / s | u/s | 6 × 4 s / 3 × 2 s | 2 % |
 | CPU multicœur | idem, tous les threads | u/s | 6 × 4 s / 3 × 2 s | 2 % |
@@ -23,6 +24,11 @@ fréquence CPU effective, utilisation, compteur Windows « % Performance Limit �
 
 **Bridage** : *détecté* seulement si le débit baisse d'au moins 7 % **et** que la température dépasse 90 °C
 **et** qu'une limitation est signalée ; sinon *probable (thermique)*, *probable (puissance/firmware)* ou *non évaluable*.
+
+**Stress combiné (mode Complet)** : calcul vérifié sur tous les cœurs sauf un, en même temps que la charge Direct3D 11
+vérifiée de la carte graphique. Résultat : *stable* (aucune erreur), *instable* (erreurs de calcul ou redémarrage du
+pilote graphique : revenir aux réglages d'usine de tout overclocking) ou *arrêté* (seuil thermique atteint : refroidissement
+insuffisant). Il n'entre pas dans l'indice de comparaison.
 
 **Progression** : chaque étape est bornée dans le temps ; le pourcentage affiché est le temps écoulé sur le temps prévu
 (jamais une progression simulée).

@@ -7,7 +7,7 @@ Statuts : **Fait** (implémenté, câblé dans l'interface et vérifié) · **Pa
 qu'en partie, détail donné) · **Non testable ici** (implémenté, mais le matériel nécessaire est absent de
 l'environnement de test : jamais simulé ni annoncé comme testé) · **Non fait** (absent, raison donnée).
 
-Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 131 tests) ; « IT » = test d'intégration sur Windows réel
+Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 136 tests) ; « IT » = test d'intégration sur Windows réel
 (`tests/FrameCore.WindowsIntegrationTests`) ; « Visite » = visite automatique de l'interface sur Windows avec captures
 (`--ui-tour`) ; « Parcours » = action utilisateur réellement exécutée pendant la visite sur la machine jetable.
 
@@ -69,7 +69,7 @@ Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 131 tests) ; « IT 
 |---|---|---|
 | GPU NVIDIA (NVML) et AMD (ADLX) : manuel, automatique progressif, test de stabilité, retour au dernier réglage stable, réglages d'usine | Non testable ici — **à considérer comme expérimental** | algorithme testé (UT : recul après échec, plafond, retour à l'origine) ; aucune carte réelle disponible |
 | GPU Intel Arc | Non fait | aucune API publique de réglage |
-| CPU AMD/Intel : conseils (PBO, Curve Optimizer, limites de puissance) + test de stabilité vérifié + contrôle WHEA | Fait (conseils, test) | aucune écriture dans le processeur (pas d'API publique sans pilote noyau) ; test exécuté sur la VM |
+| CPU AMD/Intel : conseils (PBO, Curve Optimizer, limites de puissance), procédure pas à pas, test de stabilité vérifié + contrôle WHEA | Fait (conseils, procédure, test) | aucune écriture dans le processeur (pas d'API publique sans pilote noyau) ; test exécuté sur la VM |
 | XMP/EXPO : détection + procédure guidée par fabricant de carte mère | Fait | jamais modifié depuis Windows (réglage du BIOS) |
 | BIOS : version, date, liens officiels du fabricant, jamais de flash | Fait | page Matériel › Carte mère |
 | Pilotes : inventaire, signataires, Windows Update (avec validation), sources officielles, historique des versions, retour à un pilote précédent (Gestionnaire de périphériques) | Fait / Partiel | inventaire réel ; installation via Windows Update non déclenchée sur la VM |
@@ -87,6 +87,7 @@ Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 131 tests) ; « IT 
 | Exigence | Statut | Où / comment c'est vérifié |
 |---|---|---|
 | Benchmark rapide ≈ 5 min (express ≈ 1 min 30), composants séparés, médianes, IC 95 %, progression réelle | Fait | Parcours (express) ; UT statistiques et progression |
+| Benchmark long « Complet » ≈ 12 min avec stress combiné, uniquement à la demande | Fait / Non testable ici (partie GPU, températures) | UT (arrêt thermique, limite sans capteurs, erreurs) ; câblage réel vérifié sur Windows (stress de 20 s : charge processeur vérifiée) |
 | Comparaison avant/après avec seuil de bruit et confiance ; changement de pilote/Windows signalé | Fait | UT ; Parcours |
 | Comparaison partageable (HTML, sans données personnelles) | Fait | ajouté ; Parcours (export réel) |
 | Laboratoire : CPU, RAM, stockage, réactivité, calcul type IA (GFLOPS FP32) | Fait | Parcours (réactivité, calcul type IA) ; onglet affiché et vérifié |

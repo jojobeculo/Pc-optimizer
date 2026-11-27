@@ -35,6 +35,25 @@
                         <ItemsControl ItemsSource="{Binding CpuReport.BiosSteps}">
                             <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding StringFormat='› {0}'}" Style="{StaticResource Text.Muted}" Margin="0,2,0,0"/></DataTemplate></ItemsControl.ItemTemplate>
                         </ItemsControl>
+                        <!-- Step-by-step procedure: small steps, a test after each, and the way back -->
+                        <StackPanel Visibility="{Binding CpuReport.Procedure.Count, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{i:Loc oc.cpu.procedure}" Style="{StaticResource Text.CardTitle}" Margin="0,10,0,4"/>
+                            <ItemsControl ItemsSource="{Binding CpuReport.Procedure}" AlternationCount="20">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Margin="0,3,0,0">
+                                            <TextBlock DockPanel.Dock="Left" Width="22" Style="{StaticResource Text.Muted}" FontWeight="SemiBold"
+                                                       Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={StaticResource OneBased}}"/>
+                                            <TextBlock Text="{Binding}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap"/>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <WrapPanel Margin="0,8,0,0">
+                                <Button Style="{StaticResource Button.Small}" Content="{i:Loc oc.cpu.openCompleteBench}" Margin="0,0,6,6"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="benchmark"/>
+                            </WrapPanel>
+                        </StackPanel>
                         <TextBlock Text="{i:Loc oc.cpu.tools}" Style="{StaticResource Text.CardTitle}" Margin="0,10,0,4"/>
                         <ItemsControl ItemsSource="{Binding CpuReport.Tools}">
                             <ItemsControl.ItemTemplate>

@@ -21,6 +21,8 @@ public sealed class CpuTuningReport
     public bool ControllableFromFrameCore { get; set; }
     public string Summary { get; set; } = "";
     public List<string> BiosSteps { get; set; } = new();
+    /// <summary>Safe step-by-step tuning procedure for this processor (small steps, test after each, way back).</summary>
+    public List<string> Procedure { get; set; } = new();
     public List<string> Notes { get; set; } = new();
     public List<TuningTool> Tools { get; set; } = new();
     public List<Finding> Findings { get; set; } = new();
@@ -94,6 +96,10 @@ public sealed class AmdRyzenAdapter : ICpuTuningAdapter
         }
         r.BiosSteps.AddRange(Loc.T("bios.steps.pbo." + CpuTuningAdvisor.BiosVendorKey(p.Board)).Split('|'));
         r.Notes.Add(Loc.T("cpu.noVoltage"));
+        // Zen 3 and later: PBO + negative Curve Optimizer in small steps; older Ryzen: PBO only.
+        r.Procedure.AddRange(Loc.T(zen3Plus ? "cpu.proc.amd.co" : "cpu.proc.amd.pbo").Split('|'));
+        if (cpu.IsX3D && cpu.Family < 0x1A) r.Procedure.Add(Loc.T("cpu.proc.amd.x3d"));
+        r.Procedure.AddRange(Loc.T("cpu.proc.common.back").Split('|'));
         return r;
     }
 }
@@ -141,6 +147,13 @@ public sealed class IntelCoreAdapter : ICpuTuningAdapter
         r.Notes.Add(Loc.T("cpu.intel.powerLimits"));
         r.Notes.Add(Loc.T("cpu.noVoltage"));
         r.BiosSteps.AddRange(Loc.T("bios.steps.intel." + CpuTuningAdvisor.BiosVendorKey(p.Board)).Split('|'));
+        if (r.OverclockSupported == TriState.Yes)
+        {
+            r.Procedure.AddRange(Loc.T("cpu.proc.intel.ratio").Split('|'));
+            if (System.Text.RegularExpressions.Regex.IsMatch(cpu.Name, @"i[79]-1[34]\d{3}")) r.Procedure.Add(Loc.T("cpu.proc.intel.raptor"));
+            r.Procedure.AddRange(Loc.T("cpu.proc.common.back").Split('|'));
+        }
+        else if (r.OverclockSupported == TriState.No && !p.Board.IsLaptop) r.Procedure.AddRange(Loc.T("cpu.proc.intel.locked").Split('|'));
         return r;
     }
 

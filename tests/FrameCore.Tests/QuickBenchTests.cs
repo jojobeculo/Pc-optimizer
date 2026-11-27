@@ -171,3 +171,62 @@ public class VerifyRepairTests
         Assert.Empty(VerifyRepairService.ComponentsAffectedBy(t));
     }
 }
+
+public class CombinedStressTests
+{
+    private sealed class FixedSensors(double? cpu, double? gpu) : IBenchSensors
+    {
+        public BenchSensorSample? Sample() => new(cpu, gpu, null, null, null, null, null, null);
+    }
+
+    [Fact]
+    public void Thermal_guard_stops_the_load_at_once()
+    {
+        var o = new QuickBenchOptions
+        {
+            Mode = "complete",
+            Sensors = new FixedSensors(96, 60), // CPU already above the 95 °C limit
+            CombinedStress = (d, ct) => { ct.WaitHandle.WaitOne(d); return new StressOutcome(0, true, 0, false); },
+        };
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var s = QuickBenchRunner.RunCombinedStress(o, 30, null, CancellationToken.None);
+        Assert.True(sw.Elapsed < TimeSpan.FromSeconds(10));
+        Assert.Equal("cpuTemp", s.StopReason);
+        Assert.Equal(96, s.CpuTempMaxC);
+        Assert.False(s.Passed);
+    }
+
+    [Fact]
+    public void Without_temperatures_the_stress_is_kept_short()
+    {
+        TimeSpan asked = default;
+        var o = new QuickBenchOptions
+        {
+            Sensors = new FixedSensors(null, null),
+            CombinedStress = (d, ct) => { asked = d; return new StressOutcome(0, false, 0, false); },
+        };
+        var s = QuickBenchRunner.RunCombinedStress(o, 180, null, CancellationToken.None);
+        Assert.False(s.SensorsAvailable);
+        Assert.Equal(TimeSpan.FromSeconds(QuickBenchRunner.UnsupervisedStressSeconds), asked);
+        Assert.True(s.Passed);
+    }
+
+    [Fact]
+    public void Calculation_errors_mean_unstable()
+    {
+        var o = new QuickBenchOptions
+        {
+            Sensors = new FixedSensors(70, 65),
+            CombinedStress = (d, ct) => new StressOutcome(3, true, 1, false),
+        };
+        var s = QuickBenchRunner.RunCombinedStress(o, 5, null, CancellationToken.None);
+        Assert.True(s.SensorsAvailable);
+        Assert.Null(s.StopReason);
+        Assert.Equal(3, s.CpuErrors);
+        Assert.Equal(1, s.GpuErrors);
+        Assert.False(s.Passed);
+        var ok = QuickBenchRunner.RunCombinedStress(new QuickBenchOptions { Sensors = new FixedSensors(70, 65), CombinedStress = (d, ct) => new StressOutcome(0, true, 0, false) }, 5, null, CancellationToken.None);
+        Assert.True(ok.Passed);
+        Assert.Equal(70, ok.CpuTempMaxC);
+    }
+}

@@ -56,6 +56,17 @@ public static class QuickBenchFactory
             Sensors = new MonitoringBenchSensors(m),
             Gpu = new D3D11GpuBench(gpu?.Luid, gpu is { IsSoftware: false }, () => m.Last?.GpuTemp),
             StorageFolder = Core.AppPaths.Root,
+            // Complete mode: all cores but one with checked results, plus the GPU stability workload, at the same time.
+            CombinedStress = (d, ct) =>
+            {
+                var cpu = Task.Run(() => CpuStressTest.Run(d, Math.Max(1, Environment.ProcessorCount - 1), null, ct));
+                var gpuRun = gpu is { IsSoftware: false }
+                    ? Task.Run(() => (GpuManager.GpuStabilityResult?)new GpuManager.D3D11StabilityTester(gpu.Luid, () => m.Last?.GpuTemp).Run(d, ct))
+                    : Task.FromResult<GpuManager.GpuStabilityResult?>(null);
+                Task.WaitAll(cpu, gpuRun);
+                var g = gpuRun.Result;
+                return new StressOutcome(cpu.Result.Errors, g != null && g.Error == null, g == null ? 0 : g.ComputeErrors + g.MemoryErrors, g?.DriverReset == true || g?.DeviceLost == true);
+            },
         };
     }
 }

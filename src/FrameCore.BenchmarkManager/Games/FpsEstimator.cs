@@ -211,6 +211,8 @@ public sealed class FpsEstimator
     {
         var g = new GameGain { Before = before };
         if (before.Fps == null) { g.ReasonKeys.Add("game.gain.noEstimate"); return g; }
+        // Nothing optimised and nothing measured: there is no "after" yet (never shown as "72 → 72, +0 %").
+        if (cmp == null && appliedTweaks.Count == 0) { g.ReasonKeys.Add("game.gain.notOptimized"); return g; }
         var fpsTweaks = appliedTweaks.Any(t => t.CanAffectFrameRate);
         if (cmp == null)
         {

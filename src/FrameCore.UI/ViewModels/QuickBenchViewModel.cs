@@ -50,7 +50,9 @@ public sealed class QuickRunRow
 {
     public QuickBenchResult Result { get; init; } = null!;
     public string Title => $"{Result.StartedUtc.ToLocalTime():g} · {Result.Label}";
-    public string Detail => Loc.T("quick.history.detail", Result.Metrics.Count(m => m.Measured), Math.Round(Result.Duration.TotalMinutes, 1), Result.ActiveTweakIds.Count);
+    public string Detail => Loc.T("quick.mode.short." + Result.Mode) + " · "
+        + Loc.T("quick.history.detail", Result.Metrics.Count(m => m.Measured), Math.Round(Result.Duration.TotalMinutes, 1), Result.ActiveTweakIds.Count)
+        + (Result.Stress is { } st ? " · " + Loc.T(st.Passed ? "quick.history.stressOk" : "quick.history.stressKo") : "");
 }
 
 /// <summary>Quick benchmark (~5 min), before/after comparison and the benchmark lab.</summary>
@@ -73,6 +75,9 @@ public sealed partial class QuickBenchViewModel : ObservableObject
     [ObservableProperty] private string _thermalText = "";
     [ObservableProperty] private string _throttleText = "";
     [ObservableProperty] private string _throttleKey = "Unknown";
+    /// <summary>Complete mode: result of the combined CPU + GPU stress (empty for the other modes).</summary>
+    [ObservableProperty] private string _stressText = "";
+    [ObservableProperty] private string _stressKey = "Neutral";
     [ObservableProperty] private string _indexText = "";
     [ObservableProperty] private double _indexValue = double.NaN;
     [ObservableProperty] private string _comparisonTitle = "";
@@ -97,18 +102,19 @@ public sealed partial class QuickBenchViewModel : ObservableObject
     partial void OnCompareBeforeChanged(QuickRunRow? value) => Compare();
     partial void OnCompareAfterChanged(QuickRunRow? value) => Compare();
 
-    private static readonly string[] StepKeys = { "cpu.single", "cpu.multi", "cpu.sustained", "mem.bandwidth", "mem.latency", "disk", "gpu", "sys.wake" };
+    private static readonly string[] StepKeys = { "cpu.single", "cpu.multi", "cpu.sustained", "mem.bandwidth", "mem.latency", "disk", "gpu", "sys.wake", "stress.combined" };
+    private static IEnumerable<string> StepKeysFor(string mode) => mode == "complete" ? StepKeys : StepKeys.Where(k => k != "stress.combined");
 
     [RelayCommand]
     private async Task Start()
     {
         if (Running) return;
         if (_shell.Diagnostic == null) { Dialogs.Info(Loc.T("quick.title"), Loc.T("quick.needDiagnostic")); return; }
-        if (!Dialogs.Confirm(Loc.T("quick.confirm.title"), Loc.T(Mode == "express" ? "quick.confirm.express" : "quick.confirm.standard"), Loc.T("quick.start"))) return;
+        if (!Dialogs.Confirm(Loc.T("quick.confirm.title"), Loc.T("quick.confirm." + Mode), Loc.T("quick.start"), danger: Mode == "complete")) return;
         Running = true;
         _cts = new CancellationTokenSource();
         Steps.Clear();
-        foreach (var k in StepKeys) Steps.Add(new StepItem { Key = k, Title = Loc.T("quick.step." + k) });
+        foreach (var k in StepKeysFor(Mode)) Steps.Add(new StepItem { Key = k, Title = Loc.T("quick.step." + k) });
         Overall = 0;
         var label = string.IsNullOrWhiteSpace(Label) ? Loc.T("quick.defaultLabel", DateTime.Now.ToString("g")) : Label.Trim();
         var options = QuickBenchFactory.Options(_shell.Services, _shell.Monitoring, _shell.Diagnostic.Profile, Mode);
@@ -159,6 +165,14 @@ public sealed partial class QuickBenchViewModel : ObservableObject
             : Loc.T("quick.thermal", Fmt(t.CpuTempMaxC, "0"), Fmt(t.GpuTempMaxC, "0"), Fmt(t.CpuClockAvgMhz, "0"), Fmt(t.CpuClockMinUnderLoadMhz, "0"), Fmt(t.PerformanceLimitMinPercent, "0"));
         ThrottleKey = r.Throttling.ToString();
         ThrottleText = Loc.T("throttle." + r.Throttling, r.ThrottlingDetail ?? "");
+        StressText = r.Stress is not { } st ? ""
+            : Loc.T(st.StopReason == "cpuTemp" ? "quick.stress.stopCpu" : st.StopReason == "gpuTemp" ? "quick.stress.stopGpu" : st.StopReason == "cancelled" ? "quick.stress.cancelled"
+                    : st.Passed ? "quick.stress.pass" : "quick.stress.fail",
+                    st.Seconds.ToString("0"), st.CpuErrors, st.GpuTested ? st.GpuErrors.ToString(CultureInfo.CurrentCulture) : Loc.T("quick.stress.noGpu"),
+                    Fmt(st.CpuTempMaxC, "0"), Fmt(st.GpuTempMaxC, "0"))
+              + (st.GpuDriverReset ? " " + Loc.T("quick.stress.driverReset") : "")
+              + (st.SensorsAvailable ? "" : " " + Loc.T("quick.stress.noSensors"));
+        StressKey = r.Stress is not { } s2 ? "Neutral" : s2.Passed ? "Success" : s2.StopReason == "cancelled" ? "Neutral" : "Warning";
         HasResult = true;
     }
 

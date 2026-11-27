@@ -32,7 +32,8 @@ Page **Optimisation** — trois niveaux :
    puis vers le résultat). Windows demande une seule fois l'autorisation administrateur.
 5. La progression suit les vraies étapes : mesure avant → point de restauration → application (x/N) → vérification →
    mesure après.
-6. Le **Résultat** indique ce qui est appliqué, ce qui a été **relu et vérifié**, ce que Windows n'a pas conservé
+6. Le **Résultat** indique si les mesures avant/après ont bien été faites (ou pourquoi elles ne l'ont pas été), signale en
+   orange les réglages **non appliqués faute d'autorisation administrateur** (bouton « Terminer » pour les appliquer), puis ce qui est appliqué, ce qui a été **relu et vérifié**, ce que Windows n'a pas conservé
    (réécrit au plus deux fois puis annulé), l'effet mesuré (indice après/avant) et trois jeux avec leurs FPS avant → après.
 
 ## 3. Jeux & FPS
@@ -47,9 +48,17 @@ Page **Optimisation** — trois niveaux :
 - Pour une valeur exacte : **Benchmark → Capture en jeu**, choisissez le jeu dans la liste « Jeu de la bibliothèque » ;
   la mesure remplace l'estimation.
 
+
+Le chiffre « après » ne vient que de mesures : il ne change que si le benchmark constate un gain réel du processeur, de
+la mémoire ou de la carte graphique. La plupart des optimisations Windows améliorent surtout la régularité (1 % low) et
+la réactivité en jeu, ce qu'un test de calcul ne voit pas : le bouton **Mesurer en jeu (avant / après)** ouvre la capture
+en jeu avec le jeu déjà choisi. Avant toute optimisation, la page indique « Aucune optimisation n'est encore appliquée »
+au lieu d'un gain.
+
 ## 4. Benchmark
 
-- **Benchmark rapide** (standard ≈ 4–5 min, express ≈ 1 min 30) : processeur 1 cœur / multicœur / charge prolongée,
+- **Benchmark rapide** (standard ≈ 4–5 min, express ≈ 1 min 30, **complet ≈ 12 min** avec stress processeur + carte
+  graphique, uniquement quand vous le lancez) : processeur 1 cœur / multicœur / charge prolongée,
   mémoire, stockage, carte graphique, réactivité, températures et bridage. Chaque mesure est répétée (médiane,
   variation, intervalle de confiance). **Comparaison avant / après** avec interprétation : amélioration ou dégradation
   confirmée, dans le bruit, à confirmer. **Partager (HTML)** enregistre la comparaison affichée dans une page à

@@ -30,9 +30,15 @@ public sealed partial class GameRow : ObservableObject
     public string ResolutionText => $"{Estimate.Settings.Width} × {Estimate.Settings.Height}";
     public double BarFraction { get; set; }
     public bool HasGain => Gain?.GainPercent != null;
+    /// <summary>A change was actually measured (|gain| ≥ 0.5 %): only then is an "after" figure shown next to "before".</summary>
+    public bool HasMeasuredChange => Gain?.GainPercent is { } g && Math.Abs(g) >= 0.5;
+    /// <summary>A measurement exists but shows no change for this game: shown as such, never as "72 → 72 (+0 %)".</summary>
+    public bool NoMeasurableChange => Gain?.GainPercent is { } g && Math.Abs(g) < 0.5;
     public string AfterText => Gain?.AfterFps is { } a ? a.ToString("0") : "—";
-    public string GainText => Gain?.GainPercent is { } g ? (g >= 0 ? "+" : "") + g.ToString("0.#") + " %" : Loc.T("game.gain.unknown");
-    public string GainAbsText => Gain?.GainAbsolute is { } a ? (a >= 0 ? "+" : "") + a.ToString("0") + " " + Loc.T("unit.fps") : "";
+    public string GainText => Gain?.GainPercent is { } g
+        ? (Math.Abs(g) < 0.5 ? Loc.T("game.gain.none") : (g >= 0 ? "+" : "") + g.ToString("0.#") + " %")
+        : Loc.T("game.gain.unknown");
+    public string GainAbsText => HasMeasuredChange && Gain?.GainAbsolute is { } a ? (a >= 0 ? "+" : "") + a.ToString("0") + " " + Loc.T("unit.fps") : "";
     public string GainRangeText => Gain?.GainPercentLow is { } lo && Gain.GainPercentHigh is { } hi && Math.Abs(hi - lo) > 0.05 ? Loc.T("game.gainRange", lo.ToString("0.#"), hi.ToString("0.#")) : "";
     public string GainReason => Gain == null ? "" : string.Join(" ", Gain.ReasonKeys.Select(k => Loc.T(k)));
     public string Notes => string.Join("\n", Estimate.NoteKeys.Distinct().Select(k => "• " + Loc.T(k)).Concat(Game.Note != null ? new[] { "• " + Game.Note } : Array.Empty<string>()));
@@ -97,6 +103,15 @@ public sealed partial class GamesViewModel : ObservableObject, IDiagnosticConsum
     [RelayCommand] private void Select(GameRow? row) { Selected = row; ShowExplorer = true; }
     [RelayCommand] private void CloseDetail() => Selected = null;
     [RelayCommand] private void GoBenchmark() => _shell.NavigateCommand.Execute("benchmark");
+
+    /// <summary>The real effect in a game is measured in the game itself (frame times, 1 % low), before and after.</summary>
+    [RelayCommand]
+    private void MeasureInGame(GameRow? row)
+    {
+        _shell.Benchmark.Section = "ingame";
+        if (row != null) _shell.Benchmark.PreselectGame(row.Game.Id);
+        _shell.NavigateCommand.Execute("benchmark");
+    }
 
     private (int w, int h) ParseResolution()
     {

@@ -32,7 +32,12 @@ ratios depuis une application tierce sans pilote noyau. FrameCore :
   température et puissance (LibreHardwareMonitor) ;
 - propose un test de stabilité (calculs vérifiés + erreurs matérielles WHEA) ;
 - donne des recommandations adaptées (PBO / Curve Optimizer pour Ryzen, limites PL1/PL2 « Intel Default » et microcode
-  pour les 13e/14e générations) et ouvre les outils officiels (AMD Ryzen Master, Intel XTU) s'ils sont installés.
+  pour les 13e/14e générations) et ouvre les outils officiels (AMD Ryzen Master, Intel XTU) s'ils sont installés ;
+- affiche une **procédure pas à pas** propre au processeur détecté : BIOS à jour et Benchmark complet de référence,
+  réglage par petits paliers (Curve Optimizer −10, −15, −20… pour Ryzen ; ratio +1 sur un Intel débloqué avec chipset Z),
+  test de stabilité et Benchmark complet à chaque palier, retour au palier précédent au premier problème, et le moyen de
+  tout annuler (« Load Optimized Defaults » / effacement du CMOS). Aucune tension n'est jamais modifiée ; aucune procédure
+  n'est affichée quand le processeur ne s'y prête pas ou n'est pas identifié avec certitude.
 
 ## Mémoire : XMP / EXPO
 

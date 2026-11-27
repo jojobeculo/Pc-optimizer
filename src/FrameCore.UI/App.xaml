@@ -21,6 +21,7 @@
             <i:BytesConverter x:Key="Bytes"/>
             <i:UnknownConverter x:Key="Unknown"/>
             <i:SeverityIconConverter x:Key="SeverityIcon"/>
+            <i:OneBasedConverter x:Key="OneBased"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -17,7 +17,7 @@ publiés comme artefacts de chaque exécution.
 | Vérification | Résultat |
 |---|---|
 | Compilation Release des 15 projets + 2 projets de tests | ✅ 0 erreur, 0 avertissement |
-| Tests unitaires (xUnit) | ✅ 131 / 131 (Linux et Windows) |
+| Tests unitaires (xUnit) | ✅ 136 / 136 (Linux et Windows) |
 | Test d'intégration « détection matérielle » sur Windows réel | ✅ |
 | Test d'intégration « aller-retour du catalogue » sur Windows réel | ✅ 53 optimisations appliquées, relues, restaurées : état d'origine retrouvé à l'identique pour toutes ; 1 « non applicable » correctement détectée ; 16 incompatibles avec la VM ignorées ; 0 non effective |
 | Aller-retour via le processus élevé (chemin des comptes non administrateurs) | ✅ 33 optimisations exigeant des droits : 19 appliquées et vérifiées, 14 détectées « déjà en place » (rien écrit) ; état d'origine retrouvé à l'identique pour les 33 (connexion 0,5 s, total 2,4 s) |
@@ -28,7 +28,7 @@ publiés comme artefacts de chaque exécution.
 | Paquet sans données par machine ni chemin de la machine de build (contrôle bloquant du build) | ✅ |
 | Audit d'accessibilité automatique (noms accessibles, taille des cibles) + parcours au clavier | ✅ voir § 6 |
 
-## 2. Tests unitaires (131)
+## 2. Tests unitaires (136)
 
 | Fichier | Contenu principal |
 |---|---|
@@ -38,6 +38,8 @@ publiés comme artefacts de chaque exécution.
 | `QuickBenchTests` | Médiane, MAD, CV, intervalles de confiance, test de Welch, seuil de bruit, indice relatif, progression monotone, détection du bridage, comparaison avec changement de pilote/Windows ; Vérification & Réparation (2 réécritures puis restauration, régression mesurée qui disparaît / persiste, réseau et confidentialité jamais incriminés) |
 | `GameEstimatorTests` | Correspondance GPU/CPU (portable vs bureau, F/KF, APU), modèle limité GPU/CPU, pénalité de VRAM, plafonds, plages d'incertitude, origine de l'estimation, gain projeté uniquement à partir de mesures confirmées, sélection de 3 jeux |
 | `BootPerformanceTests` | Lecture des événements Windows de démarrage (format XML réel, secondes, indicateurs), refus des valeurs manquantes, classement des ralentissements (application, pilote, service, périphérique), médiane robuste aux démarrages aberrants, tendance, principaux responsables |
+| `CombinedStressTests` | Stress combiné du benchmark complet : arrêt immédiat au seuil thermique, durée limitée sans capteurs, erreurs de calcul = instable |
+| `CpuProcedureTests` | Procédure pas à pas affichée pour un Ryzen de bureau (paliers, retour aux réglages d'usine) ; aucune procédure inventée pour un processeur non identifié ou une machine virtuelle |
 | `GpuPreferenceTests` | Format de Windows (`GpuPreference=N;`), refus des chemins invalides, application journalisée puis restauration exacte sans toucher aux autres applications |
 | `XamlConsistencyTests` | Toute ressource XAML utilisée existe là où elle est utilisée ; toute clé de traduction utilisée par les vues et le code existe en français et en anglais |
 | `AnalysisTests` | EDID, références de barrettes, canaux mémoire, identification CPU/GPU/carte mère, cycle de vie Windows, sortie `bcdedit` indépendante de la langue, compteurs GPU, PresentMon 1.x/2.x, statistiques d'images (1 % / 0,1 % low), goulots d'étranglement, base de connaissances du démarrage (anti-cheats protégés, mises à jour de sécurité conservées), désactivation sans suppression, protocole du processus élevé et validation des requêtes |

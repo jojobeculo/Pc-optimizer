@@ -42,6 +42,10 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
     [ObservableProperty] private string _verificationText = "";
     [ObservableProperty] private string _performanceText = "";
     [ObservableProperty] private bool _hasOutcome;
+    /// <summary>Settings left out because administrator rights were refused (empty when none).</summary>
+    [ObservableProperty] private string _rightsWarning = "";
+    /// <summary>What was measured around the application (or why nothing was).</summary>
+    [ObservableProperty] private string _measurementText = "";
 
     public ObservableCollection<StepItem> Steps { get; } = new();
     public ObservableCollection<string> VerificationLines { get; } = new();
@@ -134,6 +138,7 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
         _shell.IsBusy = true;
         ApplyRunning = true;
         HasOutcome = false;
+        PerformanceText = ""; VerificationText = ""; RightsWarning = ""; MeasurementText = "";
         Steps.Clear();
         var measure = MeasureBeforeAfter && _shell.Diagnostic != null;
         if (measure) Steps.Add(new StepItem { Key = "benchBefore", Title = Loc.T("opt.step.benchBefore") });
@@ -153,6 +158,7 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
             CurrentStepIndeterminate = fraction == null;
         }
         QuickBenchResult? before = null;
+        QuickBenchResult? afterRun = null;
         try
         {
             var progress = new Progress<string>(s => _shell.BusyText = s);
@@ -177,6 +183,7 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
             {
                 Step("benchAfter", 0);
                 var after = await RunExpressBench(Loc.T("opt.bench.afterLabel", Loc.T("profile." + level)), f => Step("benchAfter", f));
+                afterRun = after;
                 if (!after.Cancelled && result.Verification != null)
                 {
                     var sets = _shell.Services.Journal.ChangeSets.Where(c => c.BatchId == result.BatchId).ToList();
@@ -191,6 +198,13 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
                 Step("benchAfter", 1);
             }
             foreach (var s in Steps) { s.State = "done"; s.Fraction = 1; }
+            RightsWarning = result.SkippedNeedRights > 0 ? Loc.T("opt.rightsWarning", result.SkippedNeedRights) : "";
+            MeasurementText = !MeasureBeforeAfter ? Loc.T("opt.measure.off")
+                : before == null || before.Cancelled ? Loc.T("opt.measure.beforeMissing")
+                : afterRun is { Cancelled: false } ? Loc.T("opt.measure.done", before.StartedUtc.ToLocalTime().ToString("t"), afterRun.StartedUtc.ToLocalTime().ToString("t"))
+                  + (result.RebootRequired || result.SignOutRequired ? " " + Loc.T("opt.measure.afterRestart") : "")
+                : result.Applied == 0 ? Loc.T("opt.measure.nothingApplied")
+                : Loc.T("opt.measure.afterMissing");
             ResultText = TweakService.Summary(result);
             ResultLines.Clear();
             foreach (var l in result.Lines) ResultLines.Add(l);

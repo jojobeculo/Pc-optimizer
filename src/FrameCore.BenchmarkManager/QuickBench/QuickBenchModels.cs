@@ -62,8 +62,30 @@ public sealed class QuickBenchResult
     public string? ThrottlingDetail { get; set; }
     public bool Cancelled { get; set; }
     public List<string> Notes { get; set; } = new();
+    /// <summary>Complete mode only: stability and temperatures under a combined CPU + GPU load.</summary>
+    public CombinedStressSummary? Stress { get; set; }
 
     public BenchMetric? Get(string key) => Metrics.FirstOrDefault(m => m.Key == key);
+}
+
+/// <summary>What the CPU and GPU workloads of the combined stress found (calculation errors are real instability).</summary>
+public sealed record StressOutcome(long CpuErrors, bool GpuTested, long GpuErrors, bool GpuDriverReset);
+
+/// <summary>Combined CPU + GPU load of the complete benchmark: errors, temperatures, and why it stopped early (if it did).</summary>
+public sealed class CombinedStressSummary
+{
+    public double PlannedSeconds { get; set; }
+    public double Seconds { get; set; }
+    public bool SensorsAvailable { get; set; }
+    public long CpuErrors { get; set; }
+    public bool GpuTested { get; set; }
+    public long GpuErrors { get; set; }
+    public bool GpuDriverReset { get; set; }
+    public double? CpuTempMaxC { get; set; }
+    public double? GpuTempMaxC { get; set; }
+    /// <summary>null when it ran to the end; "cpuTemp", "gpuTemp" (thermal guard) or "cancelled".</summary>
+    public string? StopReason { get; set; }
+    public bool Passed => CpuErrors == 0 && GpuErrors == 0 && !GpuDriverReset && StopReason == null;
 }
 
 public enum ChangeVerdict { Improved, Regressed, WithinNoise, Inconclusive, NotComparable }

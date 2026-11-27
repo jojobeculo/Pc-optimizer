@@ -30,6 +30,8 @@ AMD EPYC, 16 Go, pilote d'affichage de base Microsoft (pas de GPU), droits admin
 | Laboratoire : réactivité, calcul de type IA | Testée | exécutés sur la VM |
 | Laboratoire : stockage, mémoire, CPU, réseau local | Testée (logique) / Partielle | mêmes moteurs que le benchmark rapide ; réseau selon la passerelle de la VM |
 | Laboratoire : stress combiné CPU + GPU avec arrêt thermique | Non testable ici | pas de GPU ni de capteurs |
+| Benchmark « Complet » (≈ 12 min, stress combiné inclus, à la demande) | Partielle | arrêt thermique et verdict testés (tests unitaires) ; charge processeur réelle vérifiée sur Windows ; partie GPU et températures non testables sur la VM |
+| Procédure pas à pas d'overclocking processeur | Testée (affichage) | adaptée au processeur détecté ; aucune action automatique, aucune tension modifiée |
 | Estimateur de FPS (91 jeux), sélection de 3 jeux, explorateur | Partielle | modèle et correspondance matériel couverts par 13 tests ; sur la VM la carte graphique n'est pas identifiable → page en mode « données insuffisantes » (comportement attendu) |
 | Calibration par capture réelle en jeu | Partielle | logique testée ; capture ETW d'un vrai jeu impossible sur la VM |
 | Capture en jeu (ETW, PresentMon, import CSV), 1 % / 0,1 % low | Partielle | statistiques et lecture CSV testées ; capture réelle non réalisable sans jeu |

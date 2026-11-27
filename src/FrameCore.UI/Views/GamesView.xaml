@@ -26,13 +26,17 @@
                             </StackPanel>
                             <TextBlock Text="{Binding RangeText}" Style="{StaticResource Text.Caption}"/>
                         </StackPanel>
-                        <i:Icon Grid.Column="1" Glyph="{StaticResource Icon.ArrowRight}" Width="18" Height="18" Margin="10,22,10,0" VerticalAlignment="Top" Foreground="{DynamicResource Brush.TextFaint}"/>
+                        <i:Icon Grid.Column="1" Glyph="{StaticResource Icon.ArrowRight}" Width="18" Height="18" Margin="10,22,10,0" VerticalAlignment="Top" Foreground="{DynamicResource Brush.TextFaint}"
+                                Visibility="{Binding HasMeasuredChange, Converter={StaticResource BoolToVis}}"/>
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="{i:Loc games.after}" Style="{StaticResource Text.Overline}"/>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding AfterText}" Style="{StaticResource Text.Metric}" Foreground="{DynamicResource Brush.AccentText}"/>
-                            </StackPanel>
-                            <TextBlock Text="{Binding GainText}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.AccentText}" FontWeight="SemiBold"/>
+                            <!-- An "after" figure only when a change was measured; otherwise say so (never "72 → 72, +0 %") -->
+                            <TextBlock Text="{Binding AfterText}" Style="{StaticResource Text.Metric}" Foreground="{DynamicResource Brush.AccentText}"
+                                       Visibility="{Binding HasMeasuredChange, Converter={StaticResource BoolToVis}}"/>
+                            <TextBlock Text="{Binding GainText}" Style="{StaticResource Text.Caption}" FontWeight="SemiBold" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource Brush.AccentText}" Visibility="{Binding HasMeasuredChange, Converter={StaticResource BoolToVis}}"/>
+                            <TextBlock Text="{Binding GainText}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,6,0,0"
+                                       Visibility="{Binding HasMeasuredChange, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
                         </StackPanel>
                     </Grid>
                     <WrapPanel Margin="0,14,0,0">
@@ -42,7 +46,9 @@
                         </Border>
                     </WrapPanel>
                     <TextBlock Text="{Binding BasisText}" Style="{StaticResource Text.Caption}" Margin="0,2,0,0"/>
-                    <TextBlock Text="{Binding GainReason}" Style="{StaticResource Text.Muted}" Margin="0,8,0,0"/>
+                    <TextBlock Text="{Binding GainReason}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                    <Button Style="{StaticResource Button.Small}" Content="{i:Loc games.measureInGame}" HorizontalAlignment="Left" Margin="0,10,0,0"
+                            Command="{Binding DataContext.MeasureInGameCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
                 </StackPanel>
             </Border>
         </DataTemplate>
@@ -129,8 +135,11 @@
             </ItemsControl>
             <Border Style="{StaticResource Banner}" Margin="0,0,0,12">
                 <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Small}" Content="{i:Loc games.goBench}" Command="{Binding GoBenchmarkCommand}" VerticalAlignment="Center" Margin="12,0,0,0"/>
-                    <TextBlock Text="{i:Loc games.howGain}" Style="{StaticResource Text.Muted}" VerticalAlignment="Center"/>
+                    <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center" Margin="12,0,0,0">
+                        <Button Style="{StaticResource Button.Small}" Content="{i:Loc games.measureInGame}" Command="{Binding MeasureInGameCommand}" Margin="0,0,0,6"/>
+                        <Button Style="{StaticResource Button.Small}" Content="{i:Loc games.goBench}" Command="{Binding GoBenchmarkCommand}"/>
+                    </StackPanel>
+                    <TextBlock Text="{i:Loc games.howGain}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" VerticalAlignment="Center"/>
                 </DockPanel>
             </Border>
 

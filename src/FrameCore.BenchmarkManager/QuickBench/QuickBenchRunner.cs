@@ -23,8 +23,11 @@ public sealed record QuickBenchProgress(int Step, int StepCount, string StepKey,
 
 public sealed class QuickBenchOptions
 {
-    /// <summary>"standard" ≈ 4–5 min, "express" ≈ 1.5 min (used for automatic verification).</summary>
+    /// <summary>"standard" ≈ 4–5 min, "express" ≈ 1.5 min (used for automatic verification), "complete" ≈ 12 min with a
+    /// combined CPU + GPU stress (only when the user asks for it).</summary>
     public string Mode { get; set; } = "standard";
+    /// <summary>Complete mode: CPU and GPU loads with result checking, run together for the given time.</summary>
+    public Func<TimeSpan, CancellationToken, StressOutcome>? CombinedStress { get; set; }
     /// <summary>CPU work-unit throughput for a duration and thread count (units/s).</summary>
     public Func<TimeSpan, int, CancellationToken, double> CpuThroughput { get; set; } = (_, _, _) => double.NaN;
     public IGpuBench? Gpu { get; set; }
@@ -47,6 +50,15 @@ public sealed class QuickBenchRunner
     public QuickBenchRunner(QuickBenchOptions options) => _o = options;
 
     private bool Express => _o.Mode == "express";
+    private bool Complete => _o.Mode == "complete";
+
+    /// <summary>Thermal guard of the combined stress: the load stops immediately at these temperatures.</summary>
+    public const double CpuStopC = 95, GpuStopC = 90;
+    /// <summary>Without any temperature sensor the combined stress is kept short.</summary>
+    public const double UnsupervisedStressSeconds = 90;
+
+    /// <summary>Picks the value for the current mode: express / standard / complete.</summary>
+    private T By<T>(T express, T standard, T complete) => Express ? express : Complete ? complete : standard;
     private bool Runs(BenchComponent c) => _o.Only == null || _o.Only.Contains(c);
 
     private sealed record Step(string Key, BenchComponent Component, double PlannedSeconds, Action<QuickBenchResult, Action<double>, CancellationToken> Body);
@@ -55,19 +67,23 @@ public sealed class QuickBenchRunner
     {
         var result = new QuickBenchResult { Label = label, Mode = _o.Mode };
         var sw = Stopwatch.StartNew();
-        var reps = Express ? 3 : 6;
-        var cpuSeconds = Express ? 2.0 : 4.0;
+        var reps = By(3, 6, 10);
+        var cpuSeconds = By(2.0, 4.0, 5.0);
+        var sustained = By(20, 60, 240);
+        var stressSeconds = 180.0;
         var steps = new List<Step>
         {
             new("cpu.single", BenchComponent.Cpu, reps * cpuSeconds, (r, p, c) => Cpu(r, "cpu.single", 1, reps, cpuSeconds, p, c)),
             new("cpu.multi", BenchComponent.Cpu, reps * cpuSeconds, (r, p, c) => Cpu(r, "cpu.multi", Environment.ProcessorCount, reps, cpuSeconds, p, c)),
-            new("cpu.sustained", BenchComponent.Cpu, Express ? 20 : 60, (r, p, c) => Sustained(r, Express ? 20 : 60, p, c)),
-            new("mem.bandwidth", BenchComponent.Memory, Express ? 3 : 6, (r, p, c) => MemoryBandwidth(r, Express ? 5 : 9, p, c)),
-            new("mem.latency", BenchComponent.Memory, Express ? 6 : 12, (r, p, c) => MemoryLatency(r, Express ? 2 : 4, p, c)),
-            new("disk", BenchComponent.Storage, Express ? 15 : 35, (r, p, c) => Storage(r, Express ? 1 : 2, Express ? 2 : 4, p, c)),
-            new("gpu", BenchComponent.Gpu, Express ? 24 : 45, (r, p, c) => Gpu(r, Express ? 2 : 3, Express ? 10 : 15, p, c)),
-            new("sys.wake", BenchComponent.System, Express ? 6 : 12, (r, p, c) => Responsiveness(r, Express ? 3 : 4, Express ? 2 : 3, p, c)),
+            new("cpu.sustained", BenchComponent.Cpu, sustained, (r, p, c) => Sustained(r, sustained, p, c)),
+            new("mem.bandwidth", BenchComponent.Memory, By(3, 6, 10), (r, p, c) => MemoryBandwidth(r, By(5, 9, 15), p, c)),
+            new("mem.latency", BenchComponent.Memory, By(6, 12, 24), (r, p, c) => MemoryLatency(r, By(2, 4, 8), p, c)),
+            new("disk", BenchComponent.Storage, By(15, 35, 55), (r, p, c) => Storage(r, By(1, 2, 3), By(2, 4, 6), p, c)),
+            new("gpu", BenchComponent.Gpu, By(24, 45, 100), (r, p, c) => Gpu(r, By(2, 3, 5), By(10.0, 15.0, 20.0), p, c)),
+            new("sys.wake", BenchComponent.System, By(6, 12, 24), (r, p, c) => Responsiveness(r, By(3, 4, 6), By(2.0, 3.0, 4.0), p, c)),
         };
+        if (Complete && _o.CombinedStress != null)
+            steps.Add(new("stress.combined", BenchComponent.System, stressSeconds, (r, p, c) => r.Stress = RunCombinedStress(_o, stressSeconds, p, c, _loadSamples)));
         steps = steps.Where(s => Runs(s.Component)).ToList();
         var total = steps.Sum(s => s.PlannedSeconds);
         double done = 0;
@@ -273,6 +289,49 @@ public sealed class QuickBenchRunner
             }
             p((i + 1.0) / runs);
         }
+    }
+
+    // ------------------------------------------------------------------ Combined stress (complete mode)
+    /// <summary>
+    /// CPU and GPU loaded together for <paramref name="seconds"/>, temperatures read every second: the load stops at
+    /// once at <see cref="CpuStopC"/> / <see cref="GpuStopC"/>. Without any temperature sensor it is kept to
+    /// <see cref="UnsupervisedStressSeconds"/>. Calculation errors (CPU or GPU) mean the system is not stable.
+    /// </summary>
+    public static CombinedStressSummary RunCombinedStress(QuickBenchOptions o, double seconds, Action<double>? p, CancellationToken ct, List<BenchSensorSample>? sink = null)
+    {
+        var s = new CombinedStressSummary { PlannedSeconds = seconds };
+        if (o.CombinedStress == null) return s;
+        BenchSensorSample? Read() { try { return o.Sensors?.Sample(); } catch { return null; } }
+        var first = Read();
+        s.SensorsAvailable = first?.CpuTempC != null || first?.GpuTempC != null;
+        if (!s.SensorsAvailable) seconds = Math.Min(seconds, UnsupervisedStressSeconds);
+        using var stop = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        var sw = Stopwatch.StartNew();
+        var work = Task.Run(() => o.CombinedStress(TimeSpan.FromSeconds(seconds), stop.Token));
+        double? cpuMax = null, gpuMax = null;
+        void Track(BenchSensorSample? x)
+        {
+            if (x == null) return;
+            if (sink != null) lock (sink) sink.Add(x);
+            if (x.CpuTempC is { } c) { cpuMax = Math.Max(cpuMax ?? c, c); if (c >= CpuStopC) { s.StopReason ??= "cpuTemp"; stop.Cancel(); } }
+            if (x.GpuTempC is { } g) { gpuMax = Math.Max(gpuMax ?? g, g); if (g >= GpuStopC) { s.StopReason ??= "gpuTemp"; stop.Cancel(); } }
+        }
+        Track(first);
+        while (!work.Wait(1000))
+        {
+            Track(Read());
+            p?.Invoke(Math.Min(1, sw.Elapsed.TotalSeconds / seconds));
+        }
+        s.Seconds = Math.Round(sw.Elapsed.TotalSeconds, 1);
+        s.CpuTempMaxC = cpuMax is { } cm ? Math.Round(cm, 1) : null;
+        s.GpuTempMaxC = gpuMax is { } gm ? Math.Round(gm, 1) : null;
+        if (work.IsCompletedSuccessfully)
+        {
+            var r = work.Result;
+            s.CpuErrors = r.CpuErrors; s.GpuTested = r.GpuTested; s.GpuErrors = r.GpuErrors; s.GpuDriverReset = r.GpuDriverReset;
+        }
+        if (ct.IsCancellationRequested) { s.StopReason ??= "cancelled"; ct.ThrowIfCancellationRequested(); }
+        return s;
     }
 
     // ------------------------------------------------------------------ Sensors & throttling

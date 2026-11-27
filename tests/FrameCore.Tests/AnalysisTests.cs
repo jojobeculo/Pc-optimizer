@@ -466,3 +466,30 @@ public class PlatformParsingTests
         Assert.Equal("SwapEffectUpgradeEnable=1;VRROptimizeEnable=0;", DxSettingExecutor.Format(d));
     }
 }
+
+public class CpuProcedureTests
+{
+    [Fact]
+    public void Ryzen_desktop_gets_a_safe_stepwise_procedure_and_the_way_back()
+    {
+        Repo.LoadLoc();
+        var p = Sim.DesktopProfile(vendor: FrameCore.Core.Hardware.CpuVendor.Amd);
+        p.Cpu.Name = "AMD Ryzen 7 7700X 8-Core Processor"; p.Cpu.Family = 0x19;
+        var r = FrameCore.CpuManager.CpuTuningAdvisor.Analyze(p);
+        Assert.True(r.Procedure.Count >= 6);
+        Assert.Contains(r.Procedure, s => s.Contains("Curve Optimizer"));
+        Assert.Contains(r.Procedure, s => s.Contains("Load Optimized Defaults"));
+        Assert.DoesNotContain(r.Procedure, s => s.Contains("V") && s.Contains("tension") && s.Contains("augment"));
+    }
+
+    [Fact]
+    public void No_procedure_is_invented_for_unknown_or_virtual_processors()
+    {
+        Repo.LoadLoc();
+        var unknown = Sim.DesktopProfile(); // Intel, unlocked state unknown
+        Assert.Empty(FrameCore.CpuManager.CpuTuningAdvisor.Analyze(unknown).Procedure);
+        var vm = Sim.DesktopProfile(vendor: FrameCore.Core.Hardware.CpuVendor.Amd);
+        vm.Board.SystemManufacturer = "Microsoft Corporation"; vm.Board.SystemModel = "Virtual Machine";
+        Assert.Empty(FrameCore.CpuManager.CpuTuningAdvisor.Analyze(vm).Procedure);
+    }
+}

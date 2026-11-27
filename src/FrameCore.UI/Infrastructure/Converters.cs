@@ -130,3 +130,10 @@ public sealed class MultiEqualsConverter : IMultiValueConverter
         values.Length == 2 && string.Equals(values[0]?.ToString(), values[1]?.ToString(), StringComparison.OrdinalIgnoreCase);
     public object[] ConvertBack(object value, Type[] t, object p, CultureInfo c) => t.Select(_ => Binding.DoNothing).ToArray();
 }
+
+/// <summary>0-based index → "1.", "2."… (numbered lists).</summary>
+public sealed class OneBasedConverter : IValueConverter
+{
+    public object Convert(object value, Type t, object p, CultureInfo c) => value is int i ? (i + 1).ToString(c) + "." : "";
+    public object ConvertBack(object value, Type t, object p, CultureInfo c) => Binding.DoNothing;
+}
