@@ -113,13 +113,14 @@
 
                 <StackPanel Visibility="{Binding StartupSuggestions.Count, Converter={StaticResource BoolToVis}}" Margin="0,10,0,0">
                     <TextBlock Text="{i:Loc opt.startup.title}" Style="{StaticResource Text.Section}"/>
-                    <TextBlock Text="{i:Loc opt.startup.desc}" Style="{StaticResource Text.Muted}" Margin="0,0,0,8"/>
+                    <TextBlock Text="{i:Loc opt.startup.desc}" Style="{StaticResource Text.Muted}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{i:Loc opt.startup.updatersNote}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,0,0,8"/>
                     <ItemsControl ItemsSource="{Binding StartupSuggestions}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource Card}" Padding="12,10" Margin="0,0,0,6">
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalAlignment="Top" Margin="0,2,10,0"/>
+                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalAlignment="Top" Margin="0,2,10,0" AutomationProperties.Name="{Binding Name}"/>
                                         <StackPanel>
                                             <TextBlock Text="{Binding Name}" Style="{StaticResource Text.CardTitle}"/>
                                             <TextBlock Style="{StaticResource Text.Muted}">
@@ -171,7 +172,7 @@
                     </ItemsControl>
                 </Expander>
 
-                <Border Style="{StaticResource Card.Hero}" Margin="0,18,0,12">
+                <Border x:Name="ApplyCard" Style="{StaticResource Card.Hero}" Margin="0,18,0,12">
                     <StackPanel>
                         <TextBlock Text="{i:Loc opt.apply.title}" Style="{StaticResource Text.Section}"/>
                         <CheckBox Style="{StaticResource Toggle}" Content="{i:Loc opt.restorePoint}" IsChecked="{Binding CreateRestorePoint}" IsEnabled="{Binding ApplyRunning, Converter={StaticResource Not}}"/>
@@ -199,7 +200,7 @@
                 </Border>
 
                 <!-- Outcome: what changed, what was verified, measured effect, and three games -->
-                <Border Style="{StaticResource Card}" Visibility="{Binding HasOutcome, Converter={StaticResource BoolToVis}}" i:Motion.Enter="0">
+                <Border x:Name="OutcomeCard" Style="{StaticResource Card}" Visibility="{Binding HasOutcome, Converter={StaticResource BoolToVis}}" i:Motion.Enter="0">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                             <i:Icon Glyph="{StaticResource Icon.CheckCircle}" Width="20" Height="20" Foreground="{DynamicResource Brush.Success}" Margin="0,0,10,0"/>

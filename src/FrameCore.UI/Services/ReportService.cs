@@ -28,7 +28,26 @@ public static class ReportService
             catalog = r.Evaluations.Select(e => new { e.Tweak.Id, status = e.Status.ToString(), e.Compatible, current = e.CurrentSummary, target = e.TargetSummary }),
             changes = journal.ChangeSets.Select(c => new { c.TweakId, title = c.Title.ToString(), c.Status, c.CreatedUtc, c.RestoredUtc }),
         };
-        return JsonSerializer.Serialize(payload, Json.Options);
+        var node = JsonSerializer.SerializeToNode(payload, Json.Options)!;
+        if (anonymize) Scrub(node);
+        return node.ToJsonString(Json.Options);
+    }
+
+    /// <summary>Network identifiers that are not needed to diagnose performance (addresses, interface IDs, MAC override).</summary>
+    private static readonly HashSet<string> PrivateKeys = new(StringComparer.OrdinalIgnoreCase) { "gateway", "dnsServers", "interfaceGuid", "NetworkAddress" };
+
+    private static void Scrub(System.Text.Json.Nodes.JsonNode? n)
+    {
+        switch (n)
+        {
+            case System.Text.Json.Nodes.JsonObject o:
+                foreach (var key in o.Select(kv => kv.Key).Where(PrivateKeys.Contains).ToList()) o.Remove(key);
+                foreach (var kv in o.ToList()) Scrub(kv.Value);
+                break;
+            case System.Text.Json.Nodes.JsonArray a:
+                foreach (var item in a) Scrub(item);
+                break;
+        }
     }
 
     private static string E(string? s) => WebUtility.HtmlEncode(s ?? Loc.Unknown);

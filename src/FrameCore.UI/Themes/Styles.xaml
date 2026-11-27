@@ -595,6 +595,12 @@
     <Style TargetType="Expander">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextMuted}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+        <!-- Taller header: comfortable click target (≥ 24 px) -->
+        <Setter Property="HeaderTemplate">
+            <Setter.Value>
+                <DataTemplate><ContentPresenter Content="{Binding}" Margin="2,4,0,4" VerticalAlignment="Center"/></DataTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     <Style TargetType="Slider">
         <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>

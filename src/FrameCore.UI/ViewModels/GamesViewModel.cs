@@ -74,6 +74,12 @@ public sealed partial class GamesViewModel : ObservableObject, IDiagnosticConsum
     public GamesViewModel(ShellViewModel shell) => _shell = shell;
 
     public void OnDiagnostic(Services.DiagnosticResult r) { _machine = null; Ready = false; if (_shell.CurrentKey == "games") _ = LoadAsync(); }
+
+    /// <summary>
+    /// Layout check of the automated tour only (CI machines have no identifiable GPU): estimates for a stated
+    /// reference machine, so the cards and the explorer are rendered with data. Never reachable from the UI.
+    /// </summary>
+    internal void UseMachineForLayoutCheck(EstimatorMachine m) { _machine = m; Ready = false; }
     public void OnEvaluationsRefreshed(Services.DiagnosticResult r) => Ready = false;
     public void OnActivated() { if (!Ready && !Loading) _ = LoadAsync(); }
 
@@ -147,7 +153,7 @@ public sealed partial class GamesViewModel : ObservableObject, IDiagnosticConsum
                 GenreChoices.Add(new GenreChoice("all", Loc.T("games.allGenres")));
                 foreach (var g in lib.Games.Select(g => g.Genre).Distinct().OrderBy(x => Loc.T("genre." + x))) GenreChoices.Add(new GenreChoice(g, Loc.T("genre." + g)));
             }
-            MachineText = Loc.T("games.machine", diag.Profile.Cpu.Name, diag.Profile.PrimaryGpu?.Name ?? Loc.Unknown, Math.Round(_machine.RamGb));
+            MachineText = Loc.T("games.machine", _machine.CpuName ?? Loc.Unknown, _machine.GpuName ?? Loc.Unknown, Math.Round(_machine.RamGb));
             GainSourceText = source;
             Count = lib.Games.Count;
             HasEstimates = rows.Any(r => r.Estimate.Fps != null);

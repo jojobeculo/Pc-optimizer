@@ -54,6 +54,25 @@ public sealed partial class StartupRowViewModel : ObservableObject
     [RelayCommand] private Task Enable() => _toggle(this, true);
 }
 
+/// <summary>An applied profile/batch with what is still restorable in it.</summary>
+public sealed class BatchRow
+{
+    public ChangeBatch Batch { get; init; } = null!;
+    public int ActiveCount { get; init; }
+    public string Title => Batch.Title.ToString();
+    public DateTime CreatedUtc => Batch.CreatedUtc;
+    public int ChangeCount => Batch.ChangeSetIds.Count;
+    public string? RestorePointNote => Batch.RestorePointNote;
+    public bool CanRestore => ActiveCount > 0;
+    public string StateText => ActiveCount > 0 ? Loc.T("restore.batch.active", ActiveCount) : Loc.T("restore.batch.restored");
+}
+
+/// <summary>A category that still has restorable changes.</summary>
+public sealed record CategoryChip(string Key, string Label, int Count)
+{
+    public string Text => $"{Label} ({Count})";
+}
+
 public sealed partial class ChangeSetRow : ObservableObject
 {
     public ChangeSet Set { get; }
@@ -135,7 +154,8 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
     public ObservableCollection<StartupRowViewModel> StartupRows { get; } = new();
     public ObservableCollection<StartupRowViewModel> ServiceRows { get; } = new();
     public ObservableCollection<ChangeSetRow> ChangeSets { get; } = new();
-    public ObservableCollection<ChangeBatch> Batches { get; } = new();
+    public ObservableCollection<BatchRow> Batches { get; } = new();
+    public ObservableCollection<CategoryChip> RestorableCategories { get; } = new();
     public ObservableCollection<CustomProfile> CustomProfiles { get; } = new();
     private List<StartupEntry> _startup = new();
 
@@ -274,7 +294,12 @@ public sealed partial class ProModeViewModel : ObservableObject, IDiagnosticCons
         ChangeSets.Clear();
         foreach (var c in _shell.Services.Journal.ChangeSets.Take(500)) ChangeSets.Add(new ChangeSetRow(c, RestoreSet));
         Batches.Clear();
-        foreach (var b in _shell.Services.Journal.Batches.Take(50)) Batches.Add(b);
+        var journal = _shell.Services.Journal;
+        foreach (var b in journal.Batches.Take(50))
+            Batches.Add(new BatchRow { Batch = b, ActiveCount = b.ChangeSetIds.Select(id => journal.Find(id)).Count(c => c != null && Restorable(c)) });
+        RestorableCategories.Clear();
+        foreach (var g in journal.ChangeSets.Where(c => Restorable(c) && !string.IsNullOrEmpty(c.Category)).GroupBy(c => c.Category).OrderBy(g => g.Key))
+            RestorableCategories.Add(new CategoryChip(g.Key, Loc.T("pro.cat." + g.Key), g.Count()));
     }
 
     private static bool Restorable(ChangeSet c) => c.Reversible && c.Status is ChangeSetStatus.Applied or ChangeSetStatus.PartiallyRestored or ChangeSetStatus.Failed;

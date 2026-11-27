@@ -205,8 +205,8 @@
   },
   {
     "name": "GoogleUpdate|Google Update|GoogleUpdater",
-    "classification": "Optional",
-    "category": "updater"
+    "classification": "Recommended",
+    "category": "browser-updater"
   },
   {
     "name": "MicrosoftEdgeUpdate|edgeupdate",
@@ -214,14 +214,19 @@
     "category": "browser-updater"
   },
   {
-    "name": "Adobe ?(ARM|Updater|GC Invoker|Acrobat Update)|AdobeGCClient|CCXProcess|Creative Cloud",
+    "name": "Adobe ?(ARM|Acrobat Update)|AdobeARM|Acrobat Update",
+    "classification": "Recommended",
+    "category": "security-updater"
+  },
+  {
+    "name": "Adobe ?(Updater|GC Invoker)|AdobeGCClient|CCXProcess|Creative Cloud",
     "classification": "Optional",
-    "category": "updater"
+    "category": "app-companion"
   },
   {
     "name": "Java ?Update|jusched",
-    "classification": "Optional",
-    "category": "updater"
+    "classification": "Recommended",
+    "category": "security-updater"
   },
   {
     "name": "MozillaMaintenance|Firefox Background Update",
@@ -236,7 +241,7 @@
   {
     "name": "Opera.*(Assistant|Browser Assistant)|BrowserAssistant",
     "classification": "Optional",
-    "category": "updater"
+    "category": "app-companion"
   },
   {
     "name": "Wallpaper ?Engine",

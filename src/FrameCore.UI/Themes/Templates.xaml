@@ -65,7 +65,7 @@
     <DataTemplate x:Key="TweakBadges">
         <WrapPanel>
             <Border CornerRadius="6" Padding="7,2" Margin="0,0,6,4" Background="{Binding Status, Converter={StaticResource T.LevelBrush}, ConverterParameter=soft}">
-                <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="{Binding Status, Converter={StaticResource T.LevelBrush}}" Text="{Binding Status, Converter={StaticResource T.LocKey}, ConverterParameter=status.}"/>
+                <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="{Binding Status, Converter={StaticResource T.LevelBrush}}" Text="{Binding StatusLabel}"/>
             </Border>
             <Border CornerRadius="6" Padding="7,2" Margin="0,0,6,4" Background="{Binding Confidence, Converter={StaticResource T.LevelBrush}, ConverterParameter=soft}">
                 <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="{Binding Confidence, Converter={StaticResource T.LevelBrush}}" Text="{Binding Confidence, Converter={StaticResource T.LocKey}, ConverterParameter=confidence.}"/>

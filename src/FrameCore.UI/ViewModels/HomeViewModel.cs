@@ -107,16 +107,19 @@ public sealed partial class HomeViewModel : ObservableObject, IDiagnosticConsume
                                    : Suggestions > 0 ? (Loc.T("home.health.suggestions"), "Accent")
                                    : (Loc.T("home.health.good"), "Success");
         CpuName = p.Cpu.Name;
-        CpuDetail = Loc.T("home.cpu.detail", p.Cpu.Cores, p.Cpu.Threads, p.Cpu.Microarchitecture ?? Loc.Unknown);
+        CpuDetail = Loc.T("home.cpu.detail", p.Cpu.Cores, p.Cpu.Threads, p.Cpu.Microarchitecture ?? Loc.T("home.cpu.archUnknown"));
         var g = p.PrimaryGpu;
         GpuName = g?.Name ?? Loc.Unknown;
-        GpuDetail = g == null ? "" : Loc.T("home.gpu.detail", g.DedicatedVramBytes is { } v && v > 0 ? BytesConverter.Format(v) : Loc.Unknown, g.DriverVersion ?? Loc.Unknown);
+        GpuDetail = g == null ? "" : string.Join(" · ",
+            g.DedicatedVramBytes is { } v && v > 0 ? Loc.T("home.gpu.vram", BytesConverter.Format(v)) : Loc.T("home.gpu.vramUnknown"),
+            g.DriverVersion is { } dv ? Loc.T("home.gpu.driver", dv) : Loc.T("home.gpu.driverUnknown"));
         RamTotal = BytesConverter.Format(p.Memory.TotalBytes);
-        var channels = Loc.T("channels." + p.Memory.Channels);
-        if (p.Memory.ChannelsConfidence == DataConfidence.Inferred) channels = Loc.T("channels.probable", channels);
-        RamDetail = p.Memory.ConfiguredSpeedMts is { } mts
-            ? Loc.T("home.ram.detail", p.Memory.Type ?? Loc.Unknown, mts, channels)
-            : Loc.T("home.ram.detailNoSpeed", p.Memory.Type ?? Loc.Unknown, channels);
+        var channels = p.Memory.Channels == ChannelMode.Unknown ? Loc.T("home.ram.channelsUnknown") : Loc.T("channels." + p.Memory.Channels);
+        if (p.Memory.Channels != ChannelMode.Unknown && p.Memory.ChannelsConfidence == DataConfidence.Inferred) channels = Loc.T("channels.probable", channels);
+        RamDetail = string.Join(" · ",
+            p.Memory.Type ?? Loc.T("home.ram.typeUnknown"),
+            p.Memory.ConfiguredSpeedMts is { } mts ? Loc.T("home.ram.speed", mts) : Loc.T("home.ram.speedUnknown"),
+            channels);
         var sys = p.Storage.SelectMany(s => s.Volumes.Select(v => (s, v))).FirstOrDefault(x => x.v.IsSystem);
         if (sys.v != null)
         {

@@ -109,22 +109,19 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <!-- Restore by category -->
-            <TextBlock Text="{i:Loc backup.byCategory}" Style="{StaticResource Text.Section}" Margin="0,16,0,10"/>
-            <WrapPanel Margin="0,0,0,12">
-                <Button Content="{i:Loc pro.cat.Windows}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Windows" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Services}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Services" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Startup}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Startup" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Cpu}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Cpu" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Gpu}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Gpu" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Ram}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Ram" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Storage}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Storage" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Network}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Network" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Privacy}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Privacy" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Input}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Input" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Display}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Display" Margin="0,0,6,6"/>
-                <Button Content="{i:Loc pro.cat.Security}" Style="{StaticResource Button.Small}" Command="{Binding Pro.RestoreCategoryCommand}" CommandParameter="Security" Margin="0,0,6,6"/>
-            </WrapPanel>
+            <!-- Restore by category: only categories that still have restorable changes -->
+            <StackPanel Visibility="{Binding Pro.RestorableCategories.Count, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{i:Loc backup.byCategory}" Style="{StaticResource Text.Section}" Margin="0,16,0,10"/>
+                <ItemsControl ItemsSource="{Binding Pro.RestorableCategories}" Margin="0,0,0,12">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Text}" Style="{StaticResource Button.Small}" Margin="0,0,6,6"
+                                    Command="{Binding DataContext.Pro.RestoreCategoryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Key}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
 
             <!-- Applied batches -->
             <TextBlock Text="{i:Loc backup.batches}" Style="{StaticResource Text.Section}" Margin="0,8,0,10"/>
@@ -136,12 +133,14 @@
                         <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
                             <DockPanel>
                                 <Button DockPanel.Dock="Right" Content="{i:Loc common.restore}" Style="{StaticResource Button.Small}" VerticalAlignment="Center"
-                                        Command="{Binding DataContext.Pro.RestoreBatchCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                        Visibility="{Binding CanRestore, Converter={StaticResource BoolToVis}}"
+                                        Command="{Binding DataContext.Pro.RestoreBatchCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Batch}"/>
                                 <StackPanel>
                                     <TextBlock Text="{Binding Title}" FontWeight="Medium"/>
                                     <TextBlock Style="{StaticResource Text.Caption}">
-                                        <Run Text="{Binding CreatedUtc, Mode=OneWay, StringFormat=g}"/> · <Run Text="{Binding ChangeSetIds.Count, Mode=OneWay}"/> <Run Text="{i:Loc restore.changesWord}"/> · <Run Text="{Binding RestorePointNote, Mode=OneWay}"/>
+                                        <Run Text="{Binding CreatedUtc, Mode=OneWay, StringFormat=g}"/> · <Run Text="{Binding ChangeCount, Mode=OneWay}"/> <Run Text="{i:Loc restore.changesWord}"/> · <Run Text="{Binding StateText, Mode=OneWay}"/>
                                     </TextBlock>
+                                    <TextBlock Text="{Binding RestorePointNote}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </DockPanel>
                         </Border>

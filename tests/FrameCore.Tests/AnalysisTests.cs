@@ -333,7 +333,15 @@ public class StartupTests
         Assert.True(vgc.Protected);
         var gupdate = new StartupEntry { Name = "GoogleUpdateTaskMachineCore", Kind = StartupKind.ScheduledTask, FilePath = @"C:\Program Files\Google\Update\GoogleUpdate.exe" };
         kb.Classify(gupdate);
-        Assert.Equal(StartupClassification.Optional, gupdate.Classification);
+        // Browser and security updaters deliver security fixes: kept (never suggested for disabling).
+        Assert.Equal(StartupClassification.Recommended, gupdate.Classification);
+        Assert.Equal("browser-updater", gupdate.Category);
+        var acrobat = new StartupEntry { Name = "Adobe Acrobat Update Task", Kind = StartupKind.ScheduledTask };
+        kb.Classify(acrobat);
+        Assert.Equal(StartupClassification.Recommended, acrobat.Classification);
+        var genericUpdater = new StartupEntry { Name = "ContosoUpdater", Kind = StartupKind.RunKey, FilePath = @"C:\Program Files\Contoso\updater.exe", FileExists = true };
+        kb.Classify(genericUpdater);
+        Assert.Equal(StartupClassification.Optional, genericUpdater.Classification);
         var steam = new StartupEntry { Name = "Steam", Kind = StartupKind.RunKey, FilePath = @"C:\Program Files (x86)\Steam\steam.exe" };
         kb.Classify(steam);
         Assert.Equal("launcher", steam.Category);

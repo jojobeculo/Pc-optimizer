@@ -60,11 +60,13 @@ public sealed partial class TweakRowViewModel : ObservableObject
     public bool IsNotRecommended => Tweak.Confidence == Confidence.NotRecommended;
     public string ProfilesText => Tweak.Profiles.Count == 0 ? Loc.T("tweak.proOnly") : string.Join(", ", Tweak.Profiles.Select(p => Loc.T("profile." + p)));
     public bool CanApply => Compatible && (Status != TweakStatus.Applied || !Tweak.Reversible);
+    /// <summary>Maintenance operations have no lasting state: "applied" means there is nothing to do right now.</summary>
+    public string StatusLabel => !Tweak.Reversible && Status == TweakStatus.Applied ? Loc.T("status.nothingToDo") : Loc.T("status." + Status);
     public bool CanRestore => HasActiveChange && Tweak.Reversible;
 
     partial void OnEvaluationChanged(TweakEvaluation value)
     {
-        OnPropertyChanged(nameof(Status)); OnPropertyChanged(nameof(CurrentValue)); OnPropertyChanged(nameof(TargetValue));
+        OnPropertyChanged(nameof(Status)); OnPropertyChanged(nameof(StatusLabel)); OnPropertyChanged(nameof(CurrentValue)); OnPropertyChanged(nameof(TargetValue));
         OnPropertyChanged(nameof(Compatible)); OnPropertyChanged(nameof(Compatibility)); OnPropertyChanged(nameof(CanApply)); OnPropertyChanged(nameof(NeedsElevation));
     }
 

@@ -79,7 +79,7 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
         lock (r) list = r.Startup.ToList();
         foreach (var e in list.Where(e => e.Enabled && e.CanToggle && !e.Protected && e.Kind is StartupKind.RunKey or StartupKind.StartupFolder or StartupKind.ScheduledTask
                                           && e.Classification is StartupClassification.Optional or StartupClassification.Risky))
-            StartupSuggestions.Add(new StartupSuggestion { Entry = e, IsSelected = e.Category is "updater" or "adware" || e.Classification == StartupClassification.Risky });
+            StartupSuggestions.Add(new StartupSuggestion { Entry = e, IsSelected = e.Category == "adware" || e.Classification == StartupClassification.Risky });
     }
 
     [RelayCommand]

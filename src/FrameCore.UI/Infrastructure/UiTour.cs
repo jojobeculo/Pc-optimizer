@@ -196,6 +196,25 @@ public static class UiTour
                 Dialogs.AutoConfirm = false;
             }
 
+            // Games page with data: CI machines have no identifiable GPU, so the layout is also checked with the
+            // estimates of a stated reference machine (screenshots named "games-reference-machine").
+            shell.Games.UseMachineForLayoutCheck(new BenchmarkManager.Games.EstimatorMachine
+            {
+                GpuName = "NVIDIA GeForce RTX 4070", CpuName = "AMD Ryzen 7 7800X3D 8-Core Processor", GpuVramGb = 12, RamGb = 32,
+                Channels = Core.Hardware.ChannelMode.Dual, Xmp = Core.Hardware.XmpState.LikelyEnabled,
+            });
+            shell.Games.ShowExplorer = false; shell.Games.Selected = null;
+            shell.CurrentKey = "home"; shell.CurrentKey = "games";
+            await WaitUntil(() => shell.Games.Ready, TimeSpan.FromSeconds(60));
+            pages.Add(await Visit(shell, window, dir, "games-reference-machine", () => { }, scrollShots: 2));
+            shell.Games.ShowExplorer = true;
+            shell.Games.Selected = shell.Games.Rows.FirstOrDefault(r => r.Estimate.Fps != null);
+            pages.Add(await Visit(shell, window, dir, "games-reference-machine-explorer", () => { }, scrollShots: 3));
+            report["gamesReferenceMachine"] = shell.Games.Showcase.Select(r => $"{r.Name}: {r.FpsText} ({r.RangeText}) {r.LimiterText} / {r.ConfidenceText} / {r.BasisText}")
+                .Append($"estimated: {shell.Games.Rows.Count(r => r.Estimate.Fps != null)}/{shell.Games.Rows.Count}").ToList();
+            shell.Games.ShowExplorer = false; shell.Games.Selected = null;
+            if (shell.Diagnostic != null) shell.Games.OnDiagnostic(shell.Diagnostic);
+
             // Responsiveness of the layout at a small window size, light theme and English.
             window.Width = 1100; window.Height = 700;
             pages.Add(await Visit(shell, window, dir, "small-home", () => shell.CurrentKey = "home", 1));
@@ -341,7 +360,8 @@ public static class UiTour
         while (stack.Count > 0)
         {
             var d = stack.Pop();
-            if (d is System.Windows.Controls.Primitives.ButtonBase b && b.IsVisible)
+            // Only what a keyboard or screen-reader user can reach (template parts such as a combo box arrow are not).
+            if (d is System.Windows.Controls.Primitives.ButtonBase b && b.IsVisible && b.Focusable)
             {
                 var name = System.Windows.Automation.AutomationProperties.GetName(b);
                 var text = b.Content as string ?? FindText(b);

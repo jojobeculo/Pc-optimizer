@@ -83,8 +83,8 @@ public sealed class TweakEngine
         else if (states.Any(s => s.Matches)) status = TweakStatus.Partial;
         else status = TweakStatus.NotApplied;
 
-        // Stateless maintenance operations are never "applied": they can always be run again.
-        if (!tweak.Reversible && compat.Passed && status == TweakStatus.Applied) status = TweakStatus.NotApplied;
+        // Maintenance operations have no lasting state: "applied" means their handler found nothing to do
+        // (e.g. under 1 MB of old temporary files), so they are left out of plans until there is work again.
 
         return new TweakEvaluation
         {

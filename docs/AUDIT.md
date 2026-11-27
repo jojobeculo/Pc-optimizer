@@ -29,12 +29,24 @@ puis correction. Gravité : **critique** (perte de données ou système modifié
 | 17 | Mineure | Interface | Valeurs brutes « (absent) », « None » ; boutons A/B actifs sans session. | Libellés humains ; états désactivés. |
 | 18 | Mineure | Benchmark | La progression du benchmark pouvait reculer entre deux étapes (double comptage, trouvé par un test). | Corrigé et couvert par un test. |
 | 19 | Mineure | Libellés | « % Performance Limit » présenté comme une limitation alors que 100 % = aucune limitation. | Commentaire et libellés corrigés ; drapeaux de limitation lus. |
+| 20 | Majeure | Interface | Tableaux du benchmark rapide et du laboratoire réduits à un caractère par colonne (colonnes proportionnelles mesurées pendant que l'onglet était masqué), constaté sur les captures Windows. | Tableaux reconstruits avec des colonnes stables ; vérifiés sur les captures suivantes. |
+| 21 | Modérée | Interface | Barres de comparaison pleines avant d'avoir une valeur (valeur par défaut de l'animation). | Barre vide tant que la valeur est inconnue. |
+| 22 | Modérée | Icônes | Quelques icônes dessinées hors de leur cadre (déplacement relatif après concaténation des tracés, syntaxe compacte ambiguë). | Tous les tracés normalisés en coordonnées absolues ; rendu contrôlé. |
+| 23 | Modérée | Plans | Réglages d'alimentation absents de la machine affichés « état indéterminé » dans les plans. | Marqués absents et retirés des plans. |
+| 24 | Modérée | Restauration | Opérations de maintenance ponctuelles (nettoyage, retrim) comptées comme « modifications actives » à restaurer. | Statut « terminé », hors compteurs et hors restauration. |
+| 25 | Modérée | Performance de l'app | L'analyse des programmes au démarrage bloquait la fin du diagnostic (jusqu'à 15,6 s sur la VM). | Analyse en arrière-plan ; constats ajoutés à la fin ; temps par source journalisé. |
+| 26 | Modérée | Élévation | Activer les capteurs avancés figeait la fenêtre pendant le lancement du processus élevé (jusqu'à 60 s). | Lancement hors du fil de l'interface. |
+| 27 | Mineure | Restauration | Boutons de restauration sans retour quand il n'y avait rien à restaurer. | Nombre réel restauré, message « rien à restaurer », indicateur d'activité. |
+| 28 | Mineure | Localisation | Changer de langue ne traduisait pas les textes calculés (constats, résumés) avant le diagnostic suivant. | Textes recalculés immédiatement, sans nouvelle analyse. |
+| 29 | Mineure | Vérification | Après redémarrage, un réglage lisible seulement avec des droits était classé définitivement « non vérifiable ». | Gardé pour une vérification ultérieure, sans demande UAC au démarrage. |
+| 30 | Mineure | Sécurité | Le manifeste de mise à jour pouvait désigner un installateur en HTTP. | HTTPS et empreinte SHA-256 obligatoires. |
 
 ## 2. Vérifications sans défaut
 
-- **Aucun bouton décoratif** : contrôle automatique de toutes les liaisons `Command` des vues vers des commandes existantes (62/62) et 0 erreur de liaison WPF sur ~70 écrans visités sur Windows réel.
+- **Aucun bouton décoratif** : contrôle automatique de toutes les liaisons `Command` des vues vers des commandes existantes (72 utilisées, toutes définies) et 0 erreur de liaison WPF sur ~90 écrans visités sur Windows réel.
 - **Sécurité** : aucune action du catalogue ne vise Defender, le pare-feu, Windows Update, VBS/HVCI, Secure Boot, BitLocker ou les mitigations CPU (test automatique) ; le processus élevé n'accepte que des actions identiques au catalogue.
-- **Restauration exacte** : sur Windows réel, chaque optimisation compatible est appliquée, vérifiée puis restaurée, et l'état est comparé à l'état d'origine (test d'intégration).
+- **Restauration exacte** : sur Windows réel, chaque optimisation compatible est appliquée, vérifiée puis restaurée, et l'état est comparé à l'état d'origine (test d'intégration), directement **et** via le processus élevé utilisé par les comptes non administrateurs.
+- **Refus de l'UAC** : chaque chemin qui demande des droits gère le refus (message clair, réglages sans droits appliqués quand même, aucun plantage).
 
 ## 3. Limites connues (non corrigeables ici)
 
