@@ -36,7 +36,17 @@ public static class Log
     public static void Info(string area, string message) => Write("INFO", area, message);
     public static void Warn(string area, string message) => Write("WARN", area, message);
     public static void Error(string area, string message, Exception? ex = null) =>
-        Write("ERROR", area, ex == null ? message : $"{message} | {ex.GetType().Name}: {ex.Message}");
+        Write("ERROR", area, ex == null ? message : $"{message} | {Describe(ex)}");
+
+    /// <summary>Type and message of the exception and of its inner exceptions, plus the first frames of the original one.</summary>
+    public static string Describe(Exception ex)
+    {
+        var parts = new List<string>();
+        for (var e = ex; e != null && parts.Count < 5; e = e.InnerException) parts.Add($"{e.GetType().Name}: {e.Message}");
+        var root = ex; while (root.InnerException != null) root = root.InnerException;
+        var frames = (root.StackTrace ?? "").Split('\n', StringSplitOptions.RemoveEmptyEntries).Take(3).Select(f => f.Trim());
+        return string.Join(" ← ", parts) + (frames.Any() ? " @ " + string.Join(" | ", frames) : "");
+    }
 
     private static void Write(string level, string area, string message)
     {

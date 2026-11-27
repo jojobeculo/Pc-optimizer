@@ -29,6 +29,8 @@ public sealed class ApplyResult
     public string? Error { get; init; }
     public ChangeSet? ChangeSet { get; init; }
     public RestartRequirement Restart { get; init; }
+    /// <summary>Every action was already at its target when re-read just before applying: nothing was written.</summary>
+    public bool AlreadyInPlace { get; init; }
 }
 
 public sealed class RestoreResult
@@ -102,12 +104,29 @@ public sealed class TweakEngine
             Log.Warn("Engine", $"Applying not-recommended tweak {tweak.Id} on explicit user request");
 
         var ctx = new ActionContext(tweak.Id, "catalog");
+        // Re-read with the rights available now (a state may have been unreadable when the plan was built): when
+        // every action is already at its target, nothing is written, journaled or restarted.
+        if (AllAtTarget(tweak.Actions, ctx)) return new ApplyResult { Success = true, AlreadyInPlace = true };
         var cs = new ChangeSet
         {
             BatchId = batchId, TweakId = tweak.Id, Origin = "catalog", Category = tweak.Category, Title = tweak.Name,
             Restart = tweak.Restart, Reversible = tweak.Reversible,
         };
         return ApplyChangeSet(cs, tweak.Actions, ctx, progress);
+    }
+
+    private bool AllAtTarget(IReadOnlyList<ActionDefinition> actions, ActionContext ctx)
+    {
+        try
+        {
+            foreach (var a in actions)
+            {
+                var st = _dispatcher.Read(a, ctx);
+                if (!st.Readable || !st.Matches) return false;
+            }
+            return actions.Count > 0;
+        }
+        catch { return false; }
     }
 
     /// <summary>Generic transactional application, also used for dynamic changes (startup entries, services…).</summary>

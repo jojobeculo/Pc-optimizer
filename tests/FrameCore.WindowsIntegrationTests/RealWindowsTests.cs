@@ -86,7 +86,7 @@ public class RealWindowsTests
             try
             {
                 var r = s.Engine.Apply(t, facts);
-                applied = r.Success ? "oui" : r.NotApplicable ? "non applicable" : (r.RolledBack ? "échec (annulé)" : "échec");
+                applied = r.AlreadyInPlace ? "déjà en place" : r.Success ? "oui" : r.NotApplicable ? "non applicable" : (r.RolledBack ? "échec (annulé)" : "échec");
                 detail = r.Error ?? "";
                 if (r.ChangeSet != null)
                 {

@@ -90,7 +90,7 @@
             </Button>
             <Button Style="{StaticResource LabTile}" Command="{Binding LabCommand}" CommandParameter="stress" IsEnabled="{Binding Running, Converter={StaticResource Not}}">
                 <StackPanel>
-                    <i:Icon Glyph="{StaticResource Icon.Flame}" Width="22" Height="22" Foreground="{DynamicResource Brush.Warning}" HorizontalAlignment="Left"/>
+                    <i:Icon Glyph="{StaticResource Icon.Overclock}" Width="22" Height="22" Foreground="{DynamicResource Brush.Warning}" HorizontalAlignment="Left"/>
                     <TextBlock Text="{i:Loc lab.stress}" Style="{StaticResource Text.CardTitle}" Margin="0,8,0,2"/>
                     <TextBlock Text="{i:Loc lab.stress.desc}" Style="{StaticResource Text.Caption}"/>
                 </StackPanel>

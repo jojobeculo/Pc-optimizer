@@ -19,6 +19,7 @@ public sealed class BatchResult
     public string? BatchId { get; set; }
     public FrameCore.BenchmarkManager.Verification.VerifyRepairReport? Verification { get; set; }
     public int NotApplicable { get; set; }
+    public int AlreadyInPlace { get; set; }
 }
 
 /// <summary>Stages of an application, reported to the step progress indicator (fraction null = indeterminate).</summary>
@@ -82,6 +83,12 @@ public sealed class TweakService
             {
                 result.NotApplicable++;
                 result.Lines.Add("– " + t.Name + " — " + r.Error);
+                continue;
+            }
+            if (r.Success && r.AlreadyInPlace)
+            {
+                result.AlreadyInPlace++;
+                result.Lines.Add("= " + t.Name + " — " + Loc.T("apply.alreadyInPlace"));
                 continue;
             }
             if (r.Success)
@@ -170,6 +177,7 @@ public sealed class TweakService
     public static string Summary(BatchResult r)
     {
         var s = Loc.T("apply.summary", r.Applied, r.Failed);
+        if (r.AlreadyInPlace > 0) s += "\n" + Loc.T("apply.alreadyInPlaceCount", r.AlreadyInPlace);
         if (r.RebootRequired) s += "\n" + Loc.T("apply.reboot");
         else if (r.SignOutRequired) s += "\n" + Loc.T("apply.signout");
         if (r.RestorePointMessage != null) s += "\n" + r.RestorePointMessage;

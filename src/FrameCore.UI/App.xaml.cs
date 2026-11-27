@@ -65,11 +65,22 @@ public partial class App : Application
         if (Current.MainWindow is MainWindow mw) mw.ApplyTitleBarTheme(theme != "Light");
     }
 
+    /// <summary>Number of unexpected UI exceptions since start (reported by the automated tour).</summary>
+    public static int UiExceptionCount;
+    private string? _lastErrorShown;
+    private DateTime _lastErrorShownAt;
+
     private void OnUnhandled(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        Log.Error("App", "UI exception", e.Exception);
-        try { Dialogs.Error(Loc.T("app.unexpectedError", e.Exception.Message)); } catch { }
+        Interlocked.Increment(ref UiExceptionCount);
         e.Handled = true;
+        // A layout error can repeat on every pass: log it, but show the same message at most once a minute.
+        var message = e.Exception.Message;
+        var repeated = message == _lastErrorShown && DateTime.UtcNow - _lastErrorShownAt < TimeSpan.FromMinutes(1);
+        if (repeated) return;
+        Log.Error("App", "UI exception", e.Exception);
+        _lastErrorShown = message; _lastErrorShownAt = DateTime.UtcNow;
+        try { Dialogs.Error(Loc.T("app.unexpectedError", message)); } catch { }
     }
 
     protected override void OnExit(ExitEventArgs e)

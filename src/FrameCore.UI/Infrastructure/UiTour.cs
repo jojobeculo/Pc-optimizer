@@ -245,6 +245,7 @@ public static class UiTour
             report["tourError"] = ex.ToString();
             Log.Error("UiTour", "Tour failed", ex);
         }
+        report["uiExceptions"] = App.UiExceptionCount;
         report["pages"] = pages;
         lock (_listener?.Errors ?? new List<string>())
             report["bindingErrors"] = _listener?.Errors.Distinct().ToList() ?? new List<string>();
@@ -270,7 +271,7 @@ public static class UiTour
         var sw = Stopwatch.StartNew();
         var journalDir = Path.Combine(Path.GetTempPath(), "framecore-worker-test-" + Guid.NewGuid().ToString("N"));
         var problems = new List<string>();
-        int tried = 0, applied = 0, verified = 0, notApplicable = 0, exact = 0;
+        int tried = 0, applied = 0, verified = 0, notApplicable = 0, exact = 0, inPlace = 0;
         try
         {
             using var broker = new Core.Elevation.ElevationBroker();
@@ -297,7 +298,8 @@ public static class UiTour
                 try
                 {
                     var r = engine.Apply(t, facts);
-                    if (r.Success) applied++;
+                    if (r.AlreadyInPlace) inPlace++;
+                    else if (r.Success) applied++;
                     else if (r.NotApplicable) notApplicable++;
                     else problems.Add($"{t.Id}: apply failed: {r.Error}");
                     if (r.Verified == true) verified++;
@@ -317,7 +319,7 @@ public static class UiTour
         catch (Exception ex) { result["ok"] = false; problems.Add(ex.ToString()); }
         finally { try { Directory.Delete(journalDir, true); } catch { } }
         result["tried"] = tried; result["applied"] = applied; result["verified"] = verified;
-        result["notApplicable"] = notApplicable; result["exactlyRestored"] = exact; result["problems"] = problems;
+        result["notApplicable"] = notApplicable; result["alreadyInPlace"] = inPlace; result["exactlyRestored"] = exact; result["problems"] = problems;
         result["ms"] = sw.ElapsedMilliseconds;
         return result;
 
