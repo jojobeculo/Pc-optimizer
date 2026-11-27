@@ -191,7 +191,7 @@
                                                     <TextBlock Text="{Binding Unit}" Style="{StaticResource Text.Caption}" Margin="5,0,0,0" VerticalAlignment="Bottom"/>
                                                 </StackPanel>
                                                 <ItemsControl Grid.Column="3" ItemsSource="{Binding History}" ItemTemplate="{StaticResource MiniBar}" ItemsPanel="{StaticResource BarsPanel}" Height="24"
-                                                              MaxWidth="180" HorizontalAlignment="Left" Visibility="{Binding HasHistory, Converter={StaticResource BoolToVis}}" IsHitTestVisible="False"/>
+                                                              Width="160" HorizontalAlignment="Left" Visibility="{Binding HasHistory, Converter={StaticResource BoolToVis}}" IsHitTestVisible="False"/>
                                                 <TextBlock Grid.Column="3" Text="{Binding Spread}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" VerticalAlignment="Center"
                                                            Visibility="{Binding HasHistory, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
                                             </Grid>

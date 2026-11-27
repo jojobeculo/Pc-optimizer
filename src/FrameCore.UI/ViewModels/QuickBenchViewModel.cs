@@ -163,6 +163,8 @@ public sealed partial class QuickBenchViewModel : ObservableObject
         History.Select(h => h.Result).Where(x => string.IsNullOrEmpty(r.MachineSignature) || string.IsNullOrEmpty(x.MachineSignature) || x.MachineSignature == r.MachineSignature)
                .OrderBy(x => x.StartedUtc).ToList();
 
+    private static string Capitalize(string s) => s.Length == 0 ? s : char.ToUpper(s[0], CultureInfo.CurrentCulture) + s[1..];
+
     private static string Num(double v) => v.ToString(Math.Abs(v) >= 100 ? "N0" : "N1", CultureInfo.CurrentCulture);
 
     private List<ChartBar> HistoryBars(string key, QuickBenchResult current)
@@ -240,7 +242,7 @@ public sealed partial class QuickBenchViewModel : ObservableObject
                 : Loc.T("quick.trend." + mc.Verdict, mc.ImprovementPercent is { } p ? (p >= 0 ? "+" : "") + p.ToString("0.0", CultureInfo.CurrentCulture) + " %" : "");
             Components.Add(new ComponentCard
             {
-                Icon = icon, Name = Loc.T("bench.component." + c), What = Loc.T("bench.component." + c + ".what"), Headline = Loc.T("metric." + key),
+                Icon = icon, Name = Capitalize(Loc.T("bench.component." + c)), What = Loc.T("bench.component." + c + ".what"), Headline = Loc.T("metric." + key),
                 Value = m.Measured ? Num(m.Median) : "—", Unit = m.Measured ? m.Unit : Loc.T("quick.unavailable." + (m.UnavailableReason ?? "unknown")),
                 Trend = trend,
                 TrendKey = mc?.Verdict switch { ChangeVerdict.Improved => "Success", ChangeVerdict.Regressed => "Danger", ChangeVerdict.Inconclusive => "Warning", _ => "Neutral" },
@@ -359,7 +361,7 @@ public sealed partial class QuickBenchViewModel : ObservableObject
         {
             var unit = m.Unit;
             var higher = CompareAfter.Result.Get(m.Key)?.HigherIsBetter ?? CompareBefore.Result.Get(m.Key)?.HigherIsBetter ?? true;
-            double bf = double.NaN, af = double.NaN;
+            double bf = 0, af = 0; // not comparable: empty bars
             if (m.Before is { } bv && m.After is { } av && bv > 0 && av > 0)
             {
                 // Taller bar = better, also for "lower is better" values.
