@@ -495,6 +495,7 @@
  "games.explore": "Explorer les",
  "games.gain.noBench": "Gains : aucun couple de benchmarks rapides avant/après pour l'instant.",
  "games.gain.source": "Gains calculés entre les benchmarks du {0} et du {1}.",
+ "games.gain.stale": "Gains : des optimisations ont été appliquées ou annulées depuis le dernier benchmark rapide — relancez-le pour mesurer l'état actuel.",
  "games.gamesWord": "jeux",
  "games.goBench": "Ouvrir le benchmark",
  "games.howGain": "Le gain « après » n'est jamais supposé : il découle de deux benchmarks rapides (avant et après) et des seuls écarts statistiquement confirmés.",

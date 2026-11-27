@@ -12,8 +12,8 @@ Dans la page **Restauration** :
 | Action | Effet |
 |---|---|
 | **Restaurer** sur une ligne de l'historique | Annule une seule modification |
-| **Restaurer une catégorie** | Annule toutes les modifications actives d'une catégorie (ex. Services) |
-| **Profils appliqués → Restaurer** | Annule tout un profil appliqué en une fois, du plus récent au plus ancien |
+| **Restaurer une catégorie** | Annule toutes les modifications actives d'une catégorie (ex. Services). Seules les catégories qui ont encore des modifications actives sont proposées, avec leur nombre |
+| **Profils appliqués → Restaurer** | Annule tout un profil appliqué en une fois, du plus récent au plus ancien. Chaque profil indique ce qui est encore actif ; un profil déjà annulé affiche « entièrement restauré » |
 | **Tout restaurer** | Annule toutes les modifications actives faites par FrameCore |
 | **Détails** | Affiche chaque action et la valeur d'origine enregistrée |
 

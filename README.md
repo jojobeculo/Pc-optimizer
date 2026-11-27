@@ -10,7 +10,8 @@ modification est enregistrée avec la valeur exacte d'origine et peut être annu
 > **État du projet — version 2.0.** Le moteur (catalogue, transactions, vérification, statistiques, estimation) est couvert
 > par des tests automatisés, et l'application est testée sur un vrai Windows (machine virtuelle jetable de CI) : chaque
 > optimisation y est appliquée puis restaurée à l'identique, chaque écran est visité et capturé, et les parcours
-> utilisateur (benchmark, optimisation mesurée, restauration) y sont exécutés. Les fonctions qui exigent un matériel absent
+> utilisateur (benchmark, optimisation mesurée, mode Pro, démarrage, restauration) y sont exécutés, en administrateur et en
+> utilisateur standard (modifications via le processus élevé, comme sur un PC personnel). Les fonctions qui exigent un matériel absent
 > de cette VM (overclocking NVIDIA/AMD, capteurs de température, capture d'un vrai jeu) n'ont pas pu être testées :
 > voir [docs/FONCTIONNALITES.md](docs/FONCTIONNALITES.md) et [docs/RAPPORT-TESTS.md](docs/RAPPORT-TESTS.md).
 

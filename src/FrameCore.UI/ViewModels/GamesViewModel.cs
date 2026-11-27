@@ -175,6 +175,10 @@ public sealed partial class GamesViewModel : ObservableObject, IDiagnosticConsum
         var all = _shell.Services.QuickBenches.LoadAll().Where(r => !r.Cancelled).OrderByDescending(r => r.StartedUtc).ToList();
         if (all.Count < 2) return (null, Loc.T("games.gain.noBench"));
         var after = all[0];
+        // The last benchmark must describe the current state: if FrameCore changes were applied or restored since,
+        // its comparison no longer says anything about this PC as it is now.
+        var current = _shell.Services.Journal.ChangeSets.Where(c => c.Status == ChangeSetStatus.Applied && c.TweakId != null).Select(c => c.TweakId!).ToHashSet();
+        if (!after.ActiveTweakIds.ToHashSet().SetEquals(current)) return (null, Loc.T("games.gain.stale"));
         var before = all.Skip(1).FirstOrDefault(r => !r.ActiveTweakIds.ToHashSet().SetEquals(after.ActiveTweakIds)) ?? all[1];
         return (QuickBenchComparer.Compare(before, after), Loc.T("games.gain.source", before.StartedUtc.ToLocalTime().ToString("g"), after.StartedUtc.ToLocalTime().ToString("g")));
     }

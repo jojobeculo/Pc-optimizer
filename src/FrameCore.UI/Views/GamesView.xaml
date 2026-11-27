@@ -179,8 +179,8 @@
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="150"/>
-                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="140"/>
+                                            <ColumnDefinition Width="Auto" MinWidth="70"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel>
                                             <TextBlock Text="{Binding Name}" FontWeight="Medium" TextTrimming="CharacterEllipsis"/>
@@ -196,7 +196,7 @@
                                         </StackPanel>
                                         <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
                                             <TextBlock HorizontalAlignment="Right" FontFamily="{StaticResource Font.Display}" FontSize="17" FontWeight="SemiBold" Text="{Binding FpsText}"/>
-                                            <TextBlock HorizontalAlignment="Right" Text="{Binding ConfidenceText}" Style="{StaticResource Text.Caption}" Foreground="{Binding ConfidenceKey, Converter={StaticResource LevelBrush}}"/>
+                                            <TextBlock HorizontalAlignment="Right" Text="{Binding ConfidenceText}" Style="{StaticResource Text.Caption}" TextWrapping="NoWrap" Foreground="{Binding ConfidenceKey, Converter={StaticResource LevelBrush}}"/>
                                         </StackPanel>
                                     </Grid>
                                 </DataTemplate>
