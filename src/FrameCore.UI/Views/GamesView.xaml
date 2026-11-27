@@ -144,7 +144,7 @@
                     <StackPanel>
                         <DockPanel Margin="0,0,0,10">
                             <i:Icon DockPanel.Dock="Left" Glyph="{StaticResource Icon.Search}" Width="16" Height="16" Foreground="{DynamicResource Brush.TextFaint}" Margin="0,0,8,0"/>
-                            <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{i:Loc games.search}" ToolTip="{i:Loc games.search}"/>
+                            <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{i:Loc games.search}" Tag="{i:Loc games.searchHint}"/>
                         </DockPanel>
                         <ItemsControl ItemsSource="{Binding GenreChoices}" Margin="0,0,0,4">
                             <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>

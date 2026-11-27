@@ -44,7 +44,7 @@
                     <DockPanel>
                         <Button DockPanel.Dock="Right" Content="{i:Loc settings.validate}" Style="{StaticResource Button.Secondary}" Command="{Binding ValidatePresentMonCommand}" Margin="8,0,0,0"/>
                         <Button DockPanel.Dock="Right" Content="{i:Loc settings.browse}" Style="{StaticResource Button.Secondary}" Command="{Binding BrowsePresentMonCommand}" Margin="8,0,0,0"/>
-                        <TextBox Text="{Binding PresentMonPath, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Text="{Binding PresentMonPath, UpdateSourceTrigger=PropertyChanged}" Tag="{i:Loc settings.presentmon.hint}" AutomationProperties.Name="{i:Loc settings.presentmon.hint}"/>
                     </DockPanel>
                     <TextBlock Text="{Binding PresentMonStatus}" Style="{StaticResource Text.Muted}" Margin="0,6,0,0"/>
                     <Button Content="{i:Loc bench.pm.page}" Style="{StaticResource Button.Ghost}" HorizontalAlignment="Left" Command="{Binding OpenPresentMonCommand}"/>
@@ -71,7 +71,7 @@
                     <CheckBox Style="{StaticResource Toggle}" Content="{i:Loc settings.updates.enable}" IsChecked="{Binding CheckForUpdates}" Margin="0,0,0,8"/>
                     <DockPanel IsEnabled="{Binding CheckForUpdates}">
                         <Button DockPanel.Dock="Right" Content="{i:Loc settings.updates.check}" Style="{StaticResource Button.Secondary}" Command="{Binding CheckUpdatesCommand}" Margin="8,0,0,0"/>
-                        <TextBox Text="{Binding UpdateUrl, UpdateSourceTrigger=LostFocus}"/>
+                        <TextBox Text="{Binding UpdateUrl, UpdateSourceTrigger=LostFocus}" Tag="{i:Loc settings.update.hint}" AutomationProperties.Name="{i:Loc settings.update.hint}"/>
                     </DockPanel>
                     <TextBlock Text="{Binding UpdateStatus}" Style="{StaticResource Text.Muted}" Margin="0,6,0,0"/>
                 </StackPanel>

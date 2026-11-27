@@ -40,10 +40,13 @@ public static class CpuTuningAdvisor
 
     public static CpuTuningReport Analyze(MachineProfile p, IRegistryAccess? reg = null)
     {
+        // In a virtual machine the hypervisor owns the processor: no BIOS, no vendor tool applies.
+        if (p.Board.IsVirtualMachine)
+            return new CpuTuningReport { Adapter = Loc.T("hw.vm"), OverclockSupported = TriState.No, Summary = Loc.T("cpu.tuning.virtualMachine") };
         var adapter = Adapters.FirstOrDefault(a => a.Supports(p.Cpu));
         var report = adapter?.Analyze(p) ?? new CpuTuningReport
         {
-            Adapter = "generic", OverclockSupported = TriState.Unknown, Summary = Loc.T("cpu.tuning.unknownVendor"),
+            Adapter = Loc.T("cpu.tuning.generic"), OverclockSupported = TriState.Unknown, Summary = Loc.T("cpu.tuning.unknownVendor"),
         };
         if (reg != null && p.Cpu.Vendor == CpuVendor.Intel) IntelCoreAdapter.CheckRaptorLakeMicrocode(p, reg, report);
         return report;

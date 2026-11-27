@@ -112,6 +112,7 @@ public sealed partial class GamesViewModel : ObservableObject, IDiagnosticConsum
         try
         {
             var lib = _shell.Services.Games;
+            Count = lib.Games.Count; // known before the estimates: "Explore the 91 games" while computing
             _machine ??= EstimatorMachine.From(diag.Profile);
             if (Resolutions.Count == 0)
             {

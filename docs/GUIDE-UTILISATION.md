@@ -24,9 +24,12 @@ Page **Optimisation** — trois niveaux :
 1. Cliquez sur un niveau : le **plan propre à votre PC** apparaît (rien n'est encore modifié) avec, pour chaque réglage,
    la valeur actuelle et la valeur proposée, les réglages déjà en place, ceux exclus (avec la raison : portable, Ryzen X3D
    bi-CCD, version de Windows, conflit avec un autre réglage…), et les actions à faire vous-même (BIOS, pilote).
-2. Décochez ce que vous ne voulez pas.
+2. Décochez ce que vous ne voulez pas. Les programmes au démarrage proposés à la désactivation sont listés à part ;
+   les programmes de mise à jour ne sont **jamais cochés d'office** (correctifs de sécurité, aucun effet mesurable sur
+   les FPS) et ceux des navigateurs, d'Acrobat et de Java sont conservés.
 3. Options : point de restauration Windows ; **Mesurer avant et après** (benchmark express, ≈ 3 min au total, recommandé).
-4. **Appliquer la sélection**. Windows demande une seule fois l'autorisation administrateur.
+4. **Appliquer la sélection** (ou **Appliquer…** en haut du plan : la page descend d'elle-même vers la progression,
+   puis vers le résultat). Windows demande une seule fois l'autorisation administrateur.
 5. La progression suit les vraies étapes : mesure avant → point de restauration → application (x/N) → vérification →
    mesure après.
 6. Le **Résultat** indique ce qui est appliqué, ce qui a été **relu et vérifié**, ce que Windows n'a pas conservé
@@ -66,8 +69,9 @@ Méthodes détaillées : [BENCHMARKS.md](BENCHMARKS.md).
 
 ## 6. Restauration
 
-Tout ce que FrameCore a modifié, avec la valeur exacte d'origine : restaurer un élément, une catégorie, un profil ou
-tout ; **Vérifier et réparer maintenant** (après une mise à jour Windows par exemple) ; reprise d'une optimisation
+Tout ce que FrameCore a modifié, avec la valeur exacte d'origine : restaurer un élément, une catégorie (seules les
+catégories qui ont encore des modifications actives sont proposées, avec leur nombre), un profil (chaque profil
+appliqué indique ce qui est encore actif ou « entièrement restauré ») ou tout ; **Vérifier et réparer maintenant** (après une mise à jour Windows par exemple) ; reprise d'une optimisation
 interrompue ; rapports de vérification. Voir [GUIDE-RESTAURATION.md](GUIDE-RESTAURATION.md).
 
 ## 7. Mode Pro

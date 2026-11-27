@@ -151,7 +151,7 @@
                     <DockPanel Margin="0,0,0,10">
                         <Button DockPanel.Dock="Right" Content="{i:Loc pro.profiles.import}" Style="{StaticResource Button.Secondary}" Command="{Binding ImportCustomProfileCommand}" Margin="8,0,0,0"/>
                         <Button DockPanel.Dock="Right" Content="{i:Loc pro.profiles.save}" Style="{StaticResource Button.Primary}" Command="{Binding SaveCurrentAsProfileCommand}" Margin="8,0,0,0"/>
-                        <TextBox Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" Tag="{i:Loc pro.profiles.nameHint}" AutomationProperties.Name="{i:Loc pro.profiles.nameHint}"/>
                     </DockPanel>
                     <ItemsControl ItemsSource="{Binding CustomProfiles}">
                         <ItemsControl.ItemTemplate>

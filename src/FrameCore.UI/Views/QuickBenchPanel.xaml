@@ -41,7 +41,7 @@
                     </WrapPanel>
                     <DockPanel Margin="0,6,0,0" MaxWidth="460" HorizontalAlignment="Left">
                         <TextBlock DockPanel.Dock="Left" Text="{i:Loc bench.label}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <TextBox Text="{Binding Label, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{i:Loc bench.label}" ToolTip="{i:Loc quick.labelHint}" MinWidth="300"/>
+                        <TextBox Text="{Binding Label, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{i:Loc bench.label}" Tag="{i:Loc quick.labelHint}" MinWidth="300"/>
                     </DockPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">

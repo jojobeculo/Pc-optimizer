@@ -1,54 +1,102 @@
-# Rapport de tests — FrameCore 1.0.0
+# Rapport de tests — FrameCore 2.0.0
 
-Environnement de développement : conteneur Linux x64 (pas de Windows, pas de GPU, pas d'accès matériel).
-.NET SDK 10.0.404, NSIS 3.09. Wine 9.0 est présent mais plante au démarrage (`double free or corruption`) :
-**l'interface WPF n'a pas pu être lancée** dans cet environnement.
+Deux environnements :
 
-## 1. Ce qui a été vérifié
+- **Conteneur Linux** (développement) : compilation, tests unitaires, construction de l'installateur. Pas de Windows.
+- **Machine virtuelle Windows jetable** (GitHub Actions `windows-latest`, détruite après chaque exécution) :
+  Windows Server 2025 Datacenter 24H2 (build 26100), AMD EPYC, 16 Go, pilote d'affichage de base Microsoft
+  (aucun GPU), aucun capteur de température, compte administrateur. Les tests qui **modifient** Windows ne
+  s'exécutent que sur cette machine (variable `FRAMECORE_DISPOSABLE_VM=1`), jamais sur un PC personnel.
+
+Chaque modification du code relance toute la chaîne (`.github/workflows/windows-ci.yml`). Les chiffres
+ci-dessous proviennent de la dernière exécution complète ; les captures d'écran, journaux et rapports JSON sont
+publiés comme artefacts de chaque exécution.
+
+## 1. Synthèse
 
 | Vérification | Résultat |
 |---|---|
-| Compilation Debug et Release des 15 projets + tests (`net10.0` / `net10.0-windows`) | ✅ sans erreur |
-| Publication self-contained `win-x64` | ✅ `publish/FrameCore/FrameCore.exe` (PE32+ x86-64) |
-| Création de l'installateur NSIS (stub natif amd64) | ✅ `artifacts/FrameCore-Setup-1.0.0-x64.exe` |
-| Tests unitaires xUnit | ✅ 70 / 70 réussis |
-| Contrôle « aucune donnée personnelle dans le paquet » (script de build) | ✅ |
+| Compilation Release des 15 projets + 2 projets de tests | ✅ 0 erreur, 0 avertissement |
+| Tests unitaires (xUnit) | ✅ 107 / 107 (Linux et Windows) |
+| Test d'intégration « détection matérielle » sur Windows réel | ✅ |
+| Test d'intégration « aller-retour du catalogue » sur Windows réel | ✅ 53 optimisations appliquées, relues, restaurées : état d'origine retrouvé à l'identique pour toutes ; 1 « non applicable » correctement détectée ; 16 incompatibles avec la VM ignorées ; 0 non effective |
+| Aller-retour via le processus élevé (chemin des comptes non administrateurs) | voir § 4 |
+| Visite automatique de l'interface (≈ 90 écrans, thèmes sombre/clair, FR/EN, petite fenêtre) | ✅ 0 erreur de liaison WPF |
+| Parcours utilisateur réels (benchmark, application d'un profil, jeux, vérification, restauration, laboratoire, mode Pro, démarrage) | ✅ voir § 3 |
+| Installateur : installation silencieuse, lancement de l'application installée, désinstallation | ✅ voir § 5 |
+| Audit d'accessibilité automatique (noms accessibles, taille des cibles) + parcours au clavier | ✅ voir § 6 |
 
-### Détail des tests automatisés
+## 2. Tests unitaires (107)
 
-| Classe | Tests | Couverture |
-|---|---|---|
-| CatalogTests | 11 | Chargement sans erreur, textes FR/EN complets, règles de profil, absence de composant protégé, absence de changement de sécurité interdit, gestionnaires connus, faits utilisés par les conditions, exclusion X3D bi-CCD, cohérence des fichiers de langue et des paramètres de format, rejet d'entrées dangereuses |
-| EngineTests | 10 | Application puis restauration exacte (y compris valeurs absentes) ; rollback en cas d'échec au milieu d'un réglage ; journal écrit avant toute modification ; refus d'un réglage incompatible sans rien toucher ; services/tâches/alimentation ; plan Performances ultimes dupliqué puis supprimé ; fusion des réglages DirectX ; vrais réglages du catalogue sur machine simulée ; restauration multiple du plus récent au plus ancien ; séparation expérimental/consentement dans le plan |
-| SecurityTests | 4 | Worker : n'accepte que les actions exactes du catalogue ; restrictions des modifications dynamiques ; politique de sécurité bloquant les cibles protégées ; aller-retour du protocole du canal |
-| JournalTests | 1 | Le journal survit à un redémarrage et marque les modifications interrompues |
-| FrameStatisticsTests | 5 | FPS exacts, 1 % low (moyenne des 1 % les plus lents), 0,1 % low seulement ≥ 10 000 images, percentiles, conversion horodatages → frametimes |
-| PresentMonTests | 2 | Colonnes PresentMon 1.x et 2.x, valeurs NA ignorées, colonne manquante signalée |
-| ComparisonTests | 2 | Test de Welch, différence dans le bruit non présentée comme un gain |
-| BottleneckTests | 3 | Limitation GPU, limitation CPU et VRAM saturée, FPS plafonnés non présentés comme une limite matérielle |
-| EdidTests | 2 | Décodage EDID (fabricant, résolution native, plage VRR) |
-| MemoryTests | 14 | Décodage des références de kits RAM sans deviner, simple canal et XMP inactif, double canal d'après les emplacements |
-| IdentificationTests | 3 | Identification CPU, GPU et carte mère ; support de la version de Windows |
-| StartupTests | 3 | Chemin d'exécutable, sémantique StartupApproved, protection des anti-cheats, désactivation sans suppression |
-| StressAndTuningTests | 3 | Unité de calcul CPU déterministe ; réglage GPU automatique : recul après le premier échec, plafond, retour à l'origine si la validation finale échoue |
-| PlatformParsingTests | 4 | Sortie bcdedit indépendante de la langue, compteurs GPU par adaptateur, codec registre, chaîne de réglages DirectX |
+| Fichier | Contenu principal |
+|---|---|
+| `CatalogTests` | Chargement et validation du catalogue (références, conflits symétriques, zones d'impact, opérations ponctuelles), textes FR/EN complets, règles des profils, aucune cible protégée (Defender, pare-feu, Windows Update, VBS/HVCI, Secure Boot, BitLocker, mitigations), gestionnaires connus |
+| `EngineTests` | Application/restauration exacte (valeurs absentes comprises), rollback incluant l'action en échec, journal écrit avant modification, refus d'un réglage incompatible, plans sans conflit, relecture après application |
+| `AuditRegressionTests` | Non-régression des constats de l'audit (journal interrompu restaurable, reprise sans double application, profils renommés, culture, progression) |
+| `QuickBenchTests` | Médiane, MAD, CV, intervalles de confiance, test de Welch, seuil de bruit, indice relatif, progression monotone, détection du bridage, comparaison avec changement de pilote/Windows ; Vérification & Réparation (2 réécritures puis restauration, régression mesurée qui disparaît / persiste, réseau et confidentialité jamais incriminés) |
+| `GameEstimatorTests` | Correspondance GPU/CPU (portable vs bureau, F/KF, APU), modèle limité GPU/CPU, pénalité de VRAM, plafonds, plages d'incertitude, origine de l'estimation, gain projeté uniquement à partir de mesures confirmées, sélection de 3 jeux |
+| `AnalysisTests` | EDID, références de barrettes, canaux mémoire, identification CPU/GPU/carte mère, cycle de vie Windows, sortie `bcdedit` indépendante de la langue, compteurs GPU, PresentMon 1.x/2.x, statistiques d'images (1 % / 0,1 % low), goulots d'étranglement, base de connaissances du démarrage (anti-cheats protégés, mises à jour de sécurité conservées), désactivation sans suppression, protocole du processus élevé et validation des requêtes |
 
-## 2. Ce qui n'a pas pu être testé ici
+## 3. Parcours utilisateur réels sur Windows (machine jetable)
 
-| Fonction | Raison | Statut |
-|---|---|---|
-| Lancement de l'interface, navigation, rendu | Pas de Windows ; Wine inutilisable | **Non testé** |
-| Détection matérielle réelle (WMI, DXGI, D3DKMT, CPUID…) | Pas de Windows | Non testé (logique d'analyse testée) |
-| Application réelle des réglages (registre, services, powercfg, bcdedit) | Pas de Windows ; règle : aucune optimisation sur un PC sans accord | Non testé en réel ; testé sur simulateurs en mémoire |
-| Élévation UAC et canal nommé | Pas de Windows | Non testé |
-| Overclocking NVIDIA (NVML) / AMD (ADLX) | Pas de GPU | **Non testé — à considérer comme expérimental** |
-| Capture ETW / PresentMon | Pas de Windows | Non testé (statistiques testées sur données) |
-| Capteurs LibreHardwareMonitor | Pas de matériel | Non testé |
-| Installation / désinstallation | Pas de Windows | Non testé (script compilé sans erreur) |
+| Parcours | Résultat mesuré |
+|---|---|
+| Premier lancement → fenêtre affichée | 0,9 s |
+| Diagnostic complet (programmes au démarrage analysés en arrière-plan) | 5,8 s (17,4 s avant optimisation de l'analyse) |
+| Benchmark rapide « express » | 75 s ; CPU 1 cœur/tous cœurs/charge prolongée, mémoire, stockage, réactivité, médianes + IC 95 % ; GPU « non mesuré » (pas de GPU) ; aucun bridage détecté |
+| Profil **Équilibré** appliqué avec mesure avant/après | 12 modifications appliquées, 0 échec ; 9/9 vérifiées actives après relecture ; point de restauration indisponible sur Windows Server (message explicite) |
+| Effet mesuré | indice 97,7 : baisse limitée au stockage, attribuée à un facteur externe car aucune modification appliquée ne touche le stockage — aucune restauration inutile |
+| Vérification & Réparation, puis **Tout restaurer** | 18 actions restaurées et vérifiées ; 0 modification active ensuite |
+| Laboratoire : réactivité, calcul FP32 | exécutés, résultats affichés |
+| Jeux & FPS sur la VM | page en mode « carte graphique non identifiée » : aucune estimation inventée |
+| Mémoire / CPU de l'application au repos | 186 Mo (ensemble de travail), 1,1 % d'un cœur en moyenne |
 
-## 3. Recommandations pour la première exécution sur un PC
+## 4. Chemins non administrateur
 
-1. Installer sur un PC de test ou après avoir créé un point de restauration.
-2. Lancer un diagnostic et vérifier les valeurs affichées dans **Matériel**.
-3. Appliquer le profil le plus léger, vérifier, puis **Tout restaurer** pour valider le cycle complet.
-4. Exporter un rapport (Paramètres → Rapport) en cas de problème.
+Sur un PC personnel, l'application tourne **sans droits administrateur** : chaque modification qui en exige
+passe par un processus élevé (UAC), via un canal nommé dont les requêtes sont revalidées contre le catalogue.
+L'exécuteur CI étant administrateur, deux tests forcent ce chemin :
+
+- **Aller-retour via le processus élevé** : toutes les optimisations compatibles qui exigent des droits sont
+  appliquées, vérifiées et restaurées à travers le canal, puis l'état est comparé à l'état d'origine
+  (rapport `workerRoundTrip`).
+- **Visite en utilisateur standard** (`runas /trustlevel:0x20000`, jeton sans le groupe Administrateurs) : le
+  diagnostic et toutes les pages fonctionnent sans droits ; les demandes d'élévation sont refusées (comme un
+  utilisateur qui refuse l'UAC) et l'application continue sans planter.
+
+Non testable ici : l'affichage réel de la fenêtre UAC (le runner n'a pas d'utilisateur interactif).
+
+## 5. Installateur
+
+| Contrôle | Résultat |
+|---|---|
+| Installation silencieuse (`/S`) | code 0 |
+| Fichiers, catalogue, raccourci du menu Démarrer, entrée « Applications » (FrameCore 2.0.0, ≈ 148 Mo) | présents |
+| Lancement de l'application **installée** (visite complète) | code 0, rapport produit |
+| Désinstallation silencieuse | code 0 ; dossier supprimé ; entrée supprimée ; données utilisateur conservées (journal de restauration) |
+
+## 6. Accessibilité
+
+- Audit automatique sur chaque page : contrôles atteignables au clavier sans nom accessible, cibles de moins de
+  22 px. Les constats ont été corrigés (en-têtes « Détails techniques » agrandis, noms accessibles ajoutés).
+- Parcours au clavier (Tab) de chaque page : le focus reste visible (anneau de focus) et parcourt toute la page.
+- Contrastes calculés pour les deux thèmes (WCAG AA) : voir `docs/DESIGN.md`.
+- Animations désactivées automatiquement si « Effets d'animation » est désactivé dans Windows.
+
+## 7. Non testé (matériel absent) — voir aussi `docs/FONCTIONNALITES.md`
+
+| Fonction | Raison |
+|---|---|
+| Overclocking NVIDIA (NVML) / AMD (ADLX) | aucune carte graphique — **à considérer comme expérimental** |
+| Partie GPU du benchmark, stress combiné, VRAM | aucune carte graphique |
+| Températures, puissance, capteurs avancés | aucun capteur exposé par la VM |
+| Capture ETW / PresentMon d'un vrai jeu, calibration de l'estimateur | aucun jeu installable sur la VM |
+| Point de restauration Windows | indisponible sur Windows Server |
+| Fenêtre UAC réelle, redémarrage réel entre application et vérification | pas de session interactive |
+
+## 8. Recommandations pour la première utilisation sur un PC
+
+1. Laisser l'option « point de restauration » activée la première fois.
+2. Lancer un **benchmark rapide** avant d'optimiser (ou cocher « mesurer avant/après »).
+3. Commencer par le profil **Équilibré**, vérifier, puis essayer **Tout restaurer** pour constater le retour arrière.
+4. En cas de problème : *Paramètres → Rapport de diagnostic* (anonymisé par défaut) et *Restauration → Tout restaurer*.

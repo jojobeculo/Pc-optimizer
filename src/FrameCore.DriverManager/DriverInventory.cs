@@ -115,7 +115,7 @@ public static class DriverInventory
                 Id = "drivers.unsigned." + d.DeviceName, Category = "Drivers", Severity = Severity.Warning,
                 Title = Loc.T("drivers.unsigned.title", d.DeviceName), Detail = Loc.T("drivers.unsigned.detail", d.Provider, d.InfName),
             });
-        if (p.Cpu.Vendor == CpuVendor.Amd && !p.Board.IsLaptop && !p.InstalledVendorTools.Contains("AMD Chipset Software"))
+        if (p.Cpu.Vendor == CpuVendor.Amd && !p.Board.IsLaptop && !p.Board.IsVirtualMachine && !p.InstalledVendorTools.Contains("AMD Chipset Software"))
             findings.Add(new Finding
             {
                 Id = "drivers.amd.chipset", Category = "Drivers", Severity = p.Cpu.IsDualCcdX3D ? Severity.Warning : Severity.Suggestion,

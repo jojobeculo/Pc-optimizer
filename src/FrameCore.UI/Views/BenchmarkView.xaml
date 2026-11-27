@@ -57,7 +57,7 @@
                             <RadioButton Style="{StaticResource Segment}" Content="{i:Loc bench.label.overclock}" IsChecked="{Binding LabelKind, Converter={StaticResource Eq}, ConverterParameter=overclock}"/>
                             <RadioButton Style="{StaticResource Segment}" Content="{i:Loc bench.label.custom}" IsChecked="{Binding LabelKind, Converter={StaticResource Eq}, ConverterParameter=custom}"/>
                         </WrapPanel>
-                        <TextBox Text="{Binding CustomLabel, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding LabelKind, Converter={StaticResource EqVis}, ConverterParameter=custom}" Margin="0,0,0,6"/>
+                        <TextBox Text="{Binding CustomLabel, UpdateSourceTrigger=PropertyChanged}" Tag="{i:Loc bench.customLabelHint}" AutomationProperties.Name="{i:Loc bench.customLabelHint}" Visibility="{Binding LabelKind, Converter={StaticResource EqVis}, ConverterParameter=custom}" Margin="0,0,0,6"/>
                         <Grid Margin="0,6,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>

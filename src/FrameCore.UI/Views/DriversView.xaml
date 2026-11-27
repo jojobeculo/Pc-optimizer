@@ -88,7 +88,7 @@
                     <DataGrid ItemsSource="{Binding Drivers}" SelectedItem="{Binding Selected}" MaxHeight="560">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{i:Loc drivers.col.device}" Binding="{Binding DeviceName}" Width="2*"/>
-                            <DataGridTextColumn Header="{i:Loc drivers.col.category}" Binding="{Binding Category, Converter={StaticResource LocKey}, ConverterParameter=drivers.cat.}" Width="100"/>
+                            <DataGridTextColumn Header="{i:Loc drivers.col.category}" Binding="{Binding Category, Converter={StaticResource LocKey}, ConverterParameter=drivers.cat.}" Width="130"/>
                             <DataGridTextColumn Header="{i:Loc drivers.col.version}" Binding="{Binding Version}" Width="130"/>
                             <DataGridTextColumn Header="{i:Loc drivers.col.date}" Binding="{Binding Date, StringFormat=d}" Width="95"/>
                             <DataGridTextColumn Header="{i:Loc drivers.col.provider}" Binding="{Binding Provider}" Width="*"/>

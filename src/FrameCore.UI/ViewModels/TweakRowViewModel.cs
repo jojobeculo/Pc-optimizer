@@ -53,8 +53,24 @@ public sealed partial class TweakRowViewModel : ObservableObject
     public TweakStatus Status => Evaluation.Status;
     public bool Compatible => Evaluation.Compatible;
     public string Compatibility => Evaluation.Compatible ? Loc.T("tweak.compatible") : string.Join("\n", Evaluation.IncompatibilityReasons);
-    public string CurrentValue => Evaluation.ActionStates.Count == 0 ? "" : string.Join("\n", Evaluation.ActionStates.Select(s => s.Readable ? s.Current : "? " + s.Error));
-    public string TargetValue => string.Join("\n", Evaluation.ActionStates.Select(s => s.Target));
+    public string CurrentValue => Evaluation.ActionStates.Count == 0 ? "" : string.Join("\n", Evaluation.ActionStates.Select((s, i) => Line(i, s.Readable ? s.Current : "? " + s.Error)));
+    public string TargetValue => string.Join("\n", Evaluation.ActionStates.Select((s, i) => Line(i, s.Target)));
+
+    /// <summary>"Name : value" so that several values of one optimisation can be told apart (registry value, service, task).</summary>
+    private string Line(int index, string value)
+    {
+        if (index >= Tweak.Actions.Count) return value;
+        var a = Tweak.Actions[index];
+        var label = a.Type switch
+        {
+            "registry" or "dxSetting" => a.Name,
+            "service" => a.Name,
+            "task" => a.Path?.TrimEnd('\\').Split('\\').LastOrDefault(),
+            _ => null,
+        };
+        return string.IsNullOrEmpty(label) || (Tweak.Actions.Count == 1 && a.Type != "registry") || value.StartsWith(label + "=", StringComparison.Ordinal)
+            ? value : $"{label} : {value}";
+    }
     public bool NeedsElevation => Evaluation.NeedsElevation;
     public bool IsExperimental => Tweak.Confidence == Confidence.Experimental;
     public bool IsNotRecommended => Tweak.Confidence == Confidence.NotRecommended;
