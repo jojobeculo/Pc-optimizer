@@ -162,3 +162,11 @@ public sealed class ResourceKeyConverter : IValueConverter
         value is string key && Application.Current?.TryFindResource(key) is { } r ? r : DependencyProperty.UnsetValue;
     public object ConvertBack(object value, Type t, object p, CultureInfo c) => Binding.DoNothing;
 }
+
+/// <summary>Width → Visible from the given minimum width ("1250"), Collapsed below (optional decorations on small windows).</summary>
+public sealed class MinWidthToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type t, object p, CultureInfo c) =>
+        value is double w && double.TryParse(p?.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out var min) && w >= min ? Visibility.Visible : Visibility.Collapsed;
+    public object ConvertBack(object value, Type t, object p, CultureInfo c) => Binding.DoNothing;
+}

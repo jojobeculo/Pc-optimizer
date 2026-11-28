@@ -3,12 +3,12 @@
     <Color x:Key="Color.Bg0">#0B0C0F</Color>
     <Color x:Key="Color.Accent">#3BE8A0</Color>
     <Color x:Key="Color.Card">#14171C</Color>
-    <SolidColorBrush x:Key="Brush.Bg0" Color="#0B0C0F"/>
-    <SolidColorBrush x:Key="Brush.Bg1" Color="#0F1115"/>
-    <SolidColorBrush x:Key="Brush.Card" Color="#14171C"/>
-    <SolidColorBrush x:Key="Brush.CardHover" Color="#1A1E24"/>
-    <SolidColorBrush x:Key="Brush.Inset" Color="#101317"/>
-    <SolidColorBrush x:Key="Brush.Border" Color="#22262E"/>
+    <SolidColorBrush x:Key="Brush.Bg0" Color="#07080C"/>
+    <SolidColorBrush x:Key="Brush.Bg1" Color="#0A0C11"/>
+    <SolidColorBrush x:Key="Brush.Card" Color="#11141B"/>
+    <SolidColorBrush x:Key="Brush.CardHover" Color="#171B24"/>
+    <SolidColorBrush x:Key="Brush.Inset" Color="#0C0F15"/>
+    <SolidColorBrush x:Key="Brush.Border" Color="#1E232D"/>
     <SolidColorBrush x:Key="Brush.BorderStrong" Color="#2F343E"/>
     <SolidColorBrush x:Key="Brush.Text" Color="#ECEFF4"/>
     <SolidColorBrush x:Key="Brush.TextMuted" Color="#A2A9B6"/>
@@ -32,10 +32,47 @@
     <SolidColorBrush x:Key="Brush.NeutralSoft" Color="#1D2128"/>
     <SolidColorBrush x:Key="Brush.Chart1" Color="#3BE8A0"/>
     <SolidColorBrush x:Key="Brush.Chart2" Color="#6EA8FF"/>
-    <SolidColorBrush x:Key="Brush.Chart3" Color="#C49BFF"/>
+    <SolidColorBrush x:Key="Brush.Chart3" Color="#A78BFA"/>
     <SolidColorBrush x:Key="Brush.Chart4" Color="#FFB547"/>
     <SolidColorBrush x:Key="Brush.ChartFill" Color="#1F3BE8A0"/>
     <SolidColorBrush x:Key="Brush.Grid" Color="#1C2027"/>
     <SolidColorBrush x:Key="Brush.Focus" Color="#6EA8FF"/>
     <SolidColorBrush x:Key="Brush.Scrim" Color="#B3000000"/>
+    <!-- Visual direction 2.1: deep backgrounds, glass-like cards with a lit top edge, mint → cyan signature gradient -->
+    <LinearGradientBrush x:Key="Brush.CardGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#141822" Offset="0"/>
+        <GradientStop Color="#0F121A" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.CardEdge" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#2C3240" Offset="0"/>
+        <GradientStop Color="#191D26" Offset="0.45"/>
+        <GradientStop Color="#171A22" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.HeroGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#0F2420" Offset="0"/>
+        <GradientStop Color="#111622" Offset="0.55"/>
+        <GradientStop Color="#141228" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.HeroEdge" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#4D3BE8A0" Offset="0"/>
+        <GradientStop Color="#2238D6F5" Offset="0.5"/>
+        <GradientStop Color="#33A78BFA" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.AccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#3BE8A0" Offset="0"/>
+        <GradientStop Color="#2ED3E6" Offset="1"/>
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="Brush.PageGlow" Center="0.12,0" GradientOrigin="0.12,0" RadiusX="0.75" RadiusY="0.55">
+        <GradientStop Color="#1A3BE8A0" Offset="0"/>
+        <GradientStop Color="#0838D6F5" Offset="0.45"/>
+        <GradientStop Color="#0007080C" Offset="1"/>
+    </RadialGradientBrush>
+    <LinearGradientBrush x:Key="Brush.NavActive" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#203BE8A0" Offset="0"/>
+        <GradientStop Color="#0838D6F5" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.TitleGradient" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#F5F7FB" Offset="0"/>
+        <GradientStop Color="#B9C6D6" Offset="1"/>
+    </LinearGradientBrush>
 </ResourceDictionary>

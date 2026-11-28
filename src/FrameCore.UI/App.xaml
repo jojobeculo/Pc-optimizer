@@ -24,6 +24,7 @@
             <i:OneBasedConverter x:Key="OneBased"/>
             <i:WidthToColumnsConverter x:Key="WidthToColumns"/>
             <i:ResourceKeyConverter x:Key="Res"/>
+            <i:MinWidthToVisibilityConverter x:Key="MinWidthVis"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -38,4 +38,38 @@
     <SolidColorBrush x:Key="Brush.Grid" Color="#E9ECF0"/>
     <SolidColorBrush x:Key="Brush.Focus" Color="#2F6FDB"/>
     <SolidColorBrush x:Key="Brush.Scrim" Color="#66000000"/>
+    <LinearGradientBrush x:Key="Brush.CardGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FFFFFF" Offset="0"/>
+        <GradientStop Color="#FBFCFD" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.CardEdge" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#DCE1E8" Offset="0"/>
+        <GradientStop Color="#E6E9EE" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.HeroGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#EEFBF5" Offset="0"/>
+        <GradientStop Color="#FFFFFF" Offset="0.55"/>
+        <GradientStop Color="#F4F1FE" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.HeroEdge" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#66087A55" Offset="0"/>
+        <GradientStop Color="#330E7490" Offset="0.5"/>
+        <GradientStop Color="#447C5CE0" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.AccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#087A55" Offset="0"/>
+        <GradientStop Color="#0E7490" Offset="1"/>
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="Brush.PageGlow" Center="0.12,0" GradientOrigin="0.12,0" RadiusX="0.75" RadiusY="0.55">
+        <GradientStop Color="#14087A55" Offset="0"/>
+        <GradientStop Color="#00F5F6F8" Offset="1"/>
+    </RadialGradientBrush>
+    <LinearGradientBrush x:Key="Brush.NavActive" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#1A087A55" Offset="0"/>
+        <GradientStop Color="#050E7490" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.TitleGradient" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#0E1116" Offset="0"/>
+        <GradientStop Color="#3A4656" Offset="1"/>
+    </LinearGradientBrush>
 </ResourceDictionary>

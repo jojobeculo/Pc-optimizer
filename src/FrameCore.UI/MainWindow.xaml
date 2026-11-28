@@ -89,7 +89,7 @@
         </Border>
 
         <!-- ===================== Content ===================== -->
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" Background="{DynamicResource Brush.PageGlow}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -106,7 +106,36 @@
                             <TextBlock Text="{i:Loc home.runDiagnostic}"/>
                         </StackPanel>
                     </Button>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+<!-- Live strip: real-time CPU / GPU / RAM, animated, on every page -->
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="0,0,12,0" VerticalAlignment="Center" x:Name="LiveStrip"
+                                Visibility="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource MinWidthVis}, ConverterParameter=1360}">
+                        <Border Background="{DynamicResource Brush.Inset}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" CornerRadius="10" Padding="10,4" Margin="0,0,8,0" ToolTip="{i:Loc live.cpu}">
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,8,0">
+                                    <TextBlock Text="CPU" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource Brush.TextFaint}"/>
+                                    <TextBlock Text="{Binding Home.CpuUsage}" FontFamily="{StaticResource Font.Mono}" FontSize="12" Foreground="{DynamicResource Brush.Text}" MinWidth="44"/>
+                                </StackPanel>
+                                <i:SparkChart Width="64" Height="24" Values="{Binding Home.CpuHistory}" Capacity="120" Maximum="100" Stroke="{DynamicResource Brush.Chart1}" Fill="{DynamicResource Brush.ChartFill}"/>
+                            </StackPanel>
+                        </Border><Border Background="{DynamicResource Brush.Inset}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" CornerRadius="10" Padding="10,4" Margin="0,0,8,0" ToolTip="{i:Loc live.gpu}">
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,8,0">
+                                    <TextBlock Text="GPU" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource Brush.TextFaint}"/>
+                                    <TextBlock Text="{Binding Home.GpuUsage}" FontFamily="{StaticResource Font.Mono}" FontSize="12" Foreground="{DynamicResource Brush.Text}" MinWidth="44"/>
+                                </StackPanel>
+                                <i:SparkChart Width="64" Height="24" Values="{Binding Home.GpuHistory}" Capacity="120" Maximum="100" Stroke="{DynamicResource Brush.Chart2}" Fill="{DynamicResource Brush.ChartFill}"/>
+                            </StackPanel>
+                        </Border><Border Background="{DynamicResource Brush.Inset}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" CornerRadius="10" Padding="10,4" Margin="0,0,8,0" ToolTip="{i:Loc live.ram}">
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,8,0">
+                                    <TextBlock Text="RAM" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource Brush.TextFaint}"/>
+                                    <TextBlock Text="{Binding Home.RamUsage}" FontFamily="{StaticResource Font.Mono}" FontSize="12" Foreground="{DynamicResource Brush.Text}" MinWidth="44"/>
+                                </StackPanel>
+                                <i:SparkChart Width="64" Height="24" Values="{Binding Home.RamHistory}" Capacity="120" Maximum="100" Stroke="{DynamicResource Brush.Chart3}" Fill="{DynamicResource Brush.ChartFill}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <i:Icon Glyph="{StaticResource Icon.Clock}" Width="14" Height="14" Foreground="{DynamicResource Brush.TextFaint}" Margin="0,0,8,0"/>
                         <TextBlock Style="{StaticResource Text.Muted}" Text="{Binding StatusText}" VerticalAlignment="Center"/>
                     </StackPanel>

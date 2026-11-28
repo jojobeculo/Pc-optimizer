@@ -25,7 +25,7 @@
         <Setter Property="FontFamily" Value="{StaticResource Font.Display}"/>
         <Setter Property="FontSize" Value="{StaticResource Size.H1}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TitleGradient}"/>
     </Style>
     <Style x:Key="Text.Subtitle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{StaticResource Size.Body}"/>
@@ -103,8 +103,8 @@
 
     <!-- ============================================================ Surfaces -->
     <Style x:Key="Card" TargetType="Border">
-        <Setter Property="Background" Value="{DynamicResource Brush.Card}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.CardGradient}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.CardEdge}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{StaticResource Radius.Card}"/>
         <Setter Property="Padding" Value="{StaticResource Pad.Card}"/>
@@ -112,6 +112,8 @@
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
     <Style x:Key="Card.Hero" TargetType="Border" BasedOn="{StaticResource Card}">
+        <Setter Property="Background" Value="{DynamicResource Brush.HeroGradient}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.HeroEdge}"/>
         <Setter Property="CornerRadius" Value="{StaticResource Radius.Hero}"/>
         <Setter Property="Padding" Value="24"/>
     </Style>
@@ -208,8 +210,8 @@
         </Setter>
     </Style>
     <Style x:Key="Button.Primary" TargetType="Button" BasedOn="{StaticResource Button.Base}">
-        <Setter Property="Background" Value="{DynamicResource Brush.Accent}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.AccentGradient}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource Brush.OnAccent}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Style.Triggers>
@@ -269,7 +271,7 @@
                             <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.Card}"/>
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.NavActive}"/>
                             <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
