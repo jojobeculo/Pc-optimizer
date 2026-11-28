@@ -1,0 +1,418 @@
+[
+  {
+    "TweakId": "bcd.dynamictick.remove",
+    "Action": "{\u0022type\u0022:\u0022bcdRemove\u0022,\u0022name\u0022:\u0022disabledynamictick\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "bcd.platformclock.remove",
+    "Action": "{\u0022type\u0022:\u0022bcdRemove\u0022,\u0022name\u0022:\u0022useplatformclock\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "cleanup.temp.system",
+    "Action": "{\u0022type\u0022:\u0022handler\u0022,\u0022name\u0022:\u0022cleanup.temp.system\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "cleanup.temp.user",
+    "Action": "{\u0022type\u0022:\u0022handler\u0022,\u0022name\u0022:\u0022cleanup.temp.user\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "content.silentapps",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\ContentDeliveryManager\u0022,\u0022name\u0022:\u0022OemPreInstalledAppsEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "content.silentapps",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\ContentDeliveryManager\u0022,\u0022name\u0022:\u0022PreInstalledAppsEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "content.silentapps",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\ContentDeliveryManager\u0022,\u0022name\u0022:\u0022SilentInstalledAppsEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "content.suggestions",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\ContentDeliveryManager\u0022,\u0022name\u0022:\u0022SoftLandingEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "content.suggestions",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\ContentDeliveryManager\u0022,\u0022name\u0022:\u0022SubscribedContent-338388Enabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "content.suggestions",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\ContentDeliveryManager\u0022,\u0022name\u0022:\u0022SubscribedContent-338389Enabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "content.suggestions",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\ContentDeliveryManager\u0022,\u0022name\u0022:\u0022SubscribedContent-353694Enabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "content.suggestions",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\ContentDeliveryManager\u0022,\u0022name\u0022:\u0022SubscribedContent-353696Enabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "content.suggestions",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\ContentDeliveryManager\u0022,\u0022name\u0022:\u0022SystemPaneSuggestionsEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "defender.gamefolders.exclude",
+    "Action": "{\u0022type\u0022:\u0022handler\u0022,\u0022name\u0022:\u0022defender.gameFolderExclusions\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "defender.scan.cpulimit",
+    "Action": "{\u0022type\u0022:\u0022handler\u0022,\u0022name\u0022:\u0022defender.scanCpuLimit\u0022,\u0022value\u0022:20,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "display.maxRefresh",
+    "Action": "{\u0022type\u0022:\u0022handler\u0022,\u0022name\u0022:\u0022display.maxRefresh\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "edge.background.off",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Edge\u0022,\u0022name\u0022:\u0022BackgroundModeEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "edge.background.off",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Edge\u0022,\u0022name\u0022:\u0022StartupBoostEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "gaming.dvr.background",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\GameDVR\u0022,\u0022name\u0022:\u0022HistoricalCaptureEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "gaming.dvr.capture",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\GameDVR\u0022,\u0022name\u0022:\u0022AppCaptureEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "gaming.dvr.capture",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\System\\\\GameConfigStore\u0022,\u0022name\u0022:\u0022GameDVR_Enabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "gaming.gamemode",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\GameBar\u0022,\u0022name\u0022:\u0022AllowAutoGameMode\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:1,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "gaming.gamemode",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\GameBar\u0022,\u0022name\u0022:\u0022AutoGameModeEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:1,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "graphics.autohdr",
+    "Action": "{\u0022type\u0022:\u0022dxSetting\u0022,\u0022name\u0022:\u0022AutoHDREnable\u0022,\u0022value\u0022:\u00221\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "graphics.hags",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\GraphicsDrivers\u0022,\u0022name\u0022:\u0022HwSchMode\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:2,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "graphics.mpo.disable",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\Dwm\u0022,\u0022name\u0022:\u0022OverlayTestMode\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:5,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "graphics.vrr",
+    "Action": "{\u0022type\u0022:\u0022dxSetting\u0022,\u0022name\u0022:\u0022VRROptimizeEnable\u0022,\u0022value\u0022:\u00221\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "graphics.windowed",
+    "Action": "{\u0022type\u0022:\u0022dxSetting\u0022,\u0022name\u0022:\u0022SwapEffectUpgradeEnable\u0022,\u0022value\u0022:\u00221\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "input.accessibility.shortcuts",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Control Panel\\\\Accessibility\\\\Keyboard Response\u0022,\u0022name\u0022:\u0022Flags\u0022,\u0022valueKind\u0022:\u0022String\u0022,\u0022value\u0022:\u0022122\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "input.accessibility.shortcuts",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Control Panel\\\\Accessibility\\\\ToggleKeys\u0022,\u0022name\u0022:\u0022Flags\u0022,\u0022valueKind\u0022:\u0022String\u0022,\u0022value\u0022:\u002258\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "input.mouse.accel",
+    "Action": "{\u0022type\u0022:\u0022spi\u0022,\u0022name\u0022:\u0022mouseAcceleration\u0022,\u0022value\u0022:\u00220,0,0\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "input.stickykeys",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Control Panel\\\\Accessibility\\\\StickyKeys\u0022,\u0022name\u0022:\u0022Flags\u0022,\u0022valueKind\u0022:\u0022String\u0022,\u0022value\u0022:\u0022506\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "mmcss.gamestask",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile\\\\Tasks\\\\Games\u0022,\u0022name\u0022:\u0022Priority\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:6,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "mmcss.gamestask",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile\\\\Tasks\\\\Games\u0022,\u0022name\u0022:\u0022Scheduling Category\u0022,\u0022valueKind\u0022:\u0022String\u0022,\u0022value\u0022:\u0022High\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "mmcss.gamestask",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile\\\\Tasks\\\\Games\u0022,\u0022name\u0022:\u0022SFIO Priority\u0022,\u0022valueKind\u0022:\u0022String\u0022,\u0022value\u0022:\u0022High\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "mmcss.networkthrottling",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile\u0022,\u0022name\u0022:\u0022NetworkThrottlingIndex\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:\u00220xFFFFFFFF\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "mmcss.responsiveness",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile\u0022,\u0022name\u0022:\u0022SystemResponsiveness\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:10,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "net.eee",
+    "Action": "{\u0022type\u0022:\u0022netAdapterProperty\u0022,\u0022name\u0022:\u0022*EEE\u0022,\u0022value\u0022:\u00220\u0022,\u0022delete\u0022:false,\u0022filter\u0022:\u0022ethernet\u0022}"
+  },
+  {
+    "TweakId": "net.flowcontrol",
+    "Action": "{\u0022type\u0022:\u0022netAdapterProperty\u0022,\u0022name\u0022:\u0022*FlowControl\u0022,\u0022value\u0022:\u00220\u0022,\u0022delete\u0022:false,\u0022filter\u0022:\u0022ethernet\u0022}"
+  },
+  {
+    "TweakId": "net.intmod",
+    "Action": "{\u0022type\u0022:\u0022netAdapterProperty\u0022,\u0022name\u0022:\u0022*InterruptModeration\u0022,\u0022value\u0022:\u00220\u0022,\u0022delete\u0022:false,\u0022filter\u0022:\u0022ethernet\u0022}"
+  },
+  {
+    "TweakId": "net.repair.autotuning",
+    "Action": "{\u0022type\u0022:\u0022handler\u0022,\u0022name\u0022:\u0022net.autotuning.normal\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "net.wifi.powersave",
+    "Action": "{\u0022type\u0022:\u0022powerSetting\u0022,\u0022delete\u0022:false,\u0022subgroup\u0022:\u002219cbb8fa-5279-450e-9fac-8a3d5fedd0c1\u0022,\u0022setting\u0022:\u002212bbebe6-58d6-4636-95bb-3217ef867c1a\u0022,\u0022ac\u0022:0}"
+  },
+  {
+    "TweakId": "network.deliveryoptimization.nopeering",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\DeliveryOptimization\u0022,\u0022name\u0022:\u0022DODownloadMode\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "notifications.scoobe",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\UserProfileEngagement\u0022,\u0022name\u0022:\u0022ScoobeSystemSettingEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "power.boost.aggressive",
+    "Action": "{\u0022type\u0022:\u0022powerSetting\u0022,\u0022delete\u0022:false,\u0022subgroup\u0022:\u002254533251-82be-4824-96c1-47b60b740d00\u0022,\u0022setting\u0022:\u0022be337238-0d82-4146-a960-4f3749d470c7\u0022,\u0022ac\u0022:2}"
+  },
+  {
+    "TweakId": "power.coreparking",
+    "Action": "{\u0022type\u0022:\u0022powerSetting\u0022,\u0022delete\u0022:false,\u0022subgroup\u0022:\u002254533251-82be-4824-96c1-47eeb4c3c3a1\u0022,\u0022setting\u0022:\u00220cc5b647-c1df-4637-891a-dec35c318583\u0022,\u0022ac\u0022:100}"
+  },
+  {
+    "TweakId": "power.disk.timeout",
+    "Action": "{\u0022type\u0022:\u0022powerSetting\u0022,\u0022delete\u0022:false,\u0022subgroup\u0022:\u00220012ee47-9041-4b5d-9b77-535fba8b1442\u0022,\u0022setting\u0022:\u00226738e2c4-e8a5-4a42-b16a-e040e769756e\u0022,\u0022ac\u0022:0}"
+  },
+  {
+    "TweakId": "power.epp",
+    "Action": "{\u0022type\u0022:\u0022powerSetting\u0022,\u0022delete\u0022:false,\u0022subgroup\u0022:\u002254533251-82be-4824-96c1-47eeb4c3c3a1\u0022,\u0022setting\u0022:\u002236687f9e-e3a5-4dbf-b1dc-15eb381c6863\u0022,\u0022ac\u0022:0}"
+  },
+  {
+    "TweakId": "power.fastboot",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Power\u0022,\u0022name\u0022:\u0022HiberbootEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "power.minstate",
+    "Action": "{\u0022type\u0022:\u0022powerSetting\u0022,\u0022delete\u0022:false,\u0022subgroup\u0022:\u002254533251-82be-4824-96c1-47eeb4c3c3a1\u0022,\u0022setting\u0022:\u0022893dee8e-2bef-41e0-89c6-b55d0929964c\u0022,\u0022ac\u0022:100}"
+  },
+  {
+    "TweakId": "power.overlay.best",
+    "Action": "{\u0022type\u0022:\u0022powerOverlay\u0022,\u0022delete\u0022:false,\u0022scheme\u0022:\u0022ded574b5-45a0-4f42-8737-46345c09c238\u0022}"
+  },
+  {
+    "TweakId": "power.pcie.aspm",
+    "Action": "{\u0022type\u0022:\u0022powerSetting\u0022,\u0022delete\u0022:false,\u0022subgroup\u0022:\u0022501a4d13-42af-4429-9fd1-a8218c268e20\u0022,\u0022setting\u0022:\u0022ee12f906-d277-404b-b6da-e5fa1a576df5\u0022,\u0022ac\u0022:0}"
+  },
+  {
+    "TweakId": "power.plan.high",
+    "Action": "{\u0022type\u0022:\u0022powerScheme\u0022,\u0022delete\u0022:false,\u0022scheme\u0022:\u00228c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\u0022}"
+  },
+  {
+    "TweakId": "power.plan.ultimate",
+    "Action": "{\u0022type\u0022:\u0022powerScheme\u0022,\u0022delete\u0022:false,\u0022scheme\u0022:\u0022e9a42b02-d5df-448d-aa00-03f14749eb61\u0022,\u0022duplicateFrom\u0022:\u0022e9a42b02-d5df-448d-aa00-03f14749eb61\u0022}"
+  },
+  {
+    "TweakId": "power.repair.boost",
+    "Action": "{\u0022type\u0022:\u0022powerSetting\u0022,\u0022delete\u0022:false,\u0022subgroup\u0022:\u002254533251-82be-4824-96c1-47eeb4c3c3a1\u0022,\u0022setting\u0022:\u0022be337238-0d82-4146-a960-4f3749d470c7\u0022,\u0022ac\u0022:2}"
+  },
+  {
+    "TweakId": "power.repair.maxstate",
+    "Action": "{\u0022type\u0022:\u0022powerSetting\u0022,\u0022delete\u0022:false,\u0022subgroup\u0022:\u002254533251-82be-4824-96c1-47eeb4c3c3a1\u0022,\u0022setting\u0022:\u0022bc5038f7-23e0-4960-96da-33abaf5935ec\u0022,\u0022ac\u0022:100}"
+  },
+  {
+    "TweakId": "power.throttling.off",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Power\\\\PowerThrottling\u0022,\u0022name\u0022:\u0022PowerThrottlingOff\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:1,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "power.usb.suspend",
+    "Action": "{\u0022type\u0022:\u0022powerSetting\u0022,\u0022delete\u0022:false,\u0022subgroup\u0022:\u00222a737441-1930-4402-8d77-b2bebba308a3\u0022,\u0022setting\u0022:\u002248e6b7a6-50f5-4782-a5d4-53bb8f07e226\u0022,\u0022ac\u0022:0}"
+  },
+  {
+    "TweakId": "privacy.activityhistory",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\System\u0022,\u0022name\u0022:\u0022PublishUserActivities\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "privacy.activityhistory",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\System\u0022,\u0022name\u0022:\u0022UploadUserActivities\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "privacy.adid",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\AdvertisingInfo\u0022,\u0022name\u0022:\u0022Enabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "privacy.backgroundapps",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\BackgroundAccessApplications\u0022,\u0022name\u0022:\u0022GlobalUserDisabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:1,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "privacy.feedback",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Siuf\\\\Rules\u0022,\u0022name\u0022:\u0022NumberOfSIUFInPeriod\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "privacy.inking",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\InputPersonalization\u0022,\u0022name\u0022:\u0022RestrictImplicitInkCollection\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:1,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "privacy.inking",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\InputPersonalization\u0022,\u0022name\u0022:\u0022RestrictImplicitTextCollection\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:1,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "privacy.recall",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\WindowsAI\u0022,\u0022name\u0022:\u0022DisableAIDataAnalysis\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:1,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "privacy.tailored",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Privacy\u0022,\u0022name\u0022:\u0022TailoredExperiencesWithDiagnosticDataEnabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "privacy.telemetry",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\DataCollection\u0022,\u0022name\u0022:\u0022AllowTelemetry\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:1,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "sched.priosep.38",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\PriorityControl\u0022,\u0022name\u0022:\u0022Win32PrioritySeparation\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:38,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "search.websuggestions",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Explorer\u0022,\u0022name\u0022:\u0022DisableSearchBoxSuggestions\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:1,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "security.hvci.off",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\DeviceGuard\\\\Scenarios\\\\HypervisorEnforcedCodeIntegrity\u0022,\u0022name\u0022:\u0022Enabled\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "security.vmp",
+    "Action": "{\u0022type\u0022:\u0022optionalFeature\u0022,\u0022name\u0022:\u0022VirtualMachinePlatform\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "storage.hibernate.off",
+    "Action": "{\u0022type\u0022:\u0022handler\u0022,\u0022name\u0022:\u0022storage.hibernate.off\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "storage.optimize.task",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Defrag\\\\ScheduledDefrag\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:true}"
+  },
+  {
+    "TweakId": "storage.pagefile.auto",
+    "Action": "{\u0022type\u0022:\u0022handler\u0022,\u0022name\u0022:\u0022storage.pagefile.auto\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "storage.retrim",
+    "Action": "{\u0022type\u0022:\u0022handler\u0022,\u0022name\u0022:\u0022storage.retrim\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "storage.trim",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\FileSystem\u0022,\u0022name\u0022:\u0022DisableDeleteNotification\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "svc.diagtrack",
+    "Action": "{\u0022type\u0022:\u0022service\u0022,\u0022name\u0022:\u0022DiagTrack\u0022,\u0022delete\u0022:false,\u0022startType\u0022:\u0022Disabled\u0022}"
+  },
+  {
+    "TweakId": "svc.dmwappush",
+    "Action": "{\u0022type\u0022:\u0022service\u0022,\u0022name\u0022:\u0022dmwappushservice\u0022,\u0022delete\u0022:false,\u0022startType\u0022:\u0022Manual\u0022}"
+  },
+  {
+    "TweakId": "svc.lfsvc",
+    "Action": "{\u0022type\u0022:\u0022service\u0022,\u0022name\u0022:\u0022lfsvc\u0022,\u0022delete\u0022:false,\u0022startType\u0022:\u0022Manual\u0022}"
+  },
+  {
+    "TweakId": "svc.mapsbroker",
+    "Action": "{\u0022type\u0022:\u0022service\u0022,\u0022name\u0022:\u0022MapsBroker\u0022,\u0022delete\u0022:false,\u0022startType\u0022:\u0022Manual\u0022}"
+  },
+  {
+    "TweakId": "svc.pcasvc",
+    "Action": "{\u0022type\u0022:\u0022service\u0022,\u0022name\u0022:\u0022PcaSvc\u0022,\u0022delete\u0022:false,\u0022startType\u0022:\u0022Manual\u0022}"
+  },
+  {
+    "TweakId": "svc.spooler",
+    "Action": "{\u0022type\u0022:\u0022service\u0022,\u0022name\u0022:\u0022Spooler\u0022,\u0022delete\u0022:false,\u0022startType\u0022:\u0022Manual\u0022}"
+  },
+  {
+    "TweakId": "svc.sysmain",
+    "Action": "{\u0022type\u0022:\u0022service\u0022,\u0022name\u0022:\u0022SysMain\u0022,\u0022delete\u0022:false,\u0022startType\u0022:\u0022Manual\u0022}"
+  },
+  {
+    "TweakId": "svc.trkwks",
+    "Action": "{\u0022type\u0022:\u0022service\u0022,\u0022name\u0022:\u0022TrkWks\u0022,\u0022delete\u0022:false,\u0022startType\u0022:\u0022Manual\u0022}"
+  },
+  {
+    "TweakId": "svc.wersvc",
+    "Action": "{\u0022type\u0022:\u0022service\u0022,\u0022name\u0022:\u0022WerSvc\u0022,\u0022delete\u0022:false,\u0022startType\u0022:\u0022Manual\u0022}"
+  },
+  {
+    "TweakId": "svc.wsearch",
+    "Action": "{\u0022type\u0022:\u0022service\u0022,\u0022name\u0022:\u0022WSearch\u0022,\u0022delete\u0022:false,\u0022startType\u0022:\u0022Manual\u0022}"
+  },
+  {
+    "TweakId": "task.appraiser",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Application Experience\\\\Microsoft Compatibility Appraiser\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "task.autochkproxy",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Autochk\\\\Proxy\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "task.ceip",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Customer Experience Improvement Program\\\\Consolidator\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "task.ceip",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Customer Experience Improvement Program\\\\UsbCeip\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "task.diskdiag",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\DiskDiagnostic\\\\Microsoft-Windows-DiskDiagnosticDataCollector\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "task.feedback",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Feedback\\\\Siuf\\\\DmClient\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "task.feedback",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Feedback\\\\Siuf\\\\DmClientOnScenarioDownload\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "task.maps",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Maps\\\\MapsUpdateTask\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "task.powerdiag",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Power Efficiency Diagnostics\\\\AnalyzeSystem\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "task.werqueue",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Windows Error Reporting\\\\QueueReporting\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "task.winsat",
+    "Action": "{\u0022type\u0022:\u0022task\u0022,\u0022path\u0022:\u0022\\\\Microsoft\\\\Windows\\\\Maintenance\\\\WinSAT\u0022,\u0022delete\u0022:false,\u0022enabled\u0022:false}"
+  },
+  {
+    "TweakId": "timer.global",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\kernel\u0022,\u0022name\u0022:\u0022GlobalTimerResolutionRequests\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:1,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "visual.animations",
+    "Action": "{\u0022type\u0022:\u0022spi\u0022,\u0022name\u0022:\u0022clientAreaAnimation\u0022,\u0022value\u0022:\u00220\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "visual.menudelay",
+    "Action": "{\u0022type\u0022:\u0022spi\u0022,\u0022name\u0022:\u0022menuShowDelay\u0022,\u0022value\u0022:\u0022200\u0022,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "visual.startup.delay",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Explorer\\\\Serialize\u0022,\u0022name\u0022:\u0022StartupDelayInMSec\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "visual.transparency",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Themes\\\\Personalize\u0022,\u0022name\u0022:\u0022EnableTransparency\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  },
+  {
+    "TweakId": "widgets.disable",
+    "Action": "{\u0022type\u0022:\u0022registry\u0022,\u0022path\u0022:\u0022HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Dsh\u0022,\u0022name\u0022:\u0022AllowNewsAndInterests\u0022,\u0022valueKind\u0022:\u0022DWord\u0022,\u0022value\u0022:0,\u0022delete\u0022:false}"
+  }
+]

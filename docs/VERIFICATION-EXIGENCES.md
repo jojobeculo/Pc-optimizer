@@ -1,4 +1,4 @@
-# Vérification des exigences — FrameCore 2.0.0
+# Vérification des exigences — FrameCore 2.1.0
 
 Contrôle point par point des deux cahiers des charges, dans le dépôt (code, câblage dans l'interface, tests) et sur un
 vrai Windows (machine virtuelle jetable de CI, en administrateur **et** en utilisateur standard).
@@ -164,7 +164,7 @@ Preuves : « UT » = test unitaire (`tests/FrameCore.Tests`, 136 tests) ; « IT 
 | Livrable | Statut |
 |---|---|
 | Code source, catalogue, bibliothèque de jeux, tables matériel | Fait (dépôt) |
-| Installateur `FrameCore-Setup-2.0.0-x64.exe` + `SHA256SUMS.txt` | Fait (`artifacts/`) |
+| Installateur `FrameCore-Setup-2.1.0-x64.exe` + `SHA256SUMS.txt` | Fait (`artifacts/`) |
 | README, guide d'utilisation, guide de restauration, installation, catalogue, benchmarks, overclocking, design, idées, dépendances et licences, notices tierces | Fait (`docs/`) |
 | Rapport d'audit, rapport de tests, état des fonctionnalités, présente vérification | Fait (`docs/AUDIT.md`, `docs/RAPPORT-TESTS.md`, `docs/FONCTIONNALITES.md`) |
 

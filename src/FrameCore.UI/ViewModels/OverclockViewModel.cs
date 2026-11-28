@@ -329,6 +329,31 @@ public sealed partial class OverclockViewModel : ObservableObject, IDiagnosticCo
 
     [RelayCommand] private void CancelAutoTune() => _cts?.Cancel();
 
+    /// <summary>
+    /// GPU tuning matched to an optimisation level (complete mode, the user ticked it): Performance → light,
+    /// Maximum → moderate, Extreme → high. Same verified procedure and way back as the buttons of this page.
+    /// </summary>
+    public async Task<string> AutoTuneForLevelAsync(Core.Models.ProfileLevel level)
+    {
+        GpuOcLevel? gl = level switch
+        {
+            Core.Models.ProfileLevel.Performance => GpuOcLevel.Light, Core.Models.ProfileLevel.Maximum => GpuOcLevel.Moderate,
+            Core.Models.ProfileLevel.Extreme => GpuOcLevel.High, _ => null,
+        };
+        if (gl is not { } lvl) return Loc.T("opt.complete.gpu.skip");
+        if (!GpuLoaded) await LoadGpu();
+        if (SelectedGpu is not { Available: true } caps) return Loc.T("opt.complete.gpu.unavailable");
+        var name = Loc.T("oc.level." + lvl);
+        if (caps.Vendor == "AMD")
+        {
+            var (preset, maxPower) = GpuOcLevels.AmdPlan(lvl);
+            await RunPresetCore(caps, preset, maxPower && caps.PowerLimit ? caps.PowerMax : null, name);
+        }
+        else if (caps.CoreOffset) await RunAutoTune(caps, GpuOcLevels.For(lvl), name);
+        else return Loc.T("opt.complete.gpu.unavailable");
+        return Loc.T("opt.complete.gpu.done", name) + " " + (AutoTuneLog.LastOrDefault() ?? "");
+    }
+
     [RelayCommand]
     private async Task RunGpuTest()
     {

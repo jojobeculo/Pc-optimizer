@@ -1,4 +1,4 @@
-# Rapport de tests — FrameCore 2.0.0
+# Rapport de tests — FrameCore 2.1.0
 
 Deux environnements :
 
@@ -88,7 +88,7 @@ Non testable ici : l'affichage réel de la fenêtre UAC (le runner n'a pas d'uti
 | Contrôle | Résultat |
 |---|---|
 | Installation silencieuse (`/S`) | code 0 |
-| Fichiers, catalogue, raccourci du menu Démarrer, entrée « Applications » (FrameCore 2.0.0, ≈ 148 Mo) | présents |
+| Fichiers, catalogue, raccourci du menu Démarrer, entrée « Applications » (FrameCore 2.1.0, ≈ 148 Mo) | présents |
 | Lancement de l'application **installée** (visite complète) | code 0, rapport produit |
 | Désinstallation silencieuse | code 0 ; dossier supprimé ; entrée supprimée ; données utilisateur conservées (journal de restauration) |
 

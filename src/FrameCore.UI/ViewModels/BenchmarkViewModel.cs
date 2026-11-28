@@ -289,6 +289,15 @@ public sealed partial class BenchmarkViewModel : ObservableObject, IDiagnosticCo
             }
             SelectedStats.Add(new PropertyRow(Loc.T("bench.conditions"), $"{s.Conditions.Resolution} @ {s.Conditions.RefreshHz:0} Hz · {s.Conditions.PowerPlan} · {Loc.T("bench.driver")} {s.Conditions.GpuDriver} · {s.Method}"));
             FrameTimes = first?.FrameTimesMs?.TakeLast(1500).ToArray() ?? Array.Empty<double>();
+            if (first?.FrameTimesMs is { Count: >= 60 } ft)
+            {
+                // Stutter: how often, which pattern (background task, shaders, random), and a steadier frame cap.
+                var st = FrameCore.BenchmarkManager.Detective.StutterAnalyzer.Analyze(ft, s.Conditions.RefreshHz is > 0 ? s.Conditions.RefreshHz : null);
+                SelectedStats.Add(new PropertyRow(Loc.T("bench.stutter.label"),
+                    Loc.T("bench.stutter.value", st.Spikes, st.SpikesPerMinute.ToString("0.#"), Loc.T("bench.stutter.pattern." + st.Pattern, st.PeriodSeconds?.ToString("0.#") ?? ""))));
+                SelectedStats.Add(new PropertyRow(Loc.T("bench.stutter.cap"),
+                    st.VrrCapFps is { } vrr ? Loc.T("bench.stutter.capVrr", st.SteadyFps.ToString("0"), vrr.ToString("0")) : Loc.T("bench.stutter.capSteady", st.SteadyFps.ToString("0"))));
+            }
             if (first != null)
                 foreach (var f in BottleneckAnalyzer.Analyze(new BottleneckInput
                 {

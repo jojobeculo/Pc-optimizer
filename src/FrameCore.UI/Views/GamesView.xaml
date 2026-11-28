@@ -65,6 +65,29 @@
                 </StackPanel>
             </DockPanel>
 
+            <!-- Automatic game profile -->
+            <Border Style="{StaticResource Card.Hero}" Margin="0,0,0,14" Padding="20,16">
+                <DockPanel>
+                    <CheckBox DockPanel.Dock="Right" Style="{StaticResource Toggle}" IsChecked="{Binding GameProfile.Enabled}" VerticalAlignment="Center"
+                              AutomationProperties.Name="{i:Loc gameprofile.title}"/>
+                    <Border DockPanel.Dock="Left" Width="40" Height="40" CornerRadius="12" Background="{DynamicResource Brush.AccentSoft}" Margin="0,0,14,0" VerticalAlignment="Top">
+                        <i:Icon Glyph="{StaticResource Icon.Games}" Width="20" Height="20" Foreground="{DynamicResource Brush.Accent}"/>
+                    </Border>
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc gameprofile.title}" Style="{StaticResource Text.CardTitle}" FontSize="16"/>
+                        <TextBlock Text="{i:Loc gameprofile.desc}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,2,0,8" MaxWidth="760" HorizontalAlignment="Left"/>
+                        <WrapPanel>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc profile.Balanced}" IsChecked="{Binding GameProfileLevel, Converter={StaticResource Eq}, ConverterParameter=Balanced}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc profile.Performance}" IsChecked="{Binding GameProfileLevel, Converter={StaticResource Eq}, ConverterParameter=Performance}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc profile.Maximum}" IsChecked="{Binding GameProfileLevel, Converter={StaticResource Eq}, ConverterParameter=Maximum}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc profile.Extreme}" IsChecked="{Binding GameProfileLevel, Converter={StaticResource Eq}, ConverterParameter=Extreme}"/>
+                        </WrapPanel>
+                        <TextBlock Text="{Binding GameProfile.StatusText}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.AccentText}" Margin="0,6,0,0"
+                                   Visibility="{Binding GameProfile.StatusText, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
             <!-- Settings used for every estimate -->
             <Border Style="{StaticResource Card}" Padding="{StaticResource Pad.CardCompact}">
                 <WrapPanel>

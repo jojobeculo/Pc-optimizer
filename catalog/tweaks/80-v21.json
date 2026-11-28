@@ -1,0 +1,444 @@
+{
+ "schemaVersion": 1,
+ "tweaks": [
+  {
+   "id": "svc.dmwappush",
+   "category": "Services",
+   "group": {
+    "fr": "Services Windows",
+    "en": "Windows services"
+   },
+   "name": {
+    "fr": "Service de routage des messages WAP (télémétrie) en manuel",
+    "en": "WAP push message routing service (telemetry) to manual"
+   },
+   "description": {
+    "fr": "Service utilisé par la télémétrie pour recevoir des messages ; démarre seulement si nécessaire.",
+    "en": "Service used by telemetry to receive messages; only starts when needed."
+   },
+   "impact": {
+    "fr": "Faible : un service de moins qui démarre et se réveille en arrière-plan.",
+    "en": "Low: one less service starting and waking in the background."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "Probable",
+   "risk": "None",
+   "kind": "Background",
+   "restart": "None",
+   "profiles": [
+    "Maximum",
+    "Extreme"
+   ],
+   "actions": [
+    {
+     "type": "service",
+     "name": "dmwappushservice",
+     "startType": "Manual"
+    }
+   ],
+   "impactAreas": [
+    "Responsiveness"
+   ],
+   "objective": {
+    "fr": "Un service de télémétrie de moins au démarrage.",
+    "en": "One less telemetry service at start-up."
+   }
+  },
+  {
+   "id": "svc.wersvc",
+   "category": "Services",
+   "group": {
+    "fr": "Services Windows",
+    "en": "Windows services"
+   },
+   "name": {
+    "fr": "Rapport d'erreurs Windows en manuel",
+    "en": "Windows Error Reporting to manual"
+   },
+   "description": {
+    "fr": "Le service de rapport d'erreurs ne démarre que lorsqu'un programme plante.",
+    "en": "The error reporting service only starts when a program crashes."
+   },
+   "impact": {
+    "fr": "Faible : un service de moins qui démarre et se réveille en arrière-plan.",
+    "en": "Low: one less service starting and waking in the background."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "Probable",
+   "risk": "None",
+   "kind": "Background",
+   "restart": "None",
+   "profiles": [
+    "Extreme"
+   ],
+   "actions": [
+    {
+     "type": "service",
+     "name": "WerSvc",
+     "startType": "Manual"
+    }
+   ],
+   "impactAreas": [
+    "Responsiveness"
+   ],
+   "objective": {
+    "fr": "Moins d'activité de fond ; les rapports restent possibles.",
+    "en": "Less background activity; reports remain possible."
+   }
+  },
+  {
+   "id": "svc.lfsvc",
+   "category": "Services",
+   "group": {
+    "fr": "Services Windows",
+    "en": "Windows services"
+   },
+   "name": {
+    "fr": "Service de géolocalisation en manuel",
+    "en": "Geolocation service to manual"
+   },
+   "description": {
+    "fr": "La géolocalisation ne démarre que si une application la demande.",
+    "en": "Geolocation only starts when an app asks for it."
+   },
+   "impact": {
+    "fr": "Faible : un service de moins qui démarre et se réveille en arrière-plan.",
+    "en": "Low: one less service starting and waking in the background."
+   },
+   "regressions": {
+    "fr": "Applications de localisation (météo, cartes) plus lentes à trouver la position.",
+    "en": "Location apps (weather, maps) slower to find the position."
+   },
+   "confidence": "Probable",
+   "risk": "None",
+   "kind": "Background",
+   "restart": "None",
+   "profiles": [
+    "Extreme"
+   ],
+   "actions": [
+    {
+     "type": "service",
+     "name": "lfsvc",
+     "startType": "Manual"
+    }
+   ],
+   "impactAreas": [
+    "Responsiveness"
+   ],
+   "objective": {
+    "fr": "Un service de moins pour un PC fixe de jeu.",
+    "en": "One less service on a desktop gaming PC."
+   }
+  },
+  {
+   "id": "task.winsat",
+   "category": "Services",
+   "group": {
+    "fr": "Tâches planifiées",
+    "en": "Scheduled tasks"
+   },
+   "name": {
+    "fr": "Évaluation des performances WinSAT",
+    "en": "WinSAT performance assessment"
+   },
+   "description": {
+    "fr": "Ancien test de performance de Windows lancé en maintenance ; son résultat n'est plus utilisé.",
+    "en": "Legacy Windows performance test run during maintenance; its result is no longer used."
+   },
+   "impact": {
+    "fr": "Négligeable à faible : une tâche de fond de moins pendant les parties.",
+    "en": "Negligible to low: one less background task while gaming."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "Probable",
+   "risk": "None",
+   "kind": "Background",
+   "restart": "None",
+   "profiles": [
+    "Maximum",
+    "Extreme"
+   ],
+   "actions": [
+    {
+     "type": "task",
+     "path": "\\Microsoft\\Windows\\Maintenance\\WinSAT",
+     "enabled": false
+    }
+   ],
+   "impactAreas": [
+    "Responsiveness"
+   ],
+   "objective": {
+    "fr": "Éviter qu'un test de performance se lance pendant une partie.",
+    "en": "Avoid a performance test starting during a game."
+   }
+  },
+  {
+   "id": "task.powerdiag",
+   "category": "Services",
+   "group": {
+    "fr": "Tâches planifiées",
+    "en": "Scheduled tasks"
+   },
+   "name": {
+    "fr": "Diagnostic d'efficacité énergétique",
+    "en": "Power efficiency diagnostics"
+   },
+   "description": {
+    "fr": "Analyse périodique de la consommation pour des rapports.",
+    "en": "Periodic power usage analysis for reports."
+   },
+   "impact": {
+    "fr": "Négligeable à faible : une tâche de fond de moins pendant les parties.",
+    "en": "Negligible to low: one less background task while gaming."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "Probable",
+   "risk": "None",
+   "kind": "Background",
+   "restart": "None",
+   "profiles": [
+    "Maximum",
+    "Extreme"
+   ],
+   "actions": [
+    {
+     "type": "task",
+     "path": "\\Microsoft\\Windows\\Power Efficiency Diagnostics\\AnalyzeSystem",
+     "enabled": false
+    }
+   ],
+   "impactAreas": [
+    "Responsiveness"
+   ],
+   "objective": {
+    "fr": "Une analyse de fond de moins.",
+    "en": "One less background analysis."
+   }
+  },
+  {
+   "id": "task.autochkproxy",
+   "category": "Services",
+   "group": {
+    "fr": "Tâches planifiées",
+    "en": "Scheduled tasks"
+   },
+   "name": {
+    "fr": "Proxy Autochk (programme d'amélioration)",
+    "en": "Autochk proxy (improvement programme)"
+   },
+   "description": {
+    "fr": "Collecte des données pour le programme d'amélioration de l'expérience utilisateur.",
+    "en": "Collects data for the customer experience improvement programme."
+   },
+   "impact": {
+    "fr": "Négligeable à faible : une tâche de fond de moins pendant les parties.",
+    "en": "Negligible to low: one less background task while gaming."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "Probable",
+   "risk": "None",
+   "kind": "Background",
+   "restart": "None",
+   "profiles": [
+    "Maximum",
+    "Extreme"
+   ],
+   "actions": [
+    {
+     "type": "task",
+     "path": "\\Microsoft\\Windows\\Autochk\\Proxy",
+     "enabled": false
+    }
+   ],
+   "impactAreas": [
+    "Privacy"
+   ],
+   "objective": {
+    "fr": "Moins de collecte de données.",
+    "en": "Less data collection."
+   }
+  },
+  {
+   "id": "task.werqueue",
+   "category": "Services",
+   "group": {
+    "fr": "Tâches planifiées",
+    "en": "Scheduled tasks"
+   },
+   "name": {
+    "fr": "File des rapports d'erreurs",
+    "en": "Error report queue"
+   },
+   "description": {
+    "fr": "Envoie périodiquement les rapports d'erreurs en attente.",
+    "en": "Periodically sends pending error reports."
+   },
+   "impact": {
+    "fr": "Négligeable à faible : une tâche de fond de moins pendant les parties.",
+    "en": "Negligible to low: one less background task while gaming."
+   },
+   "regressions": {
+    "fr": "Aucune connue.",
+    "en": "None known."
+   },
+   "confidence": "Probable",
+   "risk": "None",
+   "kind": "Background",
+   "restart": "None",
+   "profiles": [
+    "Extreme"
+   ],
+   "actions": [
+    {
+     "type": "task",
+     "path": "\\Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
+     "enabled": false
+    }
+   ],
+   "impactAreas": [
+    "Privacy",
+    "Responsiveness"
+   ],
+   "objective": {
+    "fr": "Pas d'envoi de rapports en arrière-plan pendant les parties.",
+    "en": "No report upload in the background while gaming."
+   }
+  },
+  {
+   "id": "power.boost.aggressive",
+   "category": "Power",
+   "group": {
+    "fr": "Alimentation et processeur",
+    "en": "Power and processor"
+   },
+   "name": {
+    "fr": "Mode de boost du processeur : agressif",
+    "en": "Processor boost mode: aggressive"
+   },
+   "description": {
+    "fr": "Le processeur monte en fréquence dès qu'une charge apparaît, au lieu d'attendre (plan d'alimentation actif, sur secteur).",
+    "en": "The CPU boosts as soon as a load appears instead of waiting (active power plan, on AC)."
+   },
+   "impact": {
+    "fr": "Réactivité et images un peu plus régulières quand la charge varie.",
+    "en": "Slightly better responsiveness and frame pacing when load varies."
+   },
+   "regressions": {
+    "fr": "Consommation et chaleur un peu plus élevées.",
+    "en": "Slightly higher power and heat."
+   },
+   "confidence": "Probable",
+   "risk": "Low",
+   "kind": "Performance",
+   "restart": "None",
+   "profiles": [
+    "Performance",
+    "Maximum",
+    "Extreme"
+   ],
+   "actions": [
+    {
+     "type": "powerSetting",
+     "subgroup": "54533251-82be-4824-96c1-47b60b740d00",
+     "setting": "be337238-0d82-4146-a960-4f3749d470c7",
+     "ac": 2
+    }
+   ],
+   "conditions": [
+    {
+     "fact": "system.isDesktop",
+     "op": "isTrue",
+     "reason": {
+      "fr": "Réservé aux PC fixes (autonomie des portables).",
+      "en": "Desktop PCs only (laptop battery life)."
+     }
+    }
+   ],
+   "impactAreas": [
+    "FrameTimes",
+    "Responsiveness"
+   ],
+   "objective": {
+    "fr": "Laisser le processeur monter en fréquence sans délai.",
+    "en": "Let the CPU boost without delay."
+   },
+   "sources": [
+    "https://learn.microsoft.com/en-us/windows-hardware/customize/power-settings/options-for-perf-state-engine-perfboostmode"
+   ]
+  },
+  {
+   "id": "net.flowcontrol",
+   "category": "Network",
+   "group": {
+    "fr": "Carte réseau",
+    "en": "Network adapter"
+   },
+   "name": {
+    "fr": "Contrôle de flux Ethernet désactivé",
+    "en": "Ethernet flow control off"
+   },
+   "description": {
+    "fr": "Empêche la carte réseau de mettre en pause l'envoi quand l'équipement en face le demande.",
+    "en": "Stops the network card from pausing transmission when the other end asks for it."
+   },
+   "impact": {
+    "fr": "Peut réduire des micro-pics de latence sur certaines cartes ; effet variable.",
+    "en": "May reduce latency micro-spikes on some cards; variable effect."
+   },
+   "regressions": {
+    "fr": "Sur un réseau saturé, quelques pertes de paquets possibles.",
+    "en": "On a saturated network, some packet loss possible."
+   },
+   "confidence": "Experimental",
+   "risk": "Low",
+   "kind": "Latency",
+   "restart": "None",
+   "profiles": [
+    "Extreme"
+   ],
+   "requiresConsent": true,
+   "actions": [
+    {
+     "type": "netAdapterProperty",
+     "name": "*FlowControl",
+     "value": "0",
+     "filter": "ethernet"
+    }
+   ],
+   "conditions": [
+    {
+     "fact": "net.hasEthernet",
+     "op": "isTrue",
+     "reason": {
+      "fr": "Aucune carte Ethernet physique.",
+      "en": "No physical Ethernet adapter."
+     }
+    }
+   ],
+   "impactAreas": [
+    "NetworkLatency"
+   ],
+   "objective": {
+    "fr": "Éviter les pauses d'émission de la carte réseau.",
+    "en": "Avoid the network card's transmission pauses."
+   }
+  }
+ ]
+}

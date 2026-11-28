@@ -81,7 +81,7 @@ public static class SafetyPolicy
 
     public static readonly HashSet<string> AllowedAdapterKeywords = new(StringComparer.OrdinalIgnoreCase)
     {
-        "*EEE", "*InterruptModeration", "EEELinkAdvertisement", "AdvancedEEE", "EnableGreenEthernet", "GreenEthernet", "PowerSavingMode",
+        "*EEE", "*InterruptModeration", "EEELinkAdvertisement", "AdvancedEEE", "EnableGreenEthernet", "GreenEthernet", "PowerSavingMode", "*FlowControl",
     };
 
     public static bool IsProtectedService(string name) => ProtectedServices.Contains(name);

@@ -1,7 +1,7 @@
 # Catalogue des optimisations
 
 Généré automatiquement depuis `catalog/tweaks/*.json` (`python3 build/gen-catalog-doc.py`).
-**78 optimisations.** La valeur initiale est lue sur chaque machine au moment du diagnostic et enregistrée avant toute modification ; elle apparaît dans FrameCore (Mode Pro) et dans le journal de restauration.
+**87 optimisations.** La valeur initiale est lue sur chaque machine au moment du diagnostic et enregistrée avant toute modification ; elle apparaît dans FrameCore (Mode Pro) et dans le journal de restauration.
 
 Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) vérification de la compatibilité, (3) enregistrement de l'état initial, (4) application, (5) relecture, (6) vérification de la prise en compte, (7) journalisation. En cas d'échec, les actions déjà faites sont annulées.
 
@@ -87,6 +87,15 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 | `defender.gamefolders.exclude` | Exclure les dossiers de jeux de l'analyse en temps réel de Defender | Sécurité | Probable | Moyen | Extrême | Régularité des images |
 | `network.deliveryoptimization.nopeering` | Ne plus partager les mises à jour avec d'autres PC | Réseau | Confirmé | Faible | Performance maximale | Latence réseau, Réactivité du système |
 | `edge.background.off` | Empêcher Microsoft Edge de tourner en arrière-plan | Windows | Confirmé | Faible | Extrême | Réactivité du système |
+| `svc.dmwappush` | Service de routage des messages WAP (télémétrie) en manuel | Services | Probable | Nul | Performance maximale, Extrême | Réactivité du système |
+| `svc.wersvc` | Rapport d'erreurs Windows en manuel | Services | Probable | Nul | Extrême | Réactivité du système |
+| `svc.lfsvc` | Service de géolocalisation en manuel | Services | Probable | Nul | Extrême | Réactivité du système |
+| `task.winsat` | Évaluation des performances WinSAT | Services | Probable | Nul | Performance maximale, Extrême | Réactivité du système |
+| `task.powerdiag` | Diagnostic d'efficacité énergétique | Services | Probable | Nul | Performance maximale, Extrême | Réactivité du système |
+| `task.autochkproxy` | Proxy Autochk (programme d'amélioration) | Services | Probable | Nul | Performance maximale, Extrême | Confidentialité |
+| `task.werqueue` | File des rapports d'erreurs | Services | Probable | Nul | Extrême | Confidentialité, Réactivité du système |
+| `power.boost.aggressive` | Mode de boost du processeur : agressif | Power | Probable | Faible | Performances, Performance maximale, Extrême | Régularité des images, Réactivité du système |
+| `net.flowcontrol` | Contrôle de flux Ethernet désactivé | Réseau | Expérimental | Faible | Extrême | Latence réseau |
 
 ## Fiches détaillées
 
@@ -1452,6 +1461,160 @@ Méthode commune à toutes les fiches : (1) lecture de la valeur actuelle, (2) v
 - **Vérification** : Relecture de la valeur de registre
 - **Restauration** : Réécriture de la valeur d'origine, ou suppression si elle n'existait pas
 - **Sources** : https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies
+
+### Service de routage des messages WAP (télémétrie) en manuel (`svc.dmwappush`)
+
+- **Catégorie** : Services — **Objectif** : Un service de télémétrie de moins au démarrage.
+- **Description** : Service utilisé par la télémétrie pour recevoir des messages ; démarre seulement si nécessaire.
+- **Impact attendu** : Faible : un service de moins qui démarre et se réveille en arrière-plan.
+- **Peut influencer** : Réactivité du système — *aucune raison technique de modifier les FPS*
+- **Régressions possibles** : Aucune connue.
+- **Confiance** : Probable — **Risque** : Nul — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Performance maximale, Extrême
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Service `dmwappushservice` → démarrage `Manual`
+- **Vérification** : Relecture du type de démarrage du service
+- **Restauration** : Type de démarrage d'origine rétabli
+
+### Rapport d'erreurs Windows en manuel (`svc.wersvc`)
+
+- **Catégorie** : Services — **Objectif** : Moins d'activité de fond ; les rapports restent possibles.
+- **Description** : Le service de rapport d'erreurs ne démarre que lorsqu'un programme plante.
+- **Impact attendu** : Faible : un service de moins qui démarre et se réveille en arrière-plan.
+- **Peut influencer** : Réactivité du système — *aucune raison technique de modifier les FPS*
+- **Régressions possibles** : Aucune connue.
+- **Confiance** : Probable — **Risque** : Nul — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Extrême
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Service `WerSvc` → démarrage `Manual`
+- **Vérification** : Relecture du type de démarrage du service
+- **Restauration** : Type de démarrage d'origine rétabli
+
+### Service de géolocalisation en manuel (`svc.lfsvc`)
+
+- **Catégorie** : Services — **Objectif** : Un service de moins pour un PC fixe de jeu.
+- **Description** : La géolocalisation ne démarre que si une application la demande.
+- **Impact attendu** : Faible : un service de moins qui démarre et se réveille en arrière-plan.
+- **Peut influencer** : Réactivité du système — *aucune raison technique de modifier les FPS*
+- **Régressions possibles** : Applications de localisation (météo, cartes) plus lentes à trouver la position.
+- **Confiance** : Probable — **Risque** : Nul — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Extrême
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Service `lfsvc` → démarrage `Manual`
+- **Vérification** : Relecture du type de démarrage du service
+- **Restauration** : Type de démarrage d'origine rétabli
+
+### Évaluation des performances WinSAT (`task.winsat`)
+
+- **Catégorie** : Services — **Objectif** : Éviter qu'un test de performance se lance pendant une partie.
+- **Description** : Ancien test de performance de Windows lancé en maintenance ; son résultat n'est plus utilisé.
+- **Impact attendu** : Négligeable à faible : une tâche de fond de moins pendant les parties.
+- **Peut influencer** : Réactivité du système — *aucune raison technique de modifier les FPS*
+- **Régressions possibles** : Aucune connue.
+- **Confiance** : Probable — **Risque** : Nul — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Performance maximale, Extrême
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Tâche planifiée `\Microsoft\Windows\Maintenance\WinSAT` → désactivée
+- **Vérification** : Relecture de l'état de la tâche planifiée
+- **Restauration** : État d'origine de la tâche rétabli
+
+### Diagnostic d'efficacité énergétique (`task.powerdiag`)
+
+- **Catégorie** : Services — **Objectif** : Une analyse de fond de moins.
+- **Description** : Analyse périodique de la consommation pour des rapports.
+- **Impact attendu** : Négligeable à faible : une tâche de fond de moins pendant les parties.
+- **Peut influencer** : Réactivité du système — *aucune raison technique de modifier les FPS*
+- **Régressions possibles** : Aucune connue.
+- **Confiance** : Probable — **Risque** : Nul — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Performance maximale, Extrême
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Tâche planifiée `\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem` → désactivée
+- **Vérification** : Relecture de l'état de la tâche planifiée
+- **Restauration** : État d'origine de la tâche rétabli
+
+### Proxy Autochk (programme d'amélioration) (`task.autochkproxy`)
+
+- **Catégorie** : Services — **Objectif** : Moins de collecte de données.
+- **Description** : Collecte des données pour le programme d'amélioration de l'expérience utilisateur.
+- **Impact attendu** : Négligeable à faible : une tâche de fond de moins pendant les parties.
+- **Peut influencer** : Confidentialité — *aucune raison technique de modifier les FPS*
+- **Régressions possibles** : Aucune connue.
+- **Confiance** : Probable — **Risque** : Nul — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Performance maximale, Extrême
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Tâche planifiée `\Microsoft\Windows\Autochk\Proxy` → désactivée
+- **Vérification** : Relecture de l'état de la tâche planifiée
+- **Restauration** : État d'origine de la tâche rétabli
+
+### File des rapports d'erreurs (`task.werqueue`)
+
+- **Catégorie** : Services — **Objectif** : Pas d'envoi de rapports en arrière-plan pendant les parties.
+- **Description** : Envoie périodiquement les rapports d'erreurs en attente.
+- **Impact attendu** : Négligeable à faible : une tâche de fond de moins pendant les parties.
+- **Peut influencer** : Confidentialité, Réactivité du système — *aucune raison technique de modifier les FPS*
+- **Régressions possibles** : Aucune connue.
+- **Confiance** : Probable — **Risque** : Nul — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Extrême
+- **Compatibilité** : toutes les machines Windows 10/11 x64
+- **Conflits** : aucun
+- **Application** :
+  - Tâche planifiée `\Microsoft\Windows\Windows Error Reporting\QueueReporting` → désactivée
+- **Vérification** : Relecture de l'état de la tâche planifiée
+- **Restauration** : État d'origine de la tâche rétabli
+
+### Mode de boost du processeur : agressif (`power.boost.aggressive`)
+
+- **Catégorie** : Power — **Objectif** : Laisser le processeur monter en fréquence sans délai.
+- **Description** : Le processeur monte en fréquence dès qu'une charge apparaît, au lieu d'attendre (plan d'alimentation actif, sur secteur).
+- **Impact attendu** : Réactivité et images un peu plus régulières quand la charge varie.
+- **Peut influencer** : Régularité des images, Réactivité du système
+- **Régressions possibles** : Consommation et chaleur un peu plus élevées.
+- **Confiance** : Probable — **Risque** : Faible — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Performances, Performance maximale, Extrême
+- **Compatibilité** : `system.isDesktop isTrue`
+- **Conflits** : aucun
+- **Application** :
+  - Plan d'alimentation : paramètre `be337238-0d82-4146-a960-4f3749d470c7` (sous-groupe `54533251-82be-4824-96c1-47b60b740d00`) secteur=2 batterie=None
+- **Vérification** : Relecture du paramètre du plan d'alimentation
+- **Restauration** : Valeurs secteur/batterie d'origine rétablies
+- **Sources** : https://learn.microsoft.com/en-us/windows-hardware/customize/power-settings/options-for-perf-state-engine-perfboostmode
+
+### Contrôle de flux Ethernet désactivé (`net.flowcontrol`)
+
+- **Catégorie** : Réseau — **Objectif** : Éviter les pauses d'émission de la carte réseau.
+- **Description** : Empêche la carte réseau de mettre en pause l'envoi quand l'équipement en face le demande.
+- **Impact attendu** : Peut réduire des micro-pics de latence sur certaines cartes ; effet variable.
+- **Peut influencer** : Latence réseau — *aucune raison technique de modifier les FPS*
+- **Régressions possibles** : Sur un réseau saturé, quelques pertes de paquets possibles.
+- **Confiance** : Expérimental — **Risque** : Faible — **Redémarrage** : Aucun redémarrage
+- **Persistance** : Permanent (survit au redémarrage)
+- **Profils** : Extrême — validation spécifique requise
+- **Compatibilité** : `net.hasEthernet isTrue`
+- **Conflits** : aucun
+- **Application** :
+  - Carte réseau physique : propriété `*FlowControl` = `0`
+- **Vérification** : Relecture de la propriété avancée de la carte réseau
+- **Restauration** : Valeur d'origine de la propriété rétablie
 
 ## Réglages écartés
 

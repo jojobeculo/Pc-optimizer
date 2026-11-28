@@ -53,6 +53,17 @@ public sealed record GenreChoice(string Key, string Label);
 public sealed partial class GamesViewModel : ObservableObject, IDiagnosticConsumer, IPageActivated
 {
     private readonly ShellViewModel _shell;
+    public Services.GameProfileService GameProfile => _shell.GameProfile;
+    /// <summary>Level of the game profile (Balanced … Extreme), saved in the settings.</summary>
+    public string GameProfileLevel
+    {
+        get => _shell.Services.Settings.GameProfileLevel.ToString();
+        set
+        {
+            if (!Enum.TryParse<Core.Models.ProfileLevel>(value, out var l)) return;
+            _shell.Services.Settings.GameProfileLevel = l; _shell.Services.Settings.Save(); OnPropertyChanged();
+        }
+    }
     private List<GameRow> _all = new();
     private EstimatorMachine? _machine;
 

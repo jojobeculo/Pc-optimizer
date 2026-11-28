@@ -25,7 +25,7 @@ public class LongTermRestoreTests
     [Fact]
     public void Every_action_of_every_released_version_stays_restorable_by_the_elevated_worker()
     {
-        var current = Path.Combine(FixtureDir, "restorable-actions-2.0.0.json");
+        var current = Path.Combine(FixtureDir, "restorable-actions-2.1.0.json");
         if (Environment.GetEnvironmentVariable("FRAMECORE_WRITE_FIXTURE") == "1")
             File.WriteAllText(current, JsonSerializer.Serialize(Current(), new JsonSerializerOptions { WriteIndented = true }));
         var validator = new PrivilegedRequestValidator(Catalog);

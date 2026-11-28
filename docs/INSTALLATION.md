@@ -3,7 +3,7 @@
 ## Installer
 
 1. Récupérez `FrameCore-Setup-<version>-x64.exe` et, si possible, vérifiez son empreinte avec `SHA256SUMS.txt`
-   (PowerShell : `Get-FileHash .\FrameCore-Setup-2.0.0-x64.exe`).
+   (PowerShell : `Get-FileHash .\FrameCore-Setup-2.1.0-x64.exe`).
 2. Lancez-le. Windows demande les droits administrateur pour écrire dans *Program Files*.
 3. SmartScreen peut afficher « Éditeur inconnu » : l'exécutable n'est pas signé numériquement. *Informations complémentaires*
    → *Exécuter quand même* si la source est de confiance.

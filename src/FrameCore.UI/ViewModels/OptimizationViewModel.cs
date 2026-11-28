@@ -50,6 +50,14 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
     [ObservableProperty] private string _rightsWarning = "";
     /// <summary>What was measured around the application (or why nothing was).</summary>
     [ObservableProperty] private string _measurementText = "";
+    /// <summary>quick | complete. Complete = full investigation, precise benchmark before/after, process actions,
+    /// optional GPU tuning, latency re-check, results compared line by line.</summary>
+    [ObservableProperty] private string _runMode = "quick";
+    [ObservableProperty] private bool _includeGpuOc;
+    public bool IsComplete => RunMode == "complete";
+    partial void OnRunModeChanged(string value) => OnPropertyChanged(nameof(IsComplete));
+    /// <summary>Complete mode: before → after figures (benchmark index, driver latency, background wake-ups…).</summary>
+    public ObservableCollection<string> CompleteResults { get; } = new();
 
     public ObservableCollection<StepItem> Steps { get; } = new();
     public ObservableCollection<string> VerificationLines { get; } = new();
@@ -154,18 +162,31 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
 
         var bullets = selected.Select(s => $"{s.Name} — {Loc.T("confidence." + s.Confidence)}{(s.NeedsRestart ? " · " + Loc.T("restart." + s.Restart) : "")}")
                               .Concat(startup.Select(s => Loc.T("opt.startupBullet", s.Name))).ToList();
-        if (!Dialogs.Confirm(Loc.T("opt.confirm.title", Loc.T("profile." + level)), Loc.T("opt.confirm.detail"), Loc.T("common.apply"), false, bullets)) return;
+        var complete = IsComplete && _shell.Diagnostic != null;
+        if (complete)
+        {
+            // One consent for the whole investigation, then the plan is confirmed with the process actions it found.
+            if (!DetectiveViewModel.AskConsent(true)) return;
+            bullets.Insert(0, Loc.T("opt.complete.bullet", IncludeGpuOc ? Loc.T("opt.complete.withGpu") : ""));
+        }
+        else if (!Dialogs.Confirm(Loc.T("opt.confirm.title", Loc.T("profile." + level)), Loc.T("opt.confirm.detail"), Loc.T("common.apply"), false, bullets)) return;
 
         _shell.IsBusy = true;
         ApplyRunning = true;
         HasOutcome = false;
         PerformanceText = ""; VerificationText = ""; RightsWarning = ""; MeasurementText = "";
         Steps.Clear();
-        var measure = MeasureBeforeAfter && _shell.Diagnostic != null;
+        CompleteResults.Clear();
+        var measure = (MeasureBeforeAfter || complete) && _shell.Diagnostic != null;
+        var benchMode = complete ? "standard" : "express";
+        if (complete) Steps.Add(new StepItem { Key = "detective", Title = Loc.T("opt.step.detective") });
         if (measure) Steps.Add(new StepItem { Key = "benchBefore", Title = Loc.T("opt.step.benchBefore") });
         if (CreateRestorePoint) Steps.Add(new StepItem { Key = "RestorePoint", Title = Loc.T("opt.step.restorePoint") });
         Steps.Add(new StepItem { Key = "Apply", Title = Loc.T("opt.step.apply") });
+        if (complete) Steps.Add(new StepItem { Key = "processes", Title = Loc.T("opt.step.processes") });
         Steps.Add(new StepItem { Key = "Verify", Title = Loc.T("opt.step.verify") });
+        if (complete && IncludeGpuOc) Steps.Add(new StepItem { Key = "gpuOc", Title = Loc.T("opt.step.gpuOc") });
+        if (complete) Steps.Add(new StepItem { Key = "latencyAfter", Title = Loc.T("opt.step.latencyAfter") });
         if (measure) Steps.Add(new StepItem { Key = "benchAfter", Title = Loc.T("opt.step.benchAfter") });
         void Step(string key, double? fraction)
         {
@@ -180,13 +201,20 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
         }
         QuickBenchResult? before = null;
         QuickBenchResult? afterRun = null;
+        FrameCore.BenchmarkManager.Detective.DetectiveReport? investigation = null;
         try
         {
             var progress = new Progress<string>(s => _shell.BusyText = s);
+            if (complete)
+            {
+                Step("detective", null);
+                investigation = await _shell.DetectivePage.RunAsync(true, level);
+                Step("detective", 1);
+            }
             if (measure)
             {
                 Step("benchBefore", 0);
-                before = await RunExpressBench(Loc.T("opt.bench.beforeLabel", Loc.T("profile." + level)), f => Step("benchBefore", f));
+                before = await RunExpressBench(Loc.T("opt.bench.beforeLabel", Loc.T("profile." + level)), f => Step("benchBefore", f), benchMode);
             }
             var title = new LocalizedText($"Profil {Loc.Instance.Get("profile." + level)}", $"{level} profile");
             var result = await _shell.TweakService.ApplyAsync(selected.Select(s => s.Tweak).ToList(), title, level, CreateRestorePoint, progress,
@@ -199,11 +227,41 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
                 result.Lines.Add((r.Success ? "✓ " : "✗ ") + Loc.T("opt.startupBullet", s.Name) + (r.Success ? "" : " — " + r.Error));
                 if (r.Success) result.Applied++; else result.Failed++;
             }
+            if (complete && investigation != null)
+            {
+                Step("processes", 0);
+                var actions = _shell.DetectivePage.PlannedProcessActions(level);
+                int closed = 0, lowered = 0;
+                foreach (var (v, a) in actions)
+                    foreach (var pid in v.Pids)
+                        if (a == FrameCore.BenchmarkManager.Detective.ProcessAction.Close ? ProcessControl.Close(pid) : _shell.GameProfile.LowerPriority(pid))
+                            if (a == FrameCore.BenchmarkManager.Detective.ProcessAction.Close) closed++; else lowered++;
+                if (level >= ProfileLevel.Maximum)
+                {
+                    _shell.Services.Settings.GameProfileLevel = level;
+                    _shell.GameProfile.Enabled = true;
+                }
+                result.Lines.Add(Loc.T("opt.complete.processes", closed, lowered, actions.Count));
+                Step("processes", 1);
+            }
+            if (complete && IncludeGpuOc)
+            {
+                Step("gpuOc", null);
+                result.Lines.Add(await _shell.Overclock.AutoTuneForLevelAsync(level));
+                Step("gpuOc", 1);
+            }
+            FrameCore.BenchmarkManager.Detective.LatencyReport? latencyAfter = null;
+            if (complete)
+            {
+                Step("latencyAfter", null);
+                try { latencyAfter = await Task.Run(() => _shell.Privileged.LatencyCapture(20)); } catch { }
+                Step("latencyAfter", 1);
+            }
             // Measure after, compare, and undo only changes behind a confirmed regression (never in a loop).
             if (measure && before != null && !before.Cancelled && result.Applied > 0)
             {
                 Step("benchAfter", 0);
-                var after = await RunExpressBench(Loc.T("opt.bench.afterLabel", Loc.T("profile." + level)), f => Step("benchAfter", f));
+                var after = await RunExpressBench(Loc.T("opt.bench.afterLabel", Loc.T("profile." + level)), f => Step("benchAfter", f), benchMode);
                 afterRun = after;
                 if (!after.Cancelled && result.Verification != null)
                 {
@@ -218,6 +276,7 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
                 }
                 Step("benchAfter", 1);
             }
+            if (complete) await FillCompleteResults(investigation, latencyAfter, before, afterRun);
             foreach (var s in Steps) { s.State = "done"; s.Fraction = 1; }
             RightsWarning = result.SkippedNeedRights > 0 ? Loc.T("opt.rightsWarning", result.SkippedNeedRights) : "";
             MeasurementText = !MeasureBeforeAfter ? Loc.T("opt.measure.off")
@@ -247,10 +306,34 @@ public sealed partial class OptimizationViewModel : ObservableObject, IDiagnosti
         finally { _shell.IsBusy = false; _shell.BusyText = ""; ApplyRunning = false; CurrentStep = ""; }
     }
 
-    private Task<QuickBenchResult> RunExpressBench(string label, Action<double> onProgress)
+    /// <summary>Complete mode: the figures that changed, before → after, measured the same way.</summary>
+    private async Task FillCompleteResults(FrameCore.BenchmarkManager.Detective.DetectiveReport? inv, FrameCore.BenchmarkManager.Detective.LatencyReport? latAfter,
+                                           QuickBenchResult? before, QuickBenchResult? after)
+    {
+        CompleteResults.Clear();
+        if (before != null && after != null && !after.Cancelled)
+        {
+            var cmp = QuickBenchComparer.Compare(before, after);
+            if (cmp.IndexAfterRelativeToBefore is { } idx) CompleteResults.Add(Loc.T("opt.complete.index", idx.ToString("0.0")));
+            foreach (var m in cmp.Metrics.Where(m => m.Verdict == ChangeVerdict.Improved).Take(4))
+                CompleteResults.Add(Loc.T("opt.complete.improved", Loc.T("metric." + m.Key), (m.ImprovementPercent ?? 0).ToString("+0.0;-0.0")));
+        }
+        if (inv?.Latency is { Measured: true } lb && latAfter is { Measured: true } la)
+            CompleteResults.Add(Loc.T("opt.complete.latency", Math.Max(lb.MaxDpcMs, lb.MaxIsrMs).ToString("0.000"), Math.Max(la.MaxDpcMs, la.MaxIsrMs).ToString("0.000")));
+        if (inv != null)
+        {
+            var wakeBefore = inv.Processes.Sum(p => p.WakeupsPerSec);
+            var countBefore = inv.Processes.Sum(p => p.Instances);
+            var now = await Task.Run(() => FrameCore.BenchmarkManager.Detective.ProcessSampler.Measure(TimeSpan.FromSeconds(6)));
+            CompleteResults.Add(Loc.T("opt.complete.processesLine", countBefore, now.Count, wakeBefore.ToString("N0"), now.Sum(p => p.WakeupsPerSec).ToString("N0")));
+        }
+        if (_shell.GameProfile.Enabled) CompleteResults.Add(Loc.T("opt.complete.gameProfileOn"));
+    }
+
+    private Task<QuickBenchResult> RunExpressBench(string label, Action<double> onProgress, string mode = "express")
     {
         var progress = new Progress<QuickBenchProgress>(p => onProgress(p.OverallFraction));
-        var options = QuickBenchFactory.Options(_shell.Services, _shell.Monitoring, _shell.Diagnostic?.Profile, "express");
+        var options = QuickBenchFactory.Options(_shell.Services, _shell.Monitoring, _shell.Diagnostic?.Profile, mode);
         return Task.Run(() =>
         {
             var r = new QuickBenchRunner(options).Run(label, progress, CancellationToken.None);
