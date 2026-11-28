@@ -73,6 +73,10 @@ public class DetectiveTests
         var win = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
         if (!string.IsNullOrEmpty(win)) Assert.Equal(ProcessTier.Useful, C("someservicehost", Path.Combine(win, "System32", "x.exe")).Tier);
         Assert.Equal(ProcessTier.Harmful, C("xq7z", @"C:\Users\a\AppData\Local\Temp\xq7z.exe", company: null).Tier);
+        // Suspected only from its location (could be an installer): reported, never closed automatically.
+        var suspect = C("xq7z", @"C:\Users\a\AppData\Local\Temp\xq7z.exe", company: null);
+        foreach (var level in Enum.GetValues<ProfileLevel>()) Assert.Equal(ProcessAction.None, ProcessClassifier.ActionFor(suspect, level));
+        Assert.Equal(DetectiveFix.None, DetectiveAnalysis.Processes(new List<ProcessVerdict> { suspect }, ProfileLevel.Extreme).Single(f => f.Id.StartsWith("proc.harm")).Fix);
         Assert.Equal(ProcessTier.Useful, C("myeditor", @"C:\Tools\myeditor.exe", window: true).Tier);
         Assert.Equal(ProcessTier.LowValue, C("vendorhelper", @"C:\Program Files\Vendor\vendorhelper.exe").Tier);
         Assert.Equal(ProcessTier.Useless, C("svchostlike", @"C:\Program Files\X\a.exe", services: new[] { "DiagTrack" }).Tier);

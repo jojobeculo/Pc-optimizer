@@ -50,18 +50,24 @@ public static class DetectiveAnalysis
         var allWake = grouped.Sum(v => v.WakeupsPerSec);
         f.Add(new DetectiveFinding
         {
-            Id = "proc.summary", Area = DetectiveArea.Processes, Severity = background.Count >= 10 || bgWake > 3000 ? Severity.Warning : background.Count > 0 ? Severity.Suggestion : Severity.Info,
+            Id = "proc.summary", Area = DetectiveArea.Processes,
+            // Severity follows the measured cost, not the number of programs.
+            Severity = bgWake > 2000 || background.Sum(v => v.CpuPercent) > 3 ? Severity.Warning : bgWake > 300 || background.Count >= 15 ? Severity.Suggestion : Severity.Info,
             Title = Loc.T("detective.proc.summary.title", total, background.Sum(v => v.Instances)),
             Evidence = Loc.T("detective.proc.summary.evidence", allWake.ToString("N0"), bgWake.ToString("N0"), background.Sum(v => v.CpuPercent).ToString("0.0"), background.Sum(v => v.MemoryMb).ToString("N0")),
             Advice = Loc.T("detective.proc.summary.advice"),
         });
         foreach (var v in grouped.Where(v => v.Tier == ProcessTier.Harmful))
+        {
+            var suspected = v.Category == "suspicious";
             f.Add(new DetectiveFinding
             {
-                Id = "proc.harm." + v.Name, Area = DetectiveArea.Processes, Severity = Severity.Warning,
-                Title = Loc.T("detective.proc.harmful.title", v.Name), Evidence = v.Reason + (v.Path != null ? " — " + v.Path : ""),
-                Advice = Loc.T("detective.proc.harmful.advice"), Fix = DetectiveFix.CloseProcess, FixTarget = v.Name,
+                Id = "proc.harm." + v.Name, Area = DetectiveArea.Processes, Severity = suspected ? Severity.Suggestion : Severity.Warning,
+                Title = Loc.T(suspected ? "detective.proc.suspicious.title" : "detective.proc.harmful.title", v.Name), Evidence = v.Reason + (v.Path != null ? " — " + v.Path : ""),
+                Advice = Loc.T(suspected ? "detective.proc.suspicious.advice" : "detective.proc.harmful.advice"),
+                Fix = suspected ? DetectiveFix.None : DetectiveFix.CloseProcess, FixTarget = v.Name,
             });
+        }
         var noisy = grouped.Where(v => !v.Protected && v.Tier <= ProcessTier.LowValue && (v.WakeupsPerSec >= 300 || v.CpuPercent >= 1)).Take(5).ToList();
         foreach (var v in noisy)
             f.Add(new DetectiveFinding

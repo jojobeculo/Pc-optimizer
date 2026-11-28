@@ -59,7 +59,8 @@ public static class NetworkProbe
     {
         var f = new List<DetectiveFinding>();
         var up = adapters.Where(a => a.IsUp && a.IsPhysical).ToList();
-        var active = up.FirstOrDefault(a => a.Gateway != null) ?? up.FirstOrDefault();
+        // Physical adapter first; otherwise any connected adapter with a gateway (virtual machines, some USB/Thunderbolt docks).
+        var active = up.FirstOrDefault(a => a.Gateway != null) ?? up.FirstOrDefault() ?? adapters.FirstOrDefault(a => a.IsUp && a.Gateway != null);
         if (active == null)
         {
             f.Add(new DetectiveFinding { Id = "net.none", Area = DetectiveArea.Network, Severity = Severity.Info, Title = Loc.T("detective.net.none") });
@@ -106,6 +107,8 @@ public static class NetworkProbe
                 Advice = bad ? Loc.T(active.IsWireless ? "detective.net.gateway.adviceWifi" : "detective.net.gateway.adviceWired") : "",
             });
         }
+        if (n.Internet is { Sent: > 0, Received: 0 })
+            f.Add(new DetectiveFinding { Id = "net.icmpBlocked", Area = DetectiveArea.Network, Severity = Severity.Info, Title = Loc.T("detective.net.icmpBlocked") });
         if (n.Internet is { Received: > 0 } i)
         {
             var extra = i.AvgMs - (n.Gateway?.AvgMs ?? 0);

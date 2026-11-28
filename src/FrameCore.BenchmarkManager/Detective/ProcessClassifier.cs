@@ -196,6 +196,8 @@ public sealed class ProcessClassifier
     public static ProcessAction ActionFor(ProcessVerdict v, ProfileLevel level)
     {
         if (v.Protected || v.Tier >= ProcessTier.VeryUseful || v.IsGame) return ProcessAction.None;
+        // A program only "suspected" from its location (e.g. an installer running from Temp) is reported, never closed.
+        if (v.Category == "suspicious") return ProcessAction.None;
         return v.Tier switch
         {
             ProcessTier.Harmful => v.HasWindow ? ProcessAction.LowerPriority : ProcessAction.Close,

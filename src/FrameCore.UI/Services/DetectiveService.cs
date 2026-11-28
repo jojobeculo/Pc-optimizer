@@ -107,7 +107,7 @@ public sealed class DetectiveService
         // Network path (after the kernel trace so that pings do not disturb it).
         progress("network", 0, "");
         var n = new NetworkReport();
-        var active = profile.Network.FirstOrDefault(a => a.IsUp && a.IsPhysical && a.Gateway != null);
+        var active = profile.Network.FirstOrDefault(a => a.IsUp && a.IsPhysical && a.Gateway != null) ?? profile.Network.FirstOrDefault(a => a.IsUp && a.Gateway != null);
         n.Adapter = active?.Description; n.Wired = active is { IsWireless: false }; n.LinkMbps = active?.SpeedMbps ?? 0;
         var count = deep ? 100 : 40;
         var gw = active?.Gateway is { } g ? NetworkProbe.PingAsync(g, count, 100, ct) : Task.FromResult<PingSummary>(null!);
