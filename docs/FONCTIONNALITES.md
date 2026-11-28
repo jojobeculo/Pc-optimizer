@@ -49,6 +49,11 @@ AMD EPYC, 16 Go, pilote d'affichage de base Microsoft (pas de GPU), droits admin
 | Rapport de diagnostic HTML/JSON | Testée (logique) | génération couverte ; non ouvert par la visite |
 | Mise à jour de l'application (manifeste, empreinte, consentement) | Non testable ici | désactivée par défaut ; aucun serveur de mise à jour configuré |
 | Carte graphique par application (réglage officiel de Windows, restaurable) | Testée | tests unitaires (lecture, validation, aller-retour exact) + réglage puis retour au choix de Windows sur Windows ; effet réel seulement sur un PC à deux cartes graphiques |
+| Enquête détective (processus, latence des pilotes, réseau, stabilité, matériel, avant/maintenant) | Testée (logique) / Partielle | 10 tests unitaires sur la logique ; exécutée réellement sur la VM Windows (trace noyau, processus, réseau, journaux) ; sur un vrai PC de jeu les pilotes et processus seront différents |
+| Classement des processus en 6 niveaux, actions selon le niveau | Testée (logique) | base de connaissances + classement automatique des inconnus ; processus protégés, jeux et fenêtres ouvertes jamais touchés (tests) |
+| Modes Rapide / Complet pour chaque niveau | Partielle | déroulé compilé et relié aux mêmes briques testées ; parcours complet réel non exécuté sur la VM (durée) |
+| Profil jeu automatique | Non testable ici | aucun jeu sur la VM ; logique de détection et de rétablissement relue |
+| Analyse des saccades et limite d'images conseillée | Testée (logique) | motifs périodique / démarrage / aléatoire couverts par des tests |
 | Mise à l'échelle DPI et redimensionnement | Testée | pages principales rendues à 1366×768 / 125 % et 1920×1080 / 150 % : aucun contenu coupé (contrôle automatique) |
 | Accessibilité : focus visible, noms accessibles, tailles, clavier | Testée | audit automatique pendant la visite + contrastes calculés (WCAG AA) |
 

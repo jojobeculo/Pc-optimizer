@@ -17,7 +17,7 @@ publiés comme artefacts de chaque exécution.
 | Vérification | Résultat |
 |---|---|
 | Compilation Release des 15 projets + 2 projets de tests | ✅ 0 erreur, 0 avertissement |
-| Tests unitaires (xUnit) | ✅ 163 / 163 (Linux et Windows) |
+| Tests unitaires (xUnit) | ✅ 173 / 173 (Linux et Windows) |
 | Test d'intégration « détection matérielle » sur Windows réel | ✅ |
 | Test d'intégration « aller-retour du catalogue » sur Windows réel | ✅ 53 optimisations appliquées, relues, restaurées : état d'origine retrouvé à l'identique pour toutes ; 1 « non applicable » correctement détectée ; 16 incompatibles avec la VM ignorées ; 0 non effective |
 | Aller-retour via le processus élevé (chemin des comptes non administrateurs) | ✅ 33 optimisations exigeant des droits : 19 appliquées et vérifiées, 14 détectées « déjà en place » (rien écrit) ; état d'origine retrouvé à l'identique pour les 33 (connexion 0,5 s, total 2,4 s) |
@@ -28,7 +28,7 @@ publiés comme artefacts de chaque exécution.
 | Paquet sans données par machine ni chemin de la machine de build (contrôle bloquant du build) | ✅ |
 | Audit d'accessibilité automatique (noms accessibles, taille des cibles) + parcours au clavier | ✅ voir § 6 |
 
-## 2. Tests unitaires (163)
+## 2. Tests unitaires (173)
 
 | Fichier | Contenu principal |
 |---|---|
@@ -40,7 +40,8 @@ publiés comme artefacts de chaque exécution.
 | `BootPerformanceTests` | Lecture des événements Windows de démarrage (format XML réel, secondes, indicateurs), refus des valeurs manquantes, classement des ralentissements (application, pilote, service, périphérique), médiane robuste aux démarrages aberrants, tendance, principaux responsables |
 | `CombinedStressTests` | Stress combiné du benchmark complet : arrêt immédiat au seuil thermique, durée limitée sans capteurs, erreurs de calcul = instable |
 | `DefenderHandlerTests` | Niveau Extrême : plafond des analyses planifiées et exclusion des dossiers de jeux appliqués puis restaurés exactement (Defender simulé), « 0 = aucune limite » (constaté sur Windows réel), rien de deviné sans droits, non applicable si Defender n'est pas l'antivirus |
-| `LongTermRestoreTests` | Restauration des mois plus tard : liste figée de toutes les actions de la version 2.0.0, toujours acceptées par le processus élevé pour la restauration ; action retirée restaurable mais jamais applicable ; journal vieux de 7 mois rechargé et restauré sans catalogue |
+| `DetectiveTests` | Enquête : attribution de la latence au bon pilote, calcul des réveils par processus, classement des processus (connus, inconnus, suspects, services Windows) et actions par niveau (protégés jamais touchés), causes des écrans bleus, constats réseau et note de bufferbloat, motifs de saccades et limite d'images, comparaison avec l'état de départ, vérifications matérielles |
+| `LongTermRestoreTests` | Restauration des mois plus tard : listes figées des actions des versions 2.0.0 et 2.1.0, toujours acceptées par le processus élevé pour la restauration ; action retirée restaurable mais jamais applicable ; journal vieux de 7 mois rechargé et restauré sans catalogue |
 | `CpuOcGuideTests` | Guide d'overclocking CPU : famille reconnue (jamais devinée ; rien pour portable/VM), 3 niveaux par famille, chaque réglage situé dans le BIOS des 4 marques en FR/EN, aucune tension dangereuse |
 | `LocalizationConcurrencyTests` | Traductions chargées et lues depuis 64 tâches parallèles sans erreur (défaut réel de concurrence trouvé sur Windows en CI, corrigé) |
 | `CpuProcedureTests` | Procédure pas à pas affichée pour un Ryzen de bureau (paliers, retour aux réglages d'usine) ; aucune procédure inventée pour un processeur non identifié ou une machine virtuelle |

@@ -54,6 +54,33 @@ tard, tant que l'application est installée), puis choisissez **Équilibré** po
    orange les réglages **non appliqués faute d'autorisation administrateur** (bouton « Terminer » pour les appliquer), puis ce qui est appliqué, ce qui a été **relu et vérifié**, ce que Windows n'a pas conservé
    (réécrit au plus deux fois puis annulé), l'effet mesuré (indice après/avant) et trois jeux avec leurs FPS avant → après.
 
+## 2 bis. Enquête détective et modes Rapide / Complet
+
+Page **Enquête** : un seul écran d'autorisation liste tout ce qui sera lu, puis FrameCore enquête (≈ 1 min en rapide,
+≈ 2 min en approfondi) — rien n'est modifié pendant l'enquête :
+
+| Volet | Ce qui est mesuré |
+|---|---|
+| Processus | chaque processus en cours, sa consommation et surtout ses **réveils du processeur par seconde** (le coût caché des centaines de processus « à 0 % »), classé **nuisible / inutile / peu utile / utile / très utile / primordial** |
+| Latence interne | trace du noyau Windows : le plus long appel (DPC/ISR) de **chaque pilote**, comme LatencyMon |
+| Réseau | ping vers la box puis vers Internet (d'où vient la latence), gigue, pertes, carte en 100 Mb/s, Wi-Fi, VPN, trafic en arrière-plan, test sous charge (bufferbloat) |
+| Stabilité | écrans bleus avec leur cause probable, redémarrages brutaux, erreurs matérielles WHEA, pilote graphique redémarré, jeux qui plantent, erreurs disque |
+| Matériel / stockage | carte graphique sur moins de lignes PCIe que prévu, Resizable BAR, SSD plein / usé / chaud |
+| Avant / maintenant | la première enquête sert de référence : EXPO perdu, nouveaux programmes au démarrage, plus de réveils, disque qui se remplit, pilote changé, benchmarks et températures qui se dégradent |
+
+Chaque constat a ses chiffres, une explication et, quand c'est possible, un bouton de correction (fermer et retirer
+du démarrage, mettre en retrait, profil jeu, vider le cache des shaders, test mémoire) ; **Tout corriger
+automatiquement** liste puis applique.
+
+**Modes** : chaque niveau (Équilibré, Performances, Performance maximale, Extrême) se lance en **Rapide** (plan +
+mesure express) ou en **Complet** : enquête intégrale, benchmark précis avant, plan + traitement des processus selon le
+niveau, vérification, overclocking GPU automatique si coché, latence revérifiée, benchmark après et tableau avant →
+après (indice, latence des pilotes, nombre de processus et réveils du processeur).
+
+**Profil jeu automatique** (page Jeux) : quand un jeu se lance, les programmes dispensables pour le niveau choisi
+passent en priorité minimale et le plan d'alimentation le plus rapide est activé ; tout est rétabli à la fermeture du
+jeu. FrameCore doit rester ouvert (il peut être réduit).
+
 ## 3. Jeux & FPS
 
 - **Sélection pour votre configuration** : trois jeux pertinents avec FPS estimés avant et après, plage, limitation
