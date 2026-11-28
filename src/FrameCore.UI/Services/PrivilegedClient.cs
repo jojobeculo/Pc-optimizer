@@ -56,8 +56,14 @@ public sealed class PrivilegedClient
     public StartupManager.BootHistory BootHistory() =>
         Call("boot.history", new { }, () => StartupManager.BootPerformance.Read(), TimeSpan.FromMinutes(1));
 
+    /// <summary>Kernel trace of every DPC/ISR for the given duration (administrator rights required).</summary>
+    public FrameCore.BenchmarkManager.Detective.LatencyReport LatencyCapture(int seconds) =>
+        Call("detective.latency", new LatencyRequest { Seconds = seconds }, () => FrameCore.BenchmarkManager.Detective.LatencyProbe.Capture(seconds), TimeSpan.FromSeconds(seconds + 90));
+
     private GpuTuningService Gpu() => _localGpu ??= new GpuTuningService();
 }
+
+public sealed class LatencyRequest { public int Seconds { get; set; } = 30; }
 
 public sealed class PresentMonRequest
 {

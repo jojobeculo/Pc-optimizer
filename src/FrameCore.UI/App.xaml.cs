@@ -87,6 +87,7 @@ public partial class App : Application
     {
         try
         {
+            _shell?.GameProfile.Dispose();
             _shell?.Monitoring.Dispose();
             _shell?.Services.Broker.Dispose();
         }

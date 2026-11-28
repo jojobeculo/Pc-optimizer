@@ -156,6 +156,30 @@ public static class UiTour
             {
                 Dialogs.AutoConfirm = true;
                 report["workerRoundTrip"] = await Task.Run(() => WorkerRoundTrip(shell));
+
+                // Detective: the real investigation on this VM (kernel trace, processes, network, logs).
+                {
+                    var flowDet = Stopwatch.StartNew();
+                    shell.CurrentKey = "detective";
+                    var rep = await shell.DetectivePage.RunAsync(false, Core.Models.ProfileLevel.Maximum);
+                    report["detective"] = rep == null ? "failed" : new Dictionary<string, object?>
+                    {
+                        ["seconds"] = flowDet.Elapsed.TotalSeconds,
+                        ["findings"] = rep.Findings.Select(f => $"{f.Severity} [{f.Area}] {f.Title} | {f.Evidence}").ToList(),
+                        ["latencyError"] = rep.Latency?.Error,
+                        ["maxDpcMs"] = rep.Latency?.MaxDpcMs, ["maxIsrMs"] = rep.Latency?.MaxIsrMs, ["dpcCount"] = rep.Latency?.DpcCount,
+                        ["topDrivers"] = rep.Latency?.Drivers.Take(6).Select(d => $"{d.Driver} ({d.Component}) max {d.MaxMs:0.000} ms, {d.Count} calls").ToList(),
+                        ["processes"] = rep.Processes.Sum(p => p.Instances),
+                        ["tiers"] = rep.Processes.GroupBy(p => p.Tier).ToDictionary(g => g.Key.ToString(), g => g.Sum(p => p.Instances)),
+                        ["topWakeups"] = rep.Processes.OrderByDescending(p => p.WakeupsPerSec).Take(8).Select(p => $"{p.Name} x{p.Instances} {p.Tier} {p.WakeupsPerSec:0}/s {p.CpuPercent:0.00}%").ToList(),
+                        ["gatewayPing"] = rep.Network?.Gateway?.AvgMs, ["internetPing"] = rep.Network?.Internet?.AvgMs,
+                        ["stabilityEvents"] = rep.Stability.Count,
+                    };
+                    pages.Add(await Visit(shell, window, dir, "flow-detective-report", () => shell.CurrentKey = "detective", scrollShots: 6));
+                    shell.DetectivePage.TierFilter = "LowValue";
+                    pages.Add(await Visit(shell, window, dir, "flow-detective-lowvalue", () => { }, scrollShots: 0));
+                    shell.DetectivePage.TierFilter = "all";
+                }
                 var flow = Stopwatch.StartNew();
                 shell.CurrentKey = "benchmark"; shell.Benchmark.Section = "quick";
                 shell.Benchmark.Quick.Mode = "express";

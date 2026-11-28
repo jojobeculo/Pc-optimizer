@@ -1,0 +1,1145 @@
+{
+ "schemaVersion": 1,
+ "note": {
+  "fr": "Base de connaissances des processus : un processus inconnu est classé automatiquement (service Windows, signature, emplacement, fenêtre ouverte, programme au démarrage, activité mesurée).",
+  "en": "Process knowledge base: an unknown process is classified automatically (Windows service, signature, location, open window, start-up entry, measured activity)."
+ },
+ "processes": [
+  {
+   "match": "^(system|registry|smss|csrss|wininit|winlogon|services|lsass|lsaiso|memory compression|secure system|fontdrvhost|dwm|sgrmbroker|wudfhost|wudfrd)$",
+   "tier": "Essential",
+   "category": "system",
+   "protected": true,
+   "note": {
+    "fr": "Cœur de Windows : indispensable.",
+    "en": "Windows core: required."
+   }
+  },
+  {
+   "match": "^(explorer|sihost|startmenuexperiencehost|shellexperiencehost|shellhost|searchhost|textinputhost|ctfmon|lockapp|applicationframehost)$",
+   "tier": "VeryUseful",
+   "category": "system",
+   "protected": true,
+   "note": {
+    "fr": "Interface de Windows (bureau, menu Démarrer, saisie).",
+    "en": "Windows interface (desktop, Start menu, input)."
+   }
+  },
+  {
+   "match": "^(runtimebroker|dllhost|conhost|taskhostw|backgroundtaskhost|wmiprvse|unsecapp|smartscreen|sppsvc|audiodg|spoolsv|searchindexer|searchprotocolhost|searchfilterhost|wlanext|dashost|wmiapsrv|msdtc|vds|trustedinstaller|tiworker|mousocoreworker|usocoreworker|compattelrunner|musnotification|musnotifyicon|systemsettings|systemsettingsbroker|useroobebroker|rundll32|sihclient|wermgr|werfault|consent|credentialuibroker|dataexchangehost|securityhealthhost|crossdeviceresume|aggregatorhost|identity_helper|msteamsupdate|ngciso|lsm|smss)$",
+   "tier": "Useful",
+   "category": "system",
+   "protected": false,
+   "note": {
+    "fr": "Composant de Windows, démarré à la demande.",
+    "en": "Windows component, started on demand."
+   }
+  },
+  {
+   "match": "^audiodg$",
+   "tier": "Essential",
+   "category": "audio",
+   "protected": true,
+   "note": {
+    "fr": "Moteur audio de Windows.",
+    "en": "Windows audio engine."
+   }
+  },
+  {
+   "match": "^(compattelrunner|devicecensus)$",
+   "tier": "Useless",
+   "category": "telemetry",
+   "protected": false,
+   "note": {
+    "fr": "Télémétrie de compatibilité de Windows ; aucun rôle en jeu.",
+    "en": "Windows compatibility telemetry; no role in games."
+   }
+  },
+  {
+   "match": "^(widgets|widgetservice|widgetboard|webexperiencehostapp)$",
+   "tier": "Useless",
+   "category": "windows-app",
+   "protected": false,
+   "note": {
+    "fr": "Widgets de Windows : actualités et météo en arrière-plan.",
+    "en": "Windows Widgets: news and weather in the background."
+   }
+  },
+  {
+   "match": "^(phoneexperiencehost|yourphone|yourphoneserver|crossdeviceservice)$",
+   "tier": "LowValue",
+   "category": "windows-app",
+   "protected": false,
+   "note": {
+    "fr": "Mobile connecté (Phone Link) : utile seulement si vous l'utilisez.",
+    "en": "Phone Link: only useful if you use it."
+   }
+  },
+  {
+   "match": "^(gamebar|gamebarftserver|gamebarpresencewriter|xboxpcappft|xboxgamebarwidgets)$",
+   "tier": "LowValue",
+   "category": "overlay",
+   "protected": false,
+   "note": {
+    "fr": "Xbox Game Bar : surcouche et enregistrement ; inutile si vous ne vous en servez pas.",
+    "en": "Xbox Game Bar: overlay and recording; useless if unused."
+   }
+  },
+  {
+   "match": "^(cortana|searchapp)$",
+   "tier": "Useless",
+   "category": "windows-app",
+   "protected": false,
+   "note": {
+    "fr": "Assistant/recherche Bing en arrière-plan.",
+    "en": "Background assistant/Bing search."
+   }
+  },
+  {
+   "match": "^(copilot|m365copilot|microsoft\\.copilot)$",
+   "tier": "Useless",
+   "category": "windows-app",
+   "protected": false,
+   "note": {
+    "fr": "Copilot en arrière-plan : aucun rôle en jeu.",
+    "en": "Copilot in the background: no role in games."
+   }
+  },
+  {
+   "match": "^(onedrive|onedrive\\.sync\\.service|filecoauth|onedrivestandaloneupdater)$",
+   "tier": "LowValue",
+   "category": "cloud",
+   "protected": false,
+   "note": {
+    "fr": "Synchronisation OneDrive : peut écrire sur le disque pendant que vous jouez.",
+    "en": "OneDrive sync: may write to disk while you play."
+   }
+  },
+  {
+   "match": "^(ms-teams|teams|msteams)$",
+   "tier": "LowValue",
+   "category": "communication",
+   "protected": false,
+   "note": {
+    "fr": "Teams en arrière-plan.",
+    "en": "Teams in the background."
+   }
+  },
+  {
+   "match": "^(msedge)$",
+   "tier": "Useful",
+   "category": "browser",
+   "protected": false,
+   "note": {
+    "fr": "Navigateur Edge (ou ses processus d'arrière-plan).",
+    "en": "Edge browser (or its background processes)."
+   }
+  },
+  {
+   "match": "^msedgewebview2$",
+   "tier": "Useful",
+   "category": "system",
+   "protected": false,
+   "note": {
+    "fr": "Moteur web utilisé par de nombreuses applications (Widgets, Teams, launchers).",
+    "en": "Web engine used by many apps (Widgets, Teams, launchers)."
+   }
+  },
+  {
+   "match": "^(microsoftedgeupdate|edgeupdate|msedgeupdate)$",
+   "tier": "LowValue",
+   "category": "updater",
+   "protected": false,
+   "note": {
+    "fr": "Mise à jour d'Edge : peut attendre la fin de la partie.",
+    "en": "Edge updater: can wait until after gaming."
+   }
+  },
+  {
+   "match": "^(securityhealthsystray)$",
+   "tier": "Useful",
+   "category": "security",
+   "protected": true,
+   "note": {
+    "fr": "Icône de Sécurité Windows.",
+    "en": "Windows Security icon."
+   }
+  },
+  {
+   "match": "^(msmpeng|nissrv|securityhealthservice|mpdefendercoreservice|mpcmdrun|smartscreen|mssense|sensendr|sensetvm)$",
+   "tier": "Essential",
+   "category": "security",
+   "protected": true,
+   "note": {
+    "fr": "Protection antivirus de Windows : jamais désactivée.",
+    "en": "Windows antivirus protection: never disabled."
+   }
+  },
+  {
+   "match": "^(officeclicktorun|officec2rclient|msoia|msosync|msoadfsb)$",
+   "tier": "LowValue",
+   "category": "office",
+   "protected": false,
+   "note": {
+    "fr": "Service et mises à jour de Microsoft Office.",
+    "en": "Microsoft Office service and updates."
+   }
+  },
+  {
+   "match": "^(winword|excel|powerpnt|outlook|onenote|olk)$",
+   "tier": "Useful",
+   "category": "office",
+   "protected": false,
+   "note": {
+    "fr": "Application Office ouverte.",
+    "en": "Open Office app."
+   }
+  },
+  {
+   "match": "^(vmmem|vmmemwsl|vmcompute|vmwp|wslservice|wslhost|wsl)$",
+   "tier": "LowValue",
+   "category": "virtualization",
+   "protected": false,
+   "note": {
+    "fr": "Machine virtuelle WSL/Hyper-V/Docker : réserve mémoire et processeur.",
+    "en": "WSL/Hyper-V/Docker virtual machine: reserves memory and CPU."
+   }
+  },
+  {
+   "match": "^(avp|avpui|ksde|kavfs|ekrn|egui|bdservicehost|bdagent|vsserv|avastsvc|avastui|afwserv|avgsvc|avgui|mbamservice|mbamtray|mcshield|mfemms|mfevtps|modulecoreservice|nortonsecurity|ns|nsbu|wrsa|sophos.*|cylancesvc|csfalconservice|sentinelagent|sentinelservicehost|zatray|hitmanpro.*|eset.*)$",
+   "tier": "Essential",
+   "category": "security",
+   "protected": true,
+   "note": {
+    "fr": "Antivirus ou protection de sécurité : jamais désactivé par FrameCore.",
+    "en": "Antivirus or security protection: never disabled by FrameCore."
+   }
+  },
+  {
+   "match": "^(vgc|vgtray|vgk|easyanticheat.*|eac_launcher|beservice.*|battleye.*|faceit.*|faceitclient|faceitservice|esportal.*|gameguard|gamemon.*|npggnt|xigncode.*|ricochet.*|atvi-randgrid.*|eaanticheat.*|mhyprot.*|nprotect.*|zakynthos.*)$",
+   "tier": "Essential",
+   "category": "anticheat",
+   "protected": true,
+   "note": {
+    "fr": "Anti-triche : indispensable aux jeux en ligne, jamais touché.",
+    "en": "Anti-cheat: required by online games, never touched."
+   }
+  },
+  {
+   "match": "^(nvdisplay\\.container|nvcontainer|nvsphelper64|nvidia web helper|nvtelemetrycontainer|nvidia share|nvidia overlay|nvidia app|nvoawrappercache|nvbroadcast\\.container)$",
+   "tier": "Useful",
+   "category": "gpu",
+   "protected": false,
+   "note": {
+    "fr": "Logiciel NVIDIA.",
+    "en": "NVIDIA software."
+   }
+  },
+  {
+   "match": "^nvdisplay\\.container$",
+   "tier": "VeryUseful",
+   "category": "gpu",
+   "protected": true,
+   "note": {
+    "fr": "Service d'affichage NVIDIA (panneau de configuration, réglages des jeux).",
+    "en": "NVIDIA display service (control panel, game settings)."
+   }
+  },
+  {
+   "match": "^(nvidia overlay|nvidia share|nvsphelper64)$",
+   "tier": "LowValue",
+   "category": "overlay",
+   "protected": false,
+   "note": {
+    "fr": "Surcouche NVIDIA (enregistrement, filtres, statistiques) : désactivable dans l'application NVIDIA.",
+    "en": "NVIDIA overlay (recording, filters, stats): can be turned off in the NVIDIA app."
+   }
+  },
+  {
+   "match": "^nvtelemetrycontainer$",
+   "tier": "Useless",
+   "category": "telemetry",
+   "protected": false,
+   "note": {
+    "fr": "Télémétrie NVIDIA.",
+    "en": "NVIDIA telemetry."
+   }
+  },
+  {
+   "match": "^(atiesrxx|atieclxx|amdfendrsr|amdrsserv|amdrssrcext|radeonsoftware|amdow|amdrsrcext|amd3dvcacheuser|amdppkgsvc|amdpmfservice|amdtpe)$",
+   "tier": "Useful",
+   "category": "gpu",
+   "protected": false,
+   "note": {
+    "fr": "Logiciel ou service AMD (pilote, Adrenalin, cache 3D).",
+    "en": "AMD software or service (driver, Adrenalin, 3D cache)."
+   }
+  },
+  {
+   "match": "^(atiesrxx|atieclxx|amd3dvcacheuser|amdppkgsvc|amdpmfservice)$",
+   "tier": "VeryUseful",
+   "category": "driver",
+   "protected": true,
+   "note": {
+    "fr": "Service du pilote AMD (dont le placement des jeux sur les cœurs avec cache 3D).",
+    "en": "AMD driver service (including placing games on the 3D-cache cores)."
+   }
+  },
+  {
+   "match": "^(igfxem|igfxhk|igfxtray|igfxcuiservice.*|intelgraphicssoftware|onelaunch.*intel|intelcphdcpsvc|intelcpheciservice|jhi_service|lms|esrv|esrv_svc|intelaudioservice|ipfsvc|ipf_uf|ipf_helper|rstmwservice|ialertservice|dptf.*)$",
+   "tier": "Useful",
+   "category": "driver",
+   "protected": false,
+   "note": {
+    "fr": "Composant de pilote Intel.",
+    "en": "Intel driver component."
+   }
+  },
+  {
+   "match": "^(dsatray|dsaservice|dsaupdateservice|intelsoftwareassetmanagerservice)$",
+   "tier": "LowValue",
+   "category": "updater",
+   "protected": false,
+   "note": {
+    "fr": "Assistant de mise à jour Intel : peut attendre.",
+    "en": "Intel update assistant: can wait."
+   }
+  },
+  {
+   "match": "^(rtkauduservice64|rtkngui64|ravbg64|ravcpl64|rtkaudioservice64|wavesvc64|wavessyssvc64|maxxaudio.*|dolby.*|dax3api|sonicstudio3|nahimicsvc.*|nahimic.*|a-volute.*|voicemeeter.*|steelseriessonar|sonar.*)$",
+   "tier": "Useful",
+   "category": "audio",
+   "protected": true,
+   "note": {
+    "fr": "Logiciel audio (pilote, effets, mixage).",
+    "en": "Audio software (driver, effects, mixer)."
+   }
+  },
+  {
+   "match": "^(nahimicsvc.*|nahimic.*|a-volute.*)$",
+   "tier": "LowValue",
+   "category": "audio",
+   "protected": false,
+   "note": {
+    "fr": "Nahimic : effets audio connus pour provoquer saccades et latence sur certains PC ; à désinstaller si vous ne l'utilisez pas.",
+    "en": "Nahimic: audio effects known to cause stutter and latency on some PCs; uninstall if unused."
+   }
+  },
+  {
+   "match": "^(lghub.*|logitechg_.*|lcore|logioptionsplus.*|logi_.*|razer.*|rzsdkservice|gamemanagerservice.*|synapse.*|steelseriesgg|steelseriesengine|steelseries.*|wootility.*|hyperx.*|ngenuity.*|corsair\\.service.*|icue|icuedevicepluginhost|roccat.*|swarm.*|glorious.*|zowie.*|endgame.*|mchose.*|wooting.*|asus_framework|armourysocketserver)$",
+   "tier": "Useful",
+   "category": "peripheral",
+   "protected": true,
+   "note": {
+    "fr": "Logiciel de souris/clavier/casque : nécessaire pour les profils, macros et DPI.",
+    "en": "Mouse/keyboard/headset software: needed for profiles, macros and DPI."
+   }
+  },
+  {
+   "match": "^(armourycrate.*|armourycrateservice|armourycratecontrolinterface|lightingservice|aurawallpaperservice|rogliveservice|asussoftwaremanager.*|asusoptimization.*|asussystemanalysis|asussysdiag.*|asuscertservice|asus_.*service|atkexcomsvc)$",
+   "tier": "LowValue",
+   "category": "rgb",
+   "protected": false,
+   "note": {
+    "fr": "Armoury Crate / services ASUS : nombreux processus d'arrière-plan, connus pour charger le système ; la lumière reste réglée sans eux.",
+    "en": "Armoury Crate / ASUS services: many background processes, known to load the system; lighting stays set without them."
+   }
+  },
+  {
+   "match": "^(msi.centralserver|msi_central_service|msi.terminalserver|mystic_light_service|msicenter.*|msi\\.center.*|msiafterburner|rtss|rtsshooksloader64|encoderserver.*)$",
+   "tier": "LowValue",
+   "category": "rgb",
+   "protected": false,
+   "note": {
+    "fr": "Utilitaire MSI / Afterburner / RTSS : utile seulement si vous vous en servez (surcouche, ventilation).",
+    "en": "MSI utility / Afterburner / RTSS: only useful if you use it (overlay, fans)."
+   }
+  },
+  {
+   "match": "^(gcc|gigabyte.*|rgbfusion.*|easytune.*|aorus.*|gbtupd)$",
+   "tier": "LowValue",
+   "category": "rgb",
+   "protected": false,
+   "note": {
+    "fr": "Utilitaire Gigabyte/AORUS (RGB, réglages).",
+    "en": "Gigabyte/AORUS utility (RGB, tuning)."
+   }
+  },
+  {
+   "match": "^(cam|nzxt cam|nzxt.*|signalrgb.*|openrgb|aura.*|polychrome.*|asrpolychrome.*|lianli.*|l-connect.*|thermaltake.*|tt rgb.*|deepcool.*|cooler master.*|masterplus.*|fanxpert.*|argus.*|fancontrol)$",
+   "tier": "LowValue",
+   "category": "rgb",
+   "protected": false,
+   "note": {
+    "fr": "Logiciel RGB / ventilation : souvent gourmand ; ne le gardez que s'il pilote vos ventilateurs.",
+    "en": "RGB / fan software: often heavy; keep it only if it drives your fans."
+   }
+  },
+  {
+   "match": "^(wallpaper32|wallpaper64|wallpaperservice32|lively.*|rainmeter|deskscapes.*)$",
+   "tier": "LowValue",
+   "category": "media",
+   "protected": false,
+   "note": {
+    "fr": "Fond d'écran animé / widgets : utilise la carte graphique en permanence.",
+    "en": "Animated wallpaper / widgets: uses the GPU constantly."
+   }
+  },
+  {
+   "match": "^(supportassist.*|dell.*service|dellsupportassistremedation|dell\\.techhub.*|dellclientmanagementservice|hpsupportassistant|hpsa_service|hptouchpointanalyticsservice|hpaudioswitch|hpcommrecovery|hpjumpstartbridge|hp.*telemetry.*|lenovovantage.*|imcontroller.*|lenovo.*service|lscserver|myasus|asus.*link|acer.*|careCenter.*|quickaccess.*|samsungsettings.*|samsung.*service)$",
+   "tier": "LowValue",
+   "category": "oem",
+   "protected": false,
+   "note": {
+    "fr": "Utilitaire du fabricant du PC (assistance, télémétrie, mises à jour).",
+    "en": "PC maker's utility (support, telemetry, updates)."
+   }
+  },
+  {
+   "match": "^(hptouchpointanalyticsservice|dellclientmanagementservice|hp.*telemetry.*)$",
+   "tier": "Useless",
+   "category": "telemetry",
+   "protected": false,
+   "note": {
+    "fr": "Télémétrie du fabricant.",
+    "en": "Manufacturer telemetry."
+   }
+  },
+  {
+   "match": "^(killernetworkservice|killer.*|rivetnetworks.*|smartbyte.*|smartbytenetworkservice|xtu3service|intel.*killer.*)$",
+   "tier": "LowValue",
+   "category": "network",
+   "protected": false,
+   "note": {
+    "fr": "Killer / SmartByte : « priorisation » réseau connue pour ajouter latence et instabilité ; la carte réseau fonctionne sans.",
+    "en": "Killer / SmartByte: network 'prioritisation' known to add latency and instability; the network card works without it."
+   }
+  },
+  {
+   "match": "^(steam|steamservice|steamwebhelper)$",
+   "tier": "Useful",
+   "category": "launcher",
+   "protected": false,
+   "note": {
+    "fr": "Steam (nécessaire pour les jeux Steam).",
+    "en": "Steam (needed for Steam games)."
+   }
+  },
+  {
+   "match": "^(epicgameslauncher|epicwebhelper|epiconlineservices.*|eosoverlayrenderer.*)$",
+   "tier": "Useful",
+   "category": "launcher",
+   "protected": false,
+   "note": {
+    "fr": "Epic Games Launcher (nécessaire pour Fortnite et les jeux Epic).",
+    "en": "Epic Games Launcher (needed for Fortnite and Epic games)."
+   }
+  },
+  {
+   "match": "^(riotclientservices|riotclientux.*|riotclientcrashhandler|leagueclient.*)$",
+   "tier": "Useful",
+   "category": "launcher",
+   "protected": false,
+   "note": {
+    "fr": "Client Riot (nécessaire pour Valorant/LoL).",
+    "en": "Riot client (needed for Valorant/LoL)."
+   }
+  },
+  {
+   "match": "^(battle\\.net|agent|blizzard.*|eadesktop|eabackgroundservice|ealocalhostsvc|origin.*|upc|ubisoftconnect|uplayservice.*|ubisoftgamelauncher.*|galaxyclient.*|gogalaxy.*|rockstarservice|launcher|socialclubhelper|playnite.*|xboxapp.*|xboxpcapp|gamingservices|gamingservicesnet|minecraft.*launcher|bsglauncher|hoyoplay.*|wargaming.*)$",
+   "tier": "Useful",
+   "category": "launcher",
+   "protected": false,
+   "note": {
+    "fr": "Launcher de jeux.",
+    "en": "Game launcher."
+   }
+  },
+  {
+   "match": "^(gamingservices|gamingservicesnet|gameinputsvc|xboxgipsvc)$",
+   "tier": "VeryUseful",
+   "category": "launcher",
+   "protected": true,
+   "note": {
+    "fr": "Services de jeu Microsoft (Game Pass, manettes).",
+    "en": "Microsoft gaming services (Game Pass, controllers)."
+   }
+  },
+  {
+   "match": "^(gameoverlayui|discordhookhelper.*|overwolf.*|owclient|medal.*|outplayed.*|insights.*capture|blitz.*|porofessor.*|mobalytics.*|u\\.gg.*|tracker.*network.*)$",
+   "tier": "LowValue",
+   "category": "overlay",
+   "protected": false,
+   "note": {
+    "fr": "Surcouche / capture en jeu : chaque surcouche coûte un peu de FPS et de latence.",
+    "en": "In-game overlay / capture: each overlay costs a little FPS and latency."
+   }
+  },
+  {
+   "match": "^(discord|discordptb|discordcanary)$",
+   "tier": "Useful",
+   "category": "communication",
+   "protected": false,
+   "note": {
+    "fr": "Discord : utile pour le vocal ; pensez à couper sa surcouche en jeu et l'accélération matérielle si vous avez des saccades.",
+    "en": "Discord: useful for voice; turn off its in-game overlay and hardware acceleration if you get stutter."
+   }
+  },
+  {
+   "match": "^(teamspeak.*|ts3client.*|mumble.*|guilded.*)$",
+   "tier": "Useful",
+   "category": "communication",
+   "protected": false,
+   "note": {
+    "fr": "Logiciel vocal.",
+    "en": "Voice software."
+   }
+  },
+  {
+   "match": "^(obs64|obs32|streamlabs.*|xsplit.*|twitchstudio.*)$",
+   "tier": "Useful",
+   "category": "media",
+   "protected": false,
+   "note": {
+    "fr": "Logiciel de streaming / enregistrement.",
+    "en": "Streaming / recording software."
+   }
+  },
+  {
+   "match": "^(spotify|spotifywebhelper|deezer.*|itunes|applemusic.*|vlc|aimp.*|foobar2000)$",
+   "tier": "Useful",
+   "category": "media",
+   "protected": false,
+   "note": {
+    "fr": "Lecteur de musique.",
+    "en": "Music player."
+   }
+  },
+  {
+   "match": "^(skype.*|zoom|zoomwebviewhost|zoomit|slack|whatsapp.*|telegram|signal|messenger|wechat.*|line|viber)$",
+   "tier": "LowValue",
+   "category": "communication",
+   "protected": false,
+   "note": {
+    "fr": "Messagerie en arrière-plan.",
+    "en": "Messaging in the background."
+   }
+  },
+  {
+   "match": "^(dropbox.*|googledrivefs|googledrivesync|icloud.*|icloudservices|icloudckks|apsdaemon|megasync|pcloud.*|nextcloud.*|syncthing.*|box.*sync|backupnotify|crashplan.*|acronis.*|macrium.*|reflect.*service)$",
+   "tier": "LowValue",
+   "category": "cloud",
+   "protected": false,
+   "note": {
+    "fr": "Synchronisation / sauvegarde : peut lire et écrire le disque pendant la partie.",
+    "en": "Sync / backup: may read and write the disk during play."
+   }
+  },
+  {
+   "match": "^(chrome|firefox|opera|opera_gx|brave|vivaldi|arc|librewolf|waterfox|thorium)$",
+   "tier": "Useful",
+   "category": "browser",
+   "protected": false,
+   "note": {
+    "fr": "Navigateur (ouvert ou en arrière-plan).",
+    "en": "Browser (open or in the background)."
+   }
+  },
+  {
+   "match": "^(googleupdate|googleupdater.*|googlecrashhandler.*|updater|update|bravecrashhandler.*|operaupdate.*|firefoxupdate.*|maintenanceservice|jusched|jucheck|sunjavaupdatesched|adobearm|adobeupdateservice|armsvc|agsservice|adobegcclient|agmservice|adobeipcbroker|ccxprocess|creative cloud.*|coresync|acrotray|adobecollabsync|reader_sl|ituneshelper|applemobiledeviceservice|mdnsresponder|bonjour.*|softwareupdate.*|appleupdate.*|vmware-tray|vmnat|vmnetdhcp|vmware-authd|vboxsvc|vboxsds|teamviewer.*|tv_w32|tv_x64|anydesk|rustdesk|parsecd|logmein.*|splashtop.*|ammyy.*)$",
+   "tier": "LowValue",
+   "category": "updater",
+   "protected": false,
+   "note": {
+    "fr": "Programme de mise à jour / assistant en arrière-plan : peut attendre la fin de la partie.",
+    "en": "Updater / background helper: can wait until after gaming."
+   }
+  },
+  {
+   "match": "^(adobearm|agsservice|adobegcclient|jusched|sunjavaupdatesched)$",
+   "tier": "Useless",
+   "category": "updater",
+   "protected": false,
+   "note": {
+    "fr": "Assistant de mise à jour qui tourne en permanence pour vérifier de temps en temps.",
+    "en": "Updater that runs all the time to check now and then."
+   }
+  },
+  {
+   "match": "^(teamviewer.*|tv_w32|tv_x64|anydesk|logmein.*|ammyy.*|splashtop.*)$",
+   "tier": "LowValue",
+   "category": "remote",
+   "protected": false,
+   "note": {
+    "fr": "Accès à distance : à fermer si vous ne l'utilisez pas (sécurité et ressources).",
+    "en": "Remote access: close it if unused (security and resources)."
+   }
+  },
+  {
+   "match": "^(ccleaner.*|ccleanermonitor|cctray|glary.*|wisecare.*|wise.*memory.*|memreduct|razercortex.*|cortex|gamebooster|game.*booster.*|wtfast.*|exitlag.*|noping.*)$",
+   "tier": "Useless",
+   "category": "utility",
+   "protected": false,
+   "note": {
+    "fr": "« Optimiseur » ou nettoyeur résident : fait doublon et consomme lui-même des ressources.",
+    "en": "Resident 'optimiser' or cleaner: redundant and uses resources itself."
+   }
+  },
+  {
+   "match": "^(driverbooster.*|iobit.*|advancedsystemcare.*|asc|monitor\\.exe|smartdefrag.*|driver ?easy.*|drivereasy.*|driverpack.*|driver.*updater.*|driversupport.*|drivermax.*|slimware.*|driverupdate.*|winzip.*driver.*|pcaccelerate.*|speedupmypc.*|pc ?cleaner.*|pcoptimizer.*|reimage.*|restoro.*|fortect.*|segurazo.*|sapphire.*segurazo|bytefence.*|onelaunch.*|wavebrowser.*|wave.*browser|shift.*browser|webcompanion.*|lavasoft.*|searchprotect.*|conduit.*|mypcbackup.*|pcappstore.*|pc ?app ?store.*|hotspotshield.*|totalav.*|pcprotect.*|scanguard.*|mackeeper.*|clearbar.*|safefinder.*|relevantknowledge.*|premieropinion.*|opencandy.*|installcore.*|systweak.*|advanced ?pc ?cleanup.*|outbyte.*|auslogics.*boost.*|kmspico.*|kmsauto.*|autokms.*|xmrig.*|nbminer.*|phoenixminer.*|t-rex.*|lolminer.*|gminer.*|nheqminer.*)$",
+   "tier": "Harmful",
+   "category": "adware",
+   "protected": false,
+   "note": {
+    "fr": "Logiciel indésirable connu (faux optimiseur, « mise à jour de pilotes », publicité, activateur ou mineur caché) : à désinstaller.",
+    "en": "Known unwanted software (fake optimiser, 'driver updater', adware, activator or hidden miner): uninstall it."
+   }
+  }
+ ],
+ "games": [
+  "fortniteclient-win64-shipping",
+  "fortniteclient-win64-shipping_eac_eos",
+  "valorant-win64-shipping",
+  "valorant",
+  "cs2",
+  "csgo",
+  "r5apex",
+  "r5apex_dx12",
+  "cod",
+  "codhq",
+  "blackops6",
+  "modernwarfare",
+  "overwatch",
+  "rainbowsix",
+  "rainbowsix_be",
+  "rainbowsix_vulkan",
+  "rocketleague",
+  "league of legends",
+  "dota2",
+  "pubg",
+  "tslgame",
+  "eldenring",
+  "gta5",
+  "gta5_enhanced",
+  "rdr2",
+  "cyberpunk2077",
+  "minecraft",
+  "javaw",
+  "robloxplayerbeta",
+  "marvel-win64-shipping",
+  "marvelrivals",
+  "thefinals",
+  "helldivers2",
+  "bg3",
+  "bg3_dx11",
+  "starfield",
+  "witcher3",
+  "rustclient",
+  "escapefromtarkov",
+  "forzahorizon5",
+  "fh5",
+  "forzamotorsport",
+  "destiny2",
+  "warframe.x64",
+  "huntgame",
+  "deadlock",
+  "project8",
+  "eafc25",
+  "fc25",
+  "fc26",
+  "bf6",
+  "bf2042",
+  "eft",
+  "arc-win64-shipping",
+  "stalker2-win64-shipping",
+  "wukong-win64-shipping",
+  "b1-win64-shipping",
+  "acshadows",
+  "msfs2024",
+  "flightsimulator",
+  "splitfiction",
+  "marvelrivals_launcher"
+ ],
+ "services": [
+  {
+   "name": "RpcSs",
+   "tier": "Essential"
+  },
+  {
+   "name": "RpcEptMapper",
+   "tier": "Essential"
+  },
+  {
+   "name": "DcomLaunch",
+   "tier": "Essential"
+  },
+  {
+   "name": "LSM",
+   "tier": "Essential"
+  },
+  {
+   "name": "BrokerInfrastructure",
+   "tier": "Essential"
+  },
+  {
+   "name": "Power",
+   "tier": "Essential"
+  },
+  {
+   "name": "PlugPlay",
+   "tier": "Essential"
+  },
+  {
+   "name": "EventLog",
+   "tier": "Essential"
+  },
+  {
+   "name": "Dhcp",
+   "tier": "Essential"
+  },
+  {
+   "name": "Dnscache",
+   "tier": "Essential"
+  },
+  {
+   "name": "nsi",
+   "tier": "Essential"
+  },
+  {
+   "name": "NlaSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "netprofm",
+   "tier": "Essential"
+  },
+  {
+   "name": "BFE",
+   "tier": "Essential"
+  },
+  {
+   "name": "mpssvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "CryptSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "Winmgmt",
+   "tier": "Essential"
+  },
+  {
+   "name": "Schedule",
+   "tier": "Essential"
+  },
+  {
+   "name": "ProfSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "UserManager",
+   "tier": "Essential"
+  },
+  {
+   "name": "Audiosrv",
+   "tier": "Essential"
+  },
+  {
+   "name": "AudioEndpointBuilder",
+   "tier": "Essential"
+  },
+  {
+   "name": "FontCache",
+   "tier": "Essential"
+  },
+  {
+   "name": "gpsvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "SENS",
+   "tier": "Essential"
+  },
+  {
+   "name": "SystemEventsBroker",
+   "tier": "Essential"
+  },
+  {
+   "name": "TimeBrokerSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "StateRepository",
+   "tier": "Essential"
+  },
+  {
+   "name": "CoreMessagingRegistrar",
+   "tier": "Essential"
+  },
+  {
+   "name": "WinDefend",
+   "tier": "Essential"
+  },
+  {
+   "name": "SecurityHealthService",
+   "tier": "Essential"
+  },
+  {
+   "name": "wscsvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "SamSs",
+   "tier": "Essential"
+  },
+  {
+   "name": "KeyIso",
+   "tier": "Essential"
+  },
+  {
+   "name": "VaultSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "Appinfo",
+   "tier": "Essential"
+  },
+  {
+   "name": "AppXSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "ClipSVC",
+   "tier": "Essential"
+  },
+  {
+   "name": "LanmanWorkstation",
+   "tier": "Essential"
+  },
+  {
+   "name": "WinHttpAutoProxySvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "iphlpsvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "EventSystem",
+   "tier": "Essential"
+  },
+  {
+   "name": "Wcmsvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "WlanSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "DispBrokerDesktopSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "DeviceAssociationService",
+   "tier": "Essential"
+  },
+  {
+   "name": "DevQueryBroker",
+   "tier": "Essential"
+  },
+  {
+   "name": "TokenBroker",
+   "tier": "Essential"
+  },
+  {
+   "name": "camsvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "StorSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "TrustedInstaller",
+   "tier": "Essential"
+  },
+  {
+   "name": "wuauserv",
+   "tier": "Essential"
+  },
+  {
+   "name": "UsoSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "BITS",
+   "tier": "Essential"
+  },
+  {
+   "name": "DoSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "InstallService",
+   "tier": "Essential"
+  },
+  {
+   "name": "WaaSMedicSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "mpsdrv",
+   "tier": "Essential"
+  },
+  {
+   "name": "hidserv",
+   "tier": "Essential"
+  },
+  {
+   "name": "GameInputSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "XboxGipSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "SgrmBroker",
+   "tier": "Essential"
+  },
+  {
+   "name": "Sense",
+   "tier": "Essential"
+  },
+  {
+   "name": "WdNisSvc",
+   "tier": "Essential"
+  },
+  {
+   "name": "Themes",
+   "tier": "Useful"
+  },
+  {
+   "name": "TabletInputService",
+   "tier": "Useful"
+  },
+  {
+   "name": "TextInputManagementService",
+   "tier": "Useful"
+  },
+  {
+   "name": "WpnService",
+   "tier": "Useful"
+  },
+  {
+   "name": "WpnUserService",
+   "tier": "Useful"
+  },
+  {
+   "name": "cbdhsvc",
+   "tier": "Useful"
+  },
+  {
+   "name": "DusmSvc",
+   "tier": "Useful"
+  },
+  {
+   "name": "DPS",
+   "tier": "Useful"
+  },
+  {
+   "name": "SysMain",
+   "tier": "Useful"
+  },
+  {
+   "name": "WSearch",
+   "tier": "Useful"
+  },
+  {
+   "name": "LanmanServer",
+   "tier": "Useful"
+  },
+  {
+   "name": "lmhosts",
+   "tier": "Useful"
+  },
+  {
+   "name": "NcbService",
+   "tier": "Useful"
+  },
+  {
+   "name": "ShellHWDetection",
+   "tier": "Useful"
+  },
+  {
+   "name": "PcaSvc",
+   "tier": "Useful"
+  },
+  {
+   "name": "InventorySvc",
+   "tier": "Useful"
+  },
+  {
+   "name": "CDPSvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "CDPUserSvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "WdiServiceHost",
+   "tier": "LowValue"
+  },
+  {
+   "name": "WdiSystemHost",
+   "tier": "LowValue"
+  },
+  {
+   "name": "TrkWks",
+   "tier": "LowValue"
+  },
+  {
+   "name": "WerSvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "lfsvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "Spooler",
+   "tier": "LowValue"
+  },
+  {
+   "name": "PrintNotify",
+   "tier": "LowValue"
+  },
+  {
+   "name": "Fax",
+   "tier": "LowValue"
+  },
+  {
+   "name": "XblAuthManager",
+   "tier": "LowValue"
+  },
+  {
+   "name": "XblGameSave",
+   "tier": "LowValue"
+  },
+  {
+   "name": "XboxNetApiSvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "wisvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "PhoneSvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "SEMgrSvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "SSDPSRV",
+   "tier": "LowValue"
+  },
+  {
+   "name": "upnphost",
+   "tier": "LowValue"
+  },
+  {
+   "name": "WMPNetworkSvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "icssvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "SharedAccess",
+   "tier": "LowValue"
+  },
+  {
+   "name": "RemoteRegistry",
+   "tier": "LowValue"
+  },
+  {
+   "name": "TermService",
+   "tier": "LowValue"
+  },
+  {
+   "name": "SessionEnv",
+   "tier": "LowValue"
+  },
+  {
+   "name": "UmRdpService",
+   "tier": "LowValue"
+  },
+  {
+   "name": "MapsBroker",
+   "tier": "LowValue"
+  },
+  {
+   "name": "WalletService",
+   "tier": "LowValue"
+  },
+  {
+   "name": "RetailDemo",
+   "tier": "LowValue"
+  },
+  {
+   "name": "Wecsvc",
+   "tier": "LowValue"
+  },
+  {
+   "name": "stisvc",
+   "tier": "Useful"
+  },
+  {
+   "name": "WiaRpc",
+   "tier": "Useful"
+  },
+  {
+   "name": "FrameServer",
+   "tier": "Useful"
+  },
+  {
+   "name": "SCardSvr",
+   "tier": "Useful"
+  },
+  {
+   "name": "ScDeviceEnum",
+   "tier": "Useful"
+  },
+  {
+   "name": "BthAvctpSvc",
+   "tier": "Useful"
+  },
+  {
+   "name": "bthserv",
+   "tier": "Useful"
+  },
+  {
+   "name": "DiagTrack",
+   "tier": "Useless"
+  },
+  {
+   "name": "dmwappushservice",
+   "tier": "Useless"
+  },
+  {
+   "name": "diagsvc",
+   "tier": "Useless"
+  },
+  {
+   "name": "diagnosticshub.standardcollector.service",
+   "tier": "Useless"
+  }
+ ]
+}

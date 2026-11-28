@@ -1,0 +1,289 @@
+<UserControl x:Class="FrameCore.UI.Views.DetectiveView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="clr-namespace:FrameCore.UI.Infrastructure">
+    <UserControl.Resources>
+        <DataTemplate x:Key="ScanStep">
+            <Border Background="{DynamicResource Brush.Inset}" CornerRadius="10" Padding="12,10" Margin="0,0,8,8">
+                <StackPanel>
+                    <DockPanel>
+                        <i:Icon x:Name="Ic" DockPanel.Dock="Right" Glyph="{StaticResource Icon.Activity}" Width="14" Height="14" Foreground="{DynamicResource Brush.TextFaint}"/>
+                        <TextBlock x:Name="T" Text="{Binding Title}" FontWeight="Medium" Foreground="{DynamicResource Brush.TextMuted}" TextTrimming="CharacterEllipsis"/>
+                    </DockPanel>
+                    <Border Height="4" CornerRadius="2" Background="{DynamicResource Brush.Grid}" ClipToBounds="True" Margin="0,8,0,6">
+                        <Border CornerRadius="2" Background="{DynamicResource Brush.Accent}" i:Motion.Fraction="{Binding Fraction}"/>
+                    </Border>
+                    <TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Caption}" TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding State}" Value="active">
+                    <Setter TargetName="T" Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+                    <Setter TargetName="Ic" Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State}" Value="done">
+                    <Setter TargetName="T" Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+                    <Setter TargetName="Ic" Property="Glyph" Value="{StaticResource Icon.CheckCircle}"/>
+                    <Setter TargetName="Ic" Property="Foreground" Value="{DynamicResource Brush.Success}"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="Grid4"><UniformGrid Columns="{Binding ActualWidth, RelativeSource={RelativeSource Self}, Converter={StaticResource WidthToColumns}, ConverterParameter=900:2:4}"/></ItemsPanelTemplate>
+        <ItemsPanelTemplate x:Key="Grid3"><UniformGrid Columns="{Binding ActualWidth, RelativeSource={RelativeSource Self}, Converter={StaticResource WidthToColumns}, ConverterParameter=900:2:3}"/></ItemsPanelTemplate>
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{StaticResource Pad.Page}">
+            <TextBlock Text="{i:Loc detective.title}" Style="{StaticResource Text.PageTitle}"/>
+            <TextBlock Text="{i:Loc detective.subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,4,0,18" MaxWidth="860" HorizontalAlignment="Left"/>
+
+            <!-- Launch -->
+            <Border Style="{StaticResource Card.Hero}" Margin="0,0,0,14">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,16,0">
+                        <StackPanel Orientation="Horizontal">
+                            <i:Icon Glyph="{StaticResource Icon.Search}" Width="22" Height="22" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0"/>
+                            <TextBlock Text="{i:Loc detective.hero.title}" Style="{StaticResource Text.Section}" Margin="0"/>
+                        </StackPanel>
+                        <TextBlock Text="{i:Loc detective.hero.desc}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,6,0,12" MaxWidth="720" HorizontalAlignment="Left"/>
+                        <WrapPanel>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc detective.mode.quick}" IsChecked="{Binding Deep, Converter={StaticResource Eq}, ConverterParameter=False}" IsEnabled="{Binding Running, Converter={StaticResource Not}}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc detective.mode.deep}" IsChecked="{Binding Deep, Converter={StaticResource Eq}, ConverterParameter=True}" IsEnabled="{Binding Running, Converter={StaticResource Not}}"/>
+                        </WrapPanel>
+                        <TextBlock Text="{i:Loc detective.levelFor}" Style="{StaticResource Text.Caption}" Margin="0,8,0,2"/>
+                        <WrapPanel>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc profile.Balanced}" IsChecked="{Binding Level, Converter={StaticResource Eq}, ConverterParameter=Balanced}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc profile.Performance}" IsChecked="{Binding Level, Converter={StaticResource Eq}, ConverterParameter=Performance}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc profile.Maximum}" IsChecked="{Binding Level, Converter={StaticResource Eq}, ConverterParameter=Maximum}"/>
+                            <RadioButton Style="{StaticResource Segment}" Content="{i:Loc profile.Extreme}" IsChecked="{Binding Level, Converter={StaticResource Eq}, ConverterParameter=Extreme}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <Button Style="{StaticResource Button.Primary}" Command="{Binding StartCommand}" IsEnabled="{Binding Running, Converter={StaticResource Not}}" MinWidth="220">
+                            <StackPanel Orientation="Horizontal">
+                                <i:Icon Glyph="{StaticResource Icon.Play}" Width="15" Height="15" Foreground="{DynamicResource Brush.OnAccent}" Margin="0,0,8,0"/>
+                                <TextBlock Text="{i:Loc detective.start}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource Button.Secondary}" Content="{i:Loc common.cancel}" Command="{Binding CancelCommand}" Margin="0,8,0,0" Visibility="{Binding Running, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Progress -->
+            <Border Style="{StaticResource Card}" Visibility="{Binding Running, Converter={StaticResource BoolToVis}}" Margin="0,0,0,14">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,10">
+                        <TextBlock DockPanel.Dock="Right" Style="{StaticResource Text.Metric}" FontSize="24" i:Motion.CountFormat="0 %" i:Motion.CountTo="{Binding Overall}"/>
+                        <StackPanel>
+                            <TextBlock Text="{i:Loc detective.inProgress}" Style="{StaticResource Text.Overline}"/>
+                            <TextBlock Text="{Binding CurrentStep}" Style="{StaticResource Text.CardTitle}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </DockPanel>
+                    <ItemsControl ItemsSource="{Binding Steps}" ItemTemplate="{StaticResource ScanStep}" ItemsPanel="{StaticResource Grid3}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Report -->
+            <StackPanel Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
+                <DockPanel Margin="0,4,0,10">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding FixAllResult}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <Button Style="{StaticResource Button.SmallPrimary}" Command="{Binding FixAllCommand}" IsEnabled="{Binding Running, Converter={StaticResource Not}}">
+                            <TextBlock><Run Text="{i:Loc detective.fixAll}"/> (<Run Text="{Binding FixableCount, Mode=OneWay}"/>)</TextBlock>
+                        </Button>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="{i:Loc detective.results}" Style="{StaticResource Text.Section}" Margin="0"/>
+                        <TextBlock Text="{Binding ReportTitle}" Style="{StaticResource Text.Caption}"/>
+                    </StackPanel>
+                </DockPanel>
+
+                <!-- Counters -->
+                <UniformGrid Columns="3" Margin="-6,0,-6,8">
+                    <Border Style="{StaticResource Card}" Margin="6">
+                        <StackPanel>
+                            <TextBlock Text="{i:Loc detective.count.critical}" Style="{StaticResource Text.Overline}"/>
+                            <TextBlock Style="{StaticResource Text.Metric}" Foreground="{DynamicResource Brush.Danger}" i:Motion.CountTo="{Binding CriticalCount}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Margin="6">
+                        <StackPanel>
+                            <TextBlock Text="{i:Loc detective.count.warning}" Style="{StaticResource Text.Overline}"/>
+                            <TextBlock Style="{StaticResource Text.Metric}" Foreground="{DynamicResource Brush.Warning}" i:Motion.CountTo="{Binding WarningCount}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Margin="6">
+                        <StackPanel>
+                            <TextBlock Text="{i:Loc detective.count.suggestion}" Style="{StaticResource Text.Overline}"/>
+                            <TextBlock Style="{StaticResource Text.Metric}" Foreground="{DynamicResource Brush.Accent}" i:Motion.CountTo="{Binding SuggestionCount}"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- Areas -->
+                <ItemsControl ItemsSource="{Binding Areas}" ItemsPanel="{StaticResource Grid4}" Margin="-6,0,-6,10">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Card}" Margin="6" Padding="14,12" BorderBrush="{Binding WorstKey, Converter={StaticResource LevelBrush}}">
+                                <DockPanel>
+                                    <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="10" Background="{Binding WorstKey, Converter={StaticResource LevelBrush}, ConverterParameter=soft}" Margin="0,0,10,0">
+                                        <i:Icon Glyph="{Binding Icon, Converter={StaticResource Res}}" Width="17" Height="17" Foreground="{Binding WorstKey, Converter={StaticResource LevelBrush}}"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding Summary}" Style="{StaticResource Text.Caption}" Foreground="{Binding WorstKey, Converter={StaticResource LevelBrush}}"/>
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Findings -->
+                <TextBlock Text="{i:Loc detective.findings}" Style="{StaticResource Text.Section}"/>
+                <ItemsControl ItemsSource="{Binding Findings}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Card}" Padding="0" Margin="0,0,0,8" ClipToBounds="True">
+                                <DockPanel>
+                                    <Border DockPanel.Dock="Left" Width="4" Background="{Binding SeverityKey, Converter={StaticResource LevelBrush}}"/>
+                                    <Grid Margin="14,12">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <StackPanel Margin="0,0,12,0">
+                                            <WrapPanel Margin="0,0,0,4">
+                                                <Border Style="{StaticResource Badge}" Background="{Binding SeverityKey, Converter={StaticResource LevelBrush}, ConverterParameter=soft}">
+                                                    <TextBlock Style="{StaticResource Text.Badge}" Text="{Binding SeverityText}" Foreground="{Binding SeverityKey, Converter={StaticResource LevelBrush}}"/>
+                                                </Border>
+                                                <Border Style="{StaticResource Badge}"><TextBlock Style="{StaticResource Text.Badge}" Text="{Binding AreaText}"/></Border>
+                                            </WrapPanel>
+                                            <TextBlock Text="{Binding Title}" Style="{StaticResource Text.CardTitle}" TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding Evidence}" Style="{StaticResource Text.Caption}" FontFamily="{StaticResource Font.Mono}" TextWrapping="Wrap" Margin="0,4,0,0"
+                                                       Visibility="{Binding HasEvidence, Converter={StaticResource BoolToVis}}"/>
+                                            <TextBlock Text="{Binding Advice}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,6,0,0" Visibility="{Binding HasAdvice, Converter={StaticResource BoolToVis}}"/>
+                                            <TextBlock Text="{Binding Result}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.AccentText}" TextWrapping="Wrap" Margin="0,4,0,0"
+                                                       Visibility="{Binding Result, Converter={StaticResource BoolToVis}}"/>
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Style="{StaticResource Button.Small}" Content="{Binding FixLabel}" VerticalAlignment="Top"
+                                                Command="{Binding DataContext.FixCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                Visibility="{Binding CanFix, Converter={StaticResource BoolToVis}}" IsEnabled="{Binding Fixed, Converter={StaticResource Not}}"/>
+                                    </Grid>
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Latency per driver + network -->
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="{i:Loc detective.lat.title}" Style="{StaticResource Text.CardTitle}"/>
+                            <TextBlock Text="{Binding LatencySummary}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,2,0,10"/>
+                            <ItemsControl ItemsSource="{Binding Drivers}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,8" ToolTip="{Binding Detail}">
+                                            <DockPanel>
+                                                <TextBlock DockPanel.Dock="Right" Text="{Binding Max}" FontFamily="{StaticResource Font.Mono}" FontSize="12" Foreground="{Binding SeverityKey, Converter={StaticResource LevelBrush}}"/>
+                                                <TextBlock FontSize="12.5"><Run Text="{Binding Driver, Mode=OneWay}" FontWeight="Medium"/>  <Run Text="{Binding Component, Mode=OneWay}" Foreground="{DynamicResource Brush.TextMuted}"/></TextBlock>
+                                            </DockPanel>
+                                            <Border Height="6" CornerRadius="3" Background="{DynamicResource Brush.Inset}" ClipToBounds="True" Margin="0,4,0,0">
+                                                <Border CornerRadius="3" Background="{Binding SeverityKey, Converter={StaticResource LevelBrush}}" i:Motion.Fraction="{Binding Fraction}"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Text="{i:Loc detective.lat.explain}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="{i:Loc detective.net.title}" Style="{StaticResource Text.CardTitle}"/>
+                            <TextBlock Text="{Binding NetworkSummary}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,2,0,10"/>
+                            <TextBlock Text="{i:Loc detective.net.gatewayChart}" Style="{StaticResource Text.Overline}"/>
+                            <i:SparkChart Height="56" Values="{Binding GatewayPings}" Maximum="{Binding PingMax}" Stroke="{DynamicResource Brush.Accent}" Fill="{DynamicResource Brush.ChartFill}" GridBrush="{DynamicResource Brush.Grid}" Capacity="100" Margin="0,4,0,10"/>
+                            <TextBlock Text="{i:Loc detective.net.internetChart}" Style="{StaticResource Text.Overline}"/>
+                            <i:SparkChart Height="56" Values="{Binding InternetPings}" Maximum="{Binding PingMax}" Stroke="{DynamicResource Brush.Info}" GridBrush="{DynamicResource Brush.Grid}" Capacity="100" Margin="0,4,0,10"/>
+                            <Button Style="{StaticResource Button.Small}" Content="{i:Loc detective.bloat.button}" Command="{Binding LoadedTestCommand}" HorizontalAlignment="Left"/>
+                            <TextBlock Text="{i:Loc detective.bloat.explain}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Processes -->
+                <TextBlock Text="{i:Loc detective.proc.title}" Style="{StaticResource Text.Section}" Margin="0,18,0,4"/>
+                <TextBlock Text="{i:Loc detective.proc.explain}" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" MaxWidth="900" HorizontalAlignment="Left"/>
+                <TextBlock Text="{Binding ProcessSummary}" Style="{StaticResource Text.Caption}" Margin="0,4,0,8" TextWrapping="Wrap"/>
+                <WrapPanel Margin="0,0,0,8">
+                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc detective.proc.all}" IsChecked="{Binding TierFilter, Converter={StaticResource Eq}, ConverterParameter=all}"/>
+                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc tier.Harmful}" IsChecked="{Binding TierFilter, Converter={StaticResource Eq}, ConverterParameter=Harmful}"/>
+                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc tier.Useless}" IsChecked="{Binding TierFilter, Converter={StaticResource Eq}, ConverterParameter=Useless}"/>
+                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc tier.LowValue}" IsChecked="{Binding TierFilter, Converter={StaticResource Eq}, ConverterParameter=LowValue}"/>
+                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc tier.Useful}" IsChecked="{Binding TierFilter, Converter={StaticResource Eq}, ConverterParameter=Useful}"/>
+                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc tier.VeryUseful}" IsChecked="{Binding TierFilter, Converter={StaticResource Eq}, ConverterParameter=VeryUseful}"/>
+                    <RadioButton Style="{StaticResource Segment}" Content="{i:Loc tier.Essential}" IsChecked="{Binding TierFilter, Converter={StaticResource Eq}, ConverterParameter=Essential}"/>
+                </WrapPanel>
+                <Border Style="{StaticResource Card}" Padding="10,6">
+                    <StackPanel>
+                        <Grid Margin="6,4,6,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="1.6*"/><ColumnDefinition Width="110"/><ColumnDefinition Width="1.4*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="80"/><ColumnDefinition Width="1.2*"/></Grid.ColumnDefinitions>
+                            <TextBlock Text="{i:Loc detective.proc.col.name}" Style="{StaticResource Text.Overline}"/>
+                            <TextBlock Grid.Column="1" Text="{i:Loc detective.proc.col.tier}" Style="{StaticResource Text.Overline}"/>
+                            <TextBlock Grid.Column="2" Text="{i:Loc detective.proc.col.wakeups}" Style="{StaticResource Text.Overline}"/>
+                            <TextBlock Grid.Column="3" Text="CPU" Style="{StaticResource Text.Overline}"/>
+                            <TextBlock Grid.Column="4" Text="{i:Loc detective.proc.col.memory}" Style="{StaticResource Text.Overline}"/>
+                            <TextBlock Grid.Column="5" Text="{i:Loc detective.proc.col.action}" Style="{StaticResource Text.Overline}"/>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding Processes}" VirtualizingPanel.IsVirtualizing="True">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{DynamicResource Brush.Grid}" BorderThickness="0,1,0,0" Padding="6,6" ToolTip="{Binding Reason}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="1.6*"/><ColumnDefinition Width="110"/><ColumnDefinition Width="1.4*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="80"/><ColumnDefinition Width="1.2*"/></Grid.ColumnDefinitions>
+                                            <StackPanel Margin="0,0,8,0">
+                                                <TextBlock Text="{Binding Name}" FontWeight="Medium" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{Binding Reason}" Style="{StaticResource Text.Caption}" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Style="{StaticResource Badge}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0"
+                                                    Background="{Binding TierKey, Converter={StaticResource LevelBrush}, ConverterParameter=soft}">
+                                                <TextBlock Style="{StaticResource Text.Badge}" Text="{Binding TierText}" Foreground="{Binding TierKey, Converter={StaticResource LevelBrush}}"/>
+                                            </Border>
+                                            <DockPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <TextBlock DockPanel.Dock="Right" Text="{Binding Wakeups}" FontFamily="{StaticResource Font.Mono}" FontSize="12" Margin="8,0,0,0" MinWidth="48" TextAlignment="Right"/>
+                                                <Border Height="6" CornerRadius="3" Background="{DynamicResource Brush.Inset}" ClipToBounds="True">
+                                                    <Border CornerRadius="3" Background="{Binding TierKey, Converter={StaticResource LevelBrush}}" i:Motion.Fraction="{Binding WakeFraction}"/>
+                                                </Border>
+                                            </DockPanel>
+                                            <TextBlock Grid.Column="3" Text="{Binding Cpu}" FontFamily="{StaticResource Font.Mono}" FontSize="12" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="4" Text="{Binding Memory}" FontFamily="{StaticResource Font.Mono}" FontSize="12" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="5" Text="{Binding ActionText}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Stability timeline -->
+                <TextBlock Text="{i:Loc detective.stab.title}" Style="{StaticResource Text.Section}" Margin="0,18,0,8"/>
+                <TextBlock Text="{i:Loc detective.stab.empty}" Style="{StaticResource Text.Muted}" Visibility="{Binding StabilityEvents.Count, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"/>
+                <ItemsControl ItemsSource="{Binding StabilityEvents}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Time, StringFormat=g}" Style="{StaticResource Text.Caption}" FontFamily="{StaticResource Font.Mono}"/>
+                                    <TextBlock><Run Text="{Binding Kind, Mode=OneWay, Converter={StaticResource LocKey}, ConverterParameter=detective.event.}" FontWeight="Medium"/>  <Run Text="{Binding Code, Mode=OneWay}" FontFamily="{StaticResource Font.Mono}" Foreground="{DynamicResource Brush.TextMuted}"/></TextBlock>
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

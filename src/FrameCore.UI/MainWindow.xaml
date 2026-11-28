@@ -20,6 +20,7 @@
         <DataTemplate DataType="{x:Type vm:BenchmarkViewModel}"><v:BenchmarkView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:RestoreViewModel}"><v:RestoreView/></DataTemplate>
         <DataTemplate DataType="{x:Type vm:SettingsViewModel}"><v:SettingsView/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DetectiveViewModel}"><v:DetectiveView/></DataTemplate>
     </Window.Resources>
 
     <Grid>

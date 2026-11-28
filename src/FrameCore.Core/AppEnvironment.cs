@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 
+using FrameCore.Core.Models;
+
 namespace FrameCore.Core;
 
 /// <summary>Well-known folders. User data lives in %LOCALAPPDATA%\FrameCore (no roaming, no server).</summary>
@@ -66,6 +68,10 @@ public sealed class AppSettings
     public bool AdvancedSensors { get; set; }
     public bool FirstRunCompleted { get; set; }
     public int MonitoringIntervalMs { get; set; } = 1000;
+    /// <summary>Automatic game profile: while a game runs, background programs step back and the fastest power plan is used.</summary>
+    public bool GameProfileEnabled { get; set; }
+    /// <summary>How far the game profile goes (same levels as the optimisation: Balanced … Extreme).</summary>
+    public ProfileLevel GameProfileLevel { get; set; } = ProfileLevel.Maximum;
 
     public static AppSettings Load()
     {

@@ -49,6 +49,7 @@ public static class WorkerProgram
         host.Register<GpuTuningRequest>("gpu.preset", r => Gpu().RunPreset(r.Vendor, r.Preset ?? throw new ArgumentException("preset")));
         host.Register<List<string>>("wu.install", ids => WindowsUpdateDrivers.Install(ids));
         host.Register<CaptureRequest>("bench.etw", r => EtwPresentCapture.Capture(r));
+        host.Register<LatencyRequest>("detective.latency", r => FrameCore.BenchmarkManager.Detective.LatencyProbe.Capture(Math.Clamp(r.Seconds, 5, 120)));
         host.Register<PresentMonRequest>("bench.presentmon", r => PresentMonRunner.Capture(r.Path, r.Request)); // signature verified inside
         host.Register<object>("storage.scan", _ => new StorageScanner(services.Registry).Scan());
         host.Register<object>("boot.history", _ => StartupManager.BootPerformance.Read()); // read-only

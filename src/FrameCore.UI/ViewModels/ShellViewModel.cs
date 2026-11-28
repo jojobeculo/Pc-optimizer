@@ -38,12 +38,15 @@ public sealed partial class ShellViewModel : ObservableObject
     public SettingsViewModel Settings { get; }
     public GamesViewModel Games { get; }
     public RestoreViewModel Restore { get; }
+    public DetectiveService Detective { get; }
+    public DetectiveViewModel DetectivePage { get; }
+    public GameProfileService GameProfile { get; }
 
     public ObservableCollection<NavItem> Navigation { get; } = new()
     {
         new() { Key = "home", Icon = "Home" },
         new() { Key = "performance", IsHeader = true },
-        new() { Key = "optimization", Icon = "Optimize" }, new() { Key = "games", Icon = "Games" }, new() { Key = "benchmark", Icon = "Bench" },
+        new() { Key = "detective", Icon = "Search" }, new() { Key = "optimization", Icon = "Optimize" }, new() { Key = "games", Icon = "Games" }, new() { Key = "benchmark", Icon = "Bench" },
         new() { Key = "system", IsHeader = true },
         new() { Key = "hardware", Icon = "Hardware" }, new() { Key = "drivers", Icon = "Drivers" }, new() { Key = "overclock", Icon = "Overclock" },
         new() { Key = "control", IsHeader = true },
@@ -68,6 +71,9 @@ public sealed partial class ShellViewModel : ObservableObject
         Privileged = new PrivilegedClient(services.Broker, services);
         Monitoring = new MonitoringService(Privileged, services.Settings);
         TweakService = new TweakService(services, Privileged, Diagnostics);
+        Detective = new DetectiveService(this);
+        GameProfile = new GameProfileService(this);
+        DetectivePage = new DetectiveViewModel(this);
         Home = new HomeViewModel(this);
         Optimization = new OptimizationViewModel(this);
         Hardware = new HardwareViewModel(this);
@@ -95,7 +101,7 @@ public sealed partial class ShellViewModel : ObservableObject
         CurrentPage = value switch
         {
             "optimization" => Optimization, "hardware" => Hardware, "drivers" => Drivers, "overclock" => Overclock,
-            "pro" => Pro, "benchmark" => Benchmark, "settings" => Settings, "games" => Games, "restore" => Restore, _ => Home,
+            "pro" => Pro, "benchmark" => Benchmark, "settings" => Settings, "games" => Games, "restore" => Restore, "detective" => DetectivePage, _ => Home,
         };
         (CurrentPage as IPageActivated)?.OnActivated();
     }
